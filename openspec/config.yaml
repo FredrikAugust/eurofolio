@@ -1,0 +1,32 @@
+schema: spec-driven
+
+context: |
+  Product: A private portfolio dashboard that consolidates investments across accounts.
+  Runtime: Next.js 16.3 App Router, React 19.2, TypeScript, pnpm, and Vercel.
+  Data: Turso/libSQL with Drizzle ORM. EUR is the reporting/base currency, while
+    instruments, transactions, prices, and FX observations preserve native currencies.
+  Market data: Delayed or end-of-day data is sufficient. Prefer free sources behind
+    provider adapters; ECB reference rates are the primary source for EUR FX conversion.
+  Integration: Expose authenticated portfolio reads through a stateless Streamable HTTP MCP server.
+  Performance: Optimize for a low-powered development machine and fast production responses.
+    Default to React Server Components, minimize dependencies and client JavaScript, avoid
+    request waterfalls, cache slow-changing reference data, and measure bundle/build cost.
+  Package manager: Use pnpm exclusively. Do not use npm, yarn, or bun commands.
+
+rules:
+  proposal:
+    - State explicit non-goals and the smallest useful vertical slice.
+    - Identify performance, financial-correctness, privacy, and market-data risks.
+  design:
+    - Document numeric precision, currency conversion, price provenance, and cache behavior.
+    - Prefer fewer dependencies and server-rendered UI; justify every client-side library.
+  tasks:
+    - Keep tasks independently verifiable and generally under two hours.
+    - Include lint, type, build, data-correctness, and bundle-size checks where relevant.
+
+operations:
+  apply:
+    guidance:
+      - Use pnpm for every package and script command.
+      - Keep database and market-data access server-only.
+      - Benchmark or inspect bundle impact before accepting heavy dependencies.
