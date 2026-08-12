@@ -7,7 +7,7 @@ See `proposal.md` for motivation and scope. The repository is a clean Next.js 16
 **Goals:**
 
 - Keep the portfolio ledger authoritative, exact, replayable, and independent of any market-data provider.
-- Make the primary dashboard useful with zero client JavaScript and a fixed number of database operations.
+- Make the primary dashboard useful with a small, measured client chart island and a fixed number of database operations.
 - Keep MCP requests stateless so they work across Vercel instances without Redis or sticky sessions.
 - Make price and FX failures visible while retaining the last known usable valuation.
 - Keep local installs and builds lightweight enough to measure continuously.
@@ -76,23 +76,23 @@ Use Vercel's `mcp-handler` v2 with MCP SDK v2 and Zod v4 at `/mcp`. It maps natu
 
 Tool inputs are bounded, exact-decimal fields remain strings, batch writes are transactional, list operations paginate, and errors return stable machine-readable codes. MCP is the only programmatic portfolio surface; internal web actions are not public APIs.
 
-### 9. One high-entropy owner token, no user database
+### 9. Better Auth for one bootstrapped owner
 
-Require a high-entropy `EUROFOLIO_OWNER_TOKEN` for MCP bearer authentication. Compare fixed-length token digests with a timing-safe primitive. The dashboard uses a minimal login form that exchanges the same token for an HMAC-signed, HttpOnly, Secure, SameSite=Strict session cookie using a separate `EUROFOLIO_SESSION_SECRET`.
+Use Better Auth's minimal server entry, Drizzle adapter, email/password flow, standard Next.js handler, and database-backed sessions for the dashboard. Public signup is disabled in normal operation. A one-shot owner bootstrap command may temporarily enable signup only while the database has no user; it refuses to create a second user. Better Auth owns password hashing, sessions, cookie flags, and CSRF/origin protections.
 
-This removes an auth service, user table, password hashing dependency, email provider, and tenancy logic. It is appropriate only because the product is explicitly single-owner. Secrets and financial arguments are redacted from logs.
+Keep the independent high-entropy `EUROFOLIO_OWNER_TOKEN` for MCP bearer authentication because agent clients need non-interactive access. Compare fixed-length token digests with a timing-safe primitive. Better Auth routes expose authentication only and never portfolio operations. Secrets and financial arguments remain redacted from logs.
 
-### 10. Zero-JavaScript dashboard and tiny visuals
+### 10. Server-first dashboard with one lightweight chart island
 
-Build the primary dashboard entirely from Server Components and semantic HTML. Use CSS for bars and small server-rendered SVG paths for allocation/history visuals. Do not install a charting library, client data-fetcher, state store, animation library, or component kit in the first slice.
+Build the dashboard shell, totals, holdings, and freshness tables as Server Components and semantic HTML. Use Lightweight Charts for a single interactive historical EUR-value island; its base bundle is approximately 35 kB and it is designed for large financial time series. Retain CSS bars/server markup for allocation and avoid a component kit, client data-fetcher, global state store, or animation library.
 
-Use one self-hosted/system font stack to avoid build-time font downloads. Stream independent sections only if measured latency justifies Suspense; otherwise one batched data read avoids overhead. The dashboard exposes observation dates and missing/stale warnings directly in HTML.
+Use a system font stack to avoid build-time font downloads. Batch-load historical inputs once and calculate bounded display samples server-side. The dashboard exposes observation dates and missing/stale warnings directly in HTML and remains useful before the chart hydrates.
 
 ### 11. Performance budgets are release criteria
 
 Record baseline cold and warm `pnpm build` time and peak memory. For the MVP:
 
-- The primary dashboard has no intentional client component boundary.
+- The primary dashboard has one intentional client component boundary for Lightweight Charts.
 - Dashboard data access uses a fixed number of batched database operations and zero provider calls.
 - No production dependency is accepted without documenting why a platform or small local function cannot replace it.
 - Use Next.js 16.3 Turbopack filesystem caching defaults and automatic memory eviction for local development.

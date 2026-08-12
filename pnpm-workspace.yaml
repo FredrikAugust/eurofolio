@@ -1,3 +1,6 @@
 allowBuilds:
-  sharp: false
-  unrs-resolver: false
+  '@fission-ai/openspec': true
+  esbuild: true
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - lightweight-charts@5.2.1

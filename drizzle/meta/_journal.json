@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1786567217614,
+      "tag": "0000_last_silhouette",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1786569588120,
+      "tag": "0001_lame_tana_nile",
+      "breakpoints": true
+    }
+  ]
+}

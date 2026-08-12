@@ -6,22 +6,46 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test 'src/**/*.test.ts'",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node --import tsx scripts/migrate.ts",
+    "db:check": "drizzle-kit check",
+    "auth:bootstrap": "node --import tsx scripts/bootstrap-owner.ts",
+    "analyze": "next experimental-analyze -o",
+    "analyze:chunks": "node --import tsx scripts/report-bundle.ts",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm db:check && pnpm build --webpack"
   },
   "dependencies": {
+    "@libsql/client": "0.17.4",
+    "@modelcontextprotocol/server": "2.0.0",
+    "better-auth": "1.6.27",
+    "decimal.js-light": "2.5.1",
+    "drizzle-orm": "0.45.2",
+    "lightweight-charts": "5.2.1",
+    "mcp-handler": "2.1.0",
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "yahoo-finance2": "4.0.2",
+    "zod": "4.4.3"
   },
   "devDependencies": {
+    "@fission-ai/openspec": "1.7.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
     "tailwindcss": "^4",
+    "tsx": "4.23.12",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@11.16.0"
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@11.19.0"
 }

@@ -30,11 +30,15 @@ The dashboard SHALL show the effective date, source, and freshness classificatio
 - **THEN** the dashboard visibly marks the holding stale and shows the limiting observation date
 
 ### Requirement: Minimal client execution
-The primary dashboard SHALL deliver useful holdings, totals, allocation, and freshness information in server-rendered HTML without requiring client-side JavaScript.
+The primary dashboard SHALL deliver useful holdings, totals, allocation, and freshness information in server-rendered HTML while limiting client-side JavaScript to measured interactive chart islands.
 
 #### Scenario: JavaScript is disabled
 - **WHEN** an authenticated owner loads the primary dashboard with client-side JavaScript disabled
-- **THEN** the complete current overview remains readable and navigable
+- **THEN** current totals, holdings, allocation, and freshness remain readable while interactive chart behavior is unavailable
+
+#### Scenario: Interactive history chart
+- **WHEN** client-side JavaScript is available and historical valuation samples exist
+- **THEN** the dashboard renders a responsive, interactive EUR value chart without refetching portfolio data from the browser
 
 ### Requirement: Bounded dashboard work
 The dashboard SHALL fetch portfolio inputs without per-holding database or provider request waterfalls and SHALL never contact a market-data provider while rendering a page.
@@ -42,4 +46,3 @@ The dashboard SHALL fetch portfolio inputs without per-holding database or provi
 #### Scenario: Render many holdings
 - **WHEN** the dashboard renders a portfolio containing many registered holdings
 - **THEN** database access remains bounded by a fixed number of batched operations independent of the holding count
-
