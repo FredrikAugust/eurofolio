@@ -26,6 +26,18 @@ const accountColors: Record<string, string> = {
   Revolut: "#0c0c0d",
 };
 const chartColors = ["#f04d23", "#1748ba", "#0c0c0d", "#657080"];
+const allocationColors: Record<string, string> = {
+  stock: "#f04d23",
+  fund: "#1748ba",
+  etf: "#0c0c0d",
+  cash: "#676763",
+};
+
+function assetClassLabel(assetClass: string): string {
+  return assetClass.toLowerCase() === "etf"
+    ? "ETF"
+    : assetClass.charAt(0).toUpperCase() + assetClass.slice(1).toLowerCase();
+}
 
 function latestObservation(summary: PortfolioSummary): string {
   return [
@@ -166,12 +178,15 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
         <h2 className="sr-only" id="allocation-heading">Asset allocation</h2>
         <div className="allocation-values">
           {summary.allocation.map((item) => (
-            <div key={item.assetClass} style={{ width: `${Math.max(13, (Number(item.eurValue) / total) * 100)}%` }}>
-              <span>{item.assetClass === "etf" ? "ETF" : item.assetClass}</span><strong>{percent(item.eurValue, total)}</strong>
+            <div key={item.assetClass}>
+              <span>{assetClassLabel(item.assetClass)}</span>
+              <strong>{percent(item.eurValue, total)}</strong>
+              <span className="allocation-graph" style={{ color: allocationColors[item.assetClass.toLowerCase()] ?? "#0c0c0d" }} aria-hidden="true">
+                <i style={{ width: `${Math.min(100, Math.max(0, (Number(item.eurValue) / total) * 100))}%` }} />
+              </span>
             </div>
           ))}
         </div>
-        <div className="allocation-axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div>
       </section>
 
       <section className="top-register" aria-labelledby="leaders-heading">
