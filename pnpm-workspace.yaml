@@ -2,5 +2,7 @@ allowBuilds:
   '@fission-ai/openspec': true
   esbuild: true
   unrs-resolver: true
+overrides:
+  esbuild@<=0.24.2: 0.25.12
 minimumReleaseAgeExclude:
   - lightweight-charts@5.2.1
