@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Eurofolio
 
-## Getting Started
+A private, single-owner portfolio ledger with EUR reporting, exact decimal
+arithmetic, delayed stock/ETF prices, ECB currency rates, and an MCP-only data
+entry surface.
 
-First, run the development server:
+Production: <https://eurofolio.vercel.app>
+
+## Architecture
+
+- Next.js 16.3 Server Components on Vercel
+- Turso/libSQL through Drizzle ORM
+- Better Auth email/password sessions with public signup disabled
+- Lightweight Charts loaded only for portfolio history
+- Yahoo Finance delayed stock/ETF prices and ECB daily FX rates
+- Stateless Streamable HTTP MCP at `/mcp`
+
+## Local commands
+
+Use pnpm exclusively:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install --frozen-lockfile
 pnpm dev
-# or
-bun dev
+pnpm verify
+pnpm db:migrate
+pnpm auth:bootstrap
+pnpm openspec validate build-single-user-portfolio-mvp --strict
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Standalone database and bootstrap scripts require the variables from
+`.env.example`; Next.js itself loads `.env.local` automatically.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## MCP configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The endpoint is `https://eurofolio.vercel.app/mcp` and requires a bearer token.
+The token is stored in macOS Keychain under service
+`eurofolio-mcp-owner-token`, account `fmalmo`:
 
-## Learn More
+```bash
+security find-generic-password \
+  -a fmalmo \
+  -s eurofolio-mcp-owner-token \
+  -w
+```
 
-To learn more about Next.js, take a look at the following resources:
+Configure an MCP client with the endpoint above and an `Authorization` header
+whose value is `Bearer <token>`. Do not commit or paste the token into tracked
+configuration.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Operational notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Dashboard signup is disabled permanently after bootstrap.
+- Database migrations are versioned in `drizzle/` and must run once before a
+  release that changes schema.
+- Rotate the MCP token in macOS Keychain and both Vercel Preview/Production
+  environment variables together.
+- Market data is delayed and best-effort. Manual price and FX overrides are
+  available through MCP and take precedence for the same date.
+- No broker connections or general REST mutation API exist.
