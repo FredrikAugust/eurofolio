@@ -35,6 +35,7 @@ export function Sparkline({ points, label, color = "currentColor", className = "
   }
 
   const values = valid.map((point) => point.value);
+  const nonZero = valid.filter((point) => point.value !== 0);
   const minimum = Math.min(...values);
   const maximum = Math.max(...values);
   const spread = maximum - minimum || Math.max(Math.abs(maximum) * 0.02, 1);
@@ -44,10 +45,10 @@ export function Sparkline({ points, label, color = "currentColor", className = "
   }));
   const polyline = coordinates.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
   const area = `M${coordinates.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" L")} L${width},${baseline} L0,${baseline} Z`;
-  const comparisonPoint = valid.find((point) => point.value !== 0);
+  const comparisonPoint = nonZero[0];
   const change = comparisonPoint ? ((valid.at(-1)?.value ?? 0) / comparisonPoint.value - 1) * 100 : null;
   const direction = change === null || change === 0 ? "flat" : change > 0 ? "positive" : "negative";
-  const changeLabel = change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}%`;
+  const changeLabel = nonZero.length === 1 ? "New" : change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}%`;
   const firstDate = shortDate(valid[0].time);
   const lastDate = shortDate(valid.at(-1)!.time);
 
