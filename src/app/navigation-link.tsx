@@ -19,7 +19,7 @@ export function NavigationLink({
   const pathname = usePathname();
   const current = href === "/" ? pathname === href : pathname.startsWith(href);
   return (
-    <Link href={href} aria-current={current ? "page" : undefined}>
+    <Link href={href} prefetch={true} aria-current={current ? "page" : undefined}>
       <span>{children}</span>
       <PendingMark />
     </Link>
