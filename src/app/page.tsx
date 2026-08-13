@@ -186,7 +186,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
       </section>
 
       <section className="top-register" aria-labelledby="leaders-heading">
-        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend / return</span><span>% of portfolio</span></header>
+        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend / change</span><span>% of portfolio</span></header>
         <ol>
           {topHoldings.map((holding, index) => (
             <li key={`${holding.accountId}:${holding.instrumentId}`}>
@@ -227,7 +227,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
         <header><div><h2 id="holdings-heading">All holdings</h2><p>{summary.holdings.length} positions · {summary.accountTotals.length} custodians · EUR reporting</p></div></header>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend / return</th><th>Data</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend / change</th><th>Data</th></tr></thead>
             <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
           </table>
         </div>

@@ -44,8 +44,8 @@ export function Sparkline({ points, label, color = "currentColor", className = "
   }));
   const polyline = coordinates.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
   const area = `M${coordinates.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" L")} L${width},${baseline} L0,${baseline} Z`;
-  const firstValue = valid[0].value;
-  const change = firstValue === 0 ? null : ((valid.at(-1)?.value ?? 0) / firstValue - 1) * 100;
+  const comparisonPoint = valid.find((point) => point.value !== 0);
+  const change = comparisonPoint ? ((valid.at(-1)?.value ?? 0) / comparisonPoint.value - 1) * 100 : null;
   const direction = change === null || change === 0 ? "flat" : change > 0 ? "positive" : "negative";
   const changeLabel = change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}%`;
   const firstDate = shortDate(valid[0].time);

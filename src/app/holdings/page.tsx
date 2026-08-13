@@ -28,7 +28,7 @@ export default async function HoldingsPage() {
         <h2 className="sr-only" id="holdings-page-heading">Portfolio positions</h2>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th>Account</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Value EUR</th><th>Trend / return</th><th className="number-cell">Share</th><th>Data</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Instrument</th><th>Account</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Value EUR</th><th>Trend / change</th><th className="number-cell">Share</th><th>Data</th></tr></thead>
             <tbody>{summary.holdings.map((holding, index) => (
               <tr key={`${holding.accountId}:${holding.instrumentId}`}>
                 <td className="rank-cell">{String(index + 1).padStart(2, "0")}</td>
