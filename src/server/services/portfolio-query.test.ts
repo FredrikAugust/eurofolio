@@ -5,6 +5,7 @@ import { fxRates, securityPrices } from "@/server/db/schema";
 import { LedgerService } from "@/server/services/ledger-service";
 import {
   queryPortfolio,
+  queryPortfolioDashboard,
   queryPortfolioHistory,
 } from "@/server/services/portfolio-query";
 import { createTestDatabase } from "@/server/test/database";
@@ -133,4 +134,34 @@ test("dashboard portfolio loading executes one batch as holdings grow", async ()
   await queryPortfolio(db, "2026-08-10");
   assert.equal(batches, 2);
   fixture.close();
+});
+
+test("dashboard reports exact portfolio changes for standard periods", async () => {
+  const { db, close } = await createTestDatabase();
+  const service = new LedgerService(db, () => new Date("2026-08-10T12:00:00.000Z"));
+  const account = await service.createAccount({ name: "Main", institution: "", defaultCurrency: "EUR" });
+  const instrument = await service.createInstrument({
+    name: "Index fund",
+    assetClass: "fund",
+    nativeCurrency: "EUR",
+    provider: "manual",
+    providerSymbol: "INDEX",
+  });
+  await service.ingestEvents([
+    { type: "deposit", accountId: account.id, effectiveDate: "2026-05-01", currency: "EUR", amount: "100" },
+    { type: "buy", accountId: account.id, instrumentId: instrument.id, effectiveDate: "2026-05-01", currency: "EUR", quantity: "1", unitPrice: "100" },
+  ]);
+  await db.insert(securityPrices).values([
+    { id: "may", instrumentId: instrument.id, provider: "manual", price: "80", currency: "EUR", observedOn: "2026-05-10", retrievedAt: "2026-05-10T18:00:00.000Z", isManual: true },
+    { id: "previous", instrumentId: instrument.id, provider: "manual", price: "100", currency: "EUR", observedOn: "2026-08-09", retrievedAt: "2026-08-09T18:00:00.000Z", isManual: true },
+    { id: "current", instrumentId: instrument.id, provider: "manual", price: "110", currency: "EUR", observedOn: "2026-08-10", retrievedAt: "2026-08-10T18:00:00.000Z", isManual: true },
+  ]);
+
+  const dashboard = await queryPortfolioDashboard(db, "2026-08-10");
+  assert.deepEqual(dashboard.periodChanges.map((change) => change.label), ["1D", "1W", "1M", "3M"]);
+  assert.equal(dashboard.periodChanges[0].amount, "10");
+  assert.equal(dashboard.periodChanges[0].percent, "10");
+  assert.equal(dashboard.periodChanges[3].amount, "30");
+  assert.equal(dashboard.periodChanges[3].percent, "37.5");
+  close();
 });

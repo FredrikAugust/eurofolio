@@ -61,7 +61,7 @@ export function Sparkline({ points, label, color = "currentColor", className = "
         <polyline points={polyline} className="sparkline-line" />
         <circle cx={coordinates.at(-1)!.x} cy={coordinates.at(-1)!.y} r="2.4" className="sparkline-endpoint" />
       </svg>
-      <span className="sparkline-meta"><small>{valid.length} obs</small><b className={direction}>{changeLabel}</b></span>
+      <span className="sparkline-meta"><small>{firstDate} — {lastDate}</small><b className={direction}>{changeLabel}</b></span>
     </span>
   );
 }

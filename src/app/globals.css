@@ -60,15 +60,14 @@ a, button, summary { touch-action: manipulation; }
 .register-nav button:hover { color: var(--orange); }
 
 /* First viewport */
-.value-field { position: relative; display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) 14rem; min-height: 15.65rem; border-bottom: 1px solid var(--ink); }
-.value-field::after { position: absolute; right: 14rem; bottom: 0; width: 1px; height: 100%; background: var(--line); content: ""; }
+.value-field { position: relative; display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); min-height: 18.5rem; border-bottom: 1px solid var(--ink); }
 .weight-axis { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding-top: 1.35rem; border-right: 1px solid var(--line); font: .75rem/1 var(--font-data); }
 .weight-axis span { writing-mode: vertical-rl; }.weight-axis b, .weight-axis i { font-weight: 400; font-style: normal; }
-.value-lockup { position: relative; display: flex; min-width: 0; flex-direction: column; justify-content: center; overflow: hidden; padding: .9rem 1rem 1rem .75rem; container-type: inline-size; isolation: isolate; }
+.value-lockup { position: relative; display: flex; min-width: 0; flex-direction: column; justify-content: center; overflow: hidden; padding: 1rem 1.25rem .85rem .75rem; container-type: inline-size; isolation: isolate; }
 .value-copy { position: relative; z-index: 2; width: fit-content; max-width: 100%; }
 .value-copy::after { position: absolute; z-index: -1; inset: -.45rem -1rem -.3rem -.7rem; background: linear-gradient(90deg, rgba(251, 250, 246, .94) 0%, rgba(251, 250, 246, .8) 72%, rgba(251, 250, 246, 0) 100%); content: ""; }
 .wordmark { margin-bottom: .1rem; font-size: clamp(2.4rem, 4.5cqi, 3.55rem); font-weight: 900; letter-spacing: -.06em; line-height: .92; }
-.value-lockup h1 { overflow: hidden; margin: 0; font-size: clamp(5.4rem, 17cqi, 13.4rem); font-weight: 900; letter-spacing: -.082em; line-height: .78; white-space: nowrap; }
+.value-lockup h1 { max-width: 100%; overflow: hidden; margin: 0; font-size: clamp(5rem, 11.5cqi, 10rem); font-weight: 900; letter-spacing: -.074em; line-height: .82; white-space: nowrap; }
 .value-lockup { animation: quotation-arrival .38s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes quotation-arrival { from { opacity: 0; transform: translateY(.55rem); } to { opacity: 1; transform: translateY(0); } }
 .portfolio-backdrop { position: absolute; z-index: 0; inset: 2.15rem 0 0; color: var(--blue); pointer-events: none; }
@@ -78,14 +77,14 @@ a, button, summary { touch-action: manipulation; }
 .portfolio-backdrop-point { fill: var(--proof); stroke: var(--blue); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 .portfolio-backdrop > span { position: absolute; right: .75rem; bottom: .55rem; color: var(--blue); font: .64rem/1 var(--font-data); letter-spacing: .04em; text-transform: uppercase; }
 .portfolio-backdrop.is-starting { opacity: .72; }
-.valuation-block { display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 0 1.25rem 2rem; text-transform: uppercase; }
-.valuation-block > span { font: .75rem/1.2 var(--font-data); letter-spacing: .05em; }
-.valuation-block > i { position: relative; display: block; width: 1.4rem; height: 1.4rem; margin: 1rem 0; }
-.valuation-block > i::before, .valuation-block > i::after { position: absolute; background: var(--orange); content: ""; }
-.valuation-block > i::before { top: 50%; left: 0; width: 100%; height: 1px; }
-.valuation-block > i::after { top: 0; left: 50%; width: 1px; height: 100%; }
-.valuation-block time { display: flex; flex-direction: column; color: var(--orange); font-size: 3.35rem; font-weight: 750; letter-spacing: -.06em; line-height: .88; }
-.valuation-block small { margin-top: .6rem; color: var(--orange); font: .75rem/1.3 var(--font-data); }
+.period-changes { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: min(100%, 58rem); margin-top: 1.25rem; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: rgba(251, 250, 246, .88); }
+.period-change { display: grid; min-width: 0; grid-template-columns: auto 1fr; gap: .25rem .65rem; padding: .6rem .8rem .65rem; border-right: 1px solid var(--line); }
+.period-change:last-child { border-right: 0; }
+.period-change > span { grid-row: 1 / 3; align-self: center; color: var(--dim); font: .7rem/1 var(--font-data); }
+.period-change strong { overflow: hidden; font-size: 1.18rem; font-weight: 720; letter-spacing: -.035em; line-height: 1; text-overflow: ellipsis; white-space: nowrap; }
+.period-change small { color: var(--dim); font: .62rem/1.1 var(--font-data); white-space: nowrap; }
+.period-change.positive strong, .period-change.positive small { color: var(--blue); }
+.period-change.negative strong, .period-change.negative small { color: var(--orange); }
 
 .account-register, .top-register { --overview-columns: 4.5rem minmax(0, 1fr) minmax(12rem, 26%) 10rem minmax(7rem, 12%); --overview-gap: 1rem; }
 .account-register { border-bottom: 1px solid var(--ink); }
@@ -231,8 +230,7 @@ footer { width: min(calc(100% - 3rem), 96rem); margin: 0 auto 2rem; display: fle
 
 @media (max-width: 1100px) {
   .quotation-sheet { width: 100%; padding-inline: 1rem; }
-  .value-field { grid-template-columns: 3rem minmax(0, 1fr) 11rem; }.value-field::after { right: 11rem; }
-  .valuation-block { padding-left: 1.2rem; }.valuation-block time { font-size: 2.4rem; }
+  .value-field { grid-template-columns: 3rem minmax(0, 1fr); }
   .account-register, .top-register { --overview-columns: 4rem minmax(0, 1fr) minmax(10rem, 24%) 8.5rem minmax(6rem, 11%); --overview-gap: .7rem; }
   .account-line strong { font-size: 1.65rem; }.account-value, .account-percent { font-size: 1.55rem; }
   .top-register li strong { font-size: 1.35rem; }.leader-value, .leader-percent { font-size: 1.3rem; }
@@ -243,12 +241,17 @@ footer { width: min(calc(100% - 3rem), 96rem); margin: 0 auto 2rem; display: fle
   .register-nav { grid-template-columns: 1fr auto; min-height: 2.75rem; }
   .register-nav nav { display: none; }
   .quotation-sheet { width: 100%; margin: 0 0 2.5rem; padding: 0 .85rem 1.5rem; }
-  .value-field { grid-template-columns: minmax(0, 1fr) 6.5rem; min-height: 11rem; }.value-field::after { right: 6.5rem; }.weight-axis { display: none; }
+  .value-field { grid-template-columns: minmax(0, 1fr); min-height: 14rem; }.weight-axis { display: none; }
   .value-lockup { padding: .75rem .6rem .85rem 0; }
   .value-copy::after { inset: -.35rem -.65rem -.25rem -.4rem; }
   .wordmark { margin-bottom: 1.2rem; font-size: 1.75rem; }
-  .value-lockup h1 { overflow: visible; font-size: 2.8rem; letter-spacing: -.065em; white-space: nowrap; }
-  .valuation-block { padding: .75rem 0 .75rem .75rem; }.valuation-block > span { font-size: .65rem; }.valuation-block > i { width: 1rem; height: 1rem; margin: .65rem 0; }.valuation-block time { font-size: 1.65rem; }
+  .value-lockup h1 { overflow: hidden; font-size: clamp(2.65rem, 13.2vw, 4rem); letter-spacing: -.06em; white-space: nowrap; }
+  .period-changes { width: 100%; grid-template-columns: 1fr 1fr; margin-top: 1rem; }
+  .period-change { min-height: 3.45rem; padding: .55rem .45rem; border-bottom: 1px solid var(--line); }
+  .period-change:nth-child(2n) { border-right: 0; }
+  .period-change:nth-last-child(-n + 2) { border-bottom: 0; }
+  .period-change strong { font-size: .95rem; }
+  .period-change small { font-size: .56rem; }
   .portfolio-backdrop { inset: 2.6rem 0 0; }
   .portfolio-backdrop > span { right: .35rem; bottom: .25rem; max-width: 12rem; overflow: hidden; font-size: .56rem; text-overflow: ellipsis; white-space: nowrap; }
   .account-line { grid-template-columns: 2.5rem minmax(0, 1fr) auto; grid-template-rows: auto 2.75rem; gap: .2rem .5rem; min-height: 5.65rem; }.register-rank { grid-row: 1; padding-left: 0; font-size: 1rem; }.account-line strong { grid-row: 1; font-size: 1.35rem; }.account-line .sparkline-wrap, .account-line .sparkline-empty { grid-column: 2 / 4; grid-row: 2; }.account-value { grid-column: 3; grid-row: 1; font-size: 1.2rem; }.account-percent { display: none; }
@@ -274,7 +277,6 @@ footer { width: min(calc(100% - 3rem), 96rem); margin: 0 auto 2rem; display: fle
 
 @media (max-width: 360px) {
   .value-lockup h1 { font-size: 2.55rem; }
-  .valuation-block time { font-size: 1.45rem; }
   .account-value { font-size: 1.05rem; }
 }
 

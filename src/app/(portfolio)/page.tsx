@@ -11,6 +11,7 @@ import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 import {
   type InstrumentPriceHistory,
   type PortfolioHistoryPoint,
+  type PortfolioPeriodChange,
   type PortfolioSummary,
   type ValuedHolding,
 } from "@/server/services/portfolio-query";
@@ -98,10 +99,20 @@ function MobileRegisterRow({ holding, rank, trend }: { holding: ValuedHolding; r
   );
 }
 
-function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSummary; history: PortfolioHistoryPoint[]; priceHistory: InstrumentPriceHistory[] }) {
+function signedMoney(value: string | null): string {
+  if (value === null) return "—";
+  return `${Number(value) > 0 ? "+" : ""}${money(value)}`;
+}
+
+function signedPercent(value: string | null): string {
+  if (value === null) return "Not enough history";
+  const numeric = Number(value);
+  return `${numeric > 0 ? "+" : ""}${numeric.toFixed(2)}%`;
+}
+
+function Dashboard({ summary, history, priceHistory, periodChanges }: { summary: PortfolioSummary; history: PortfolioHistoryPoint[]; priceHistory: InstrumentPriceHistory[]; periodChanges: PortfolioPeriodChange[] }) {
   const total = Number(summary.eurTotal) || 1;
   const observedOn = latestObservation(summary);
-  const observedParts = displayDate(observedOn, true) as string[];
   const valuedHistory = history.filter((point) => point.complete);
   const topHoldings = summary.holdings.filter((holding) => holding.eurValue !== null).slice(0, 3);
   const priceHistoryMap = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
@@ -120,12 +131,19 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
             <span className="wordmark">Eurofolio</span>
             <h1 id="portfolio-heading">{money(summary.eurTotal)}</h1>
           </div>
-        </div>
-        <div className={`valuation-block ${summary.complete ? "complete" : "partial"}`}>
-          <span>{summary.complete ? "Fully valued" : "Partial valuation"}</span>
-          <i aria-hidden="true" />
-          <time dateTime={observedOn}>{observedParts.map((part) => <b key={part}>{part}</b>)}</time>
-          {!summary.complete ? <small>{summary.missing.length} gap{summary.missing.length === 1 ? "" : "s"}</small> : null}
+          <div className="period-changes" aria-label={`Portfolio changes as at ${displayDate(observedOn)}`}>
+            {periodChanges.map((period) => {
+              const numeric = Number(period.amount ?? 0);
+              const direction = period.amount === null || numeric === 0 ? "flat" : numeric > 0 ? "positive" : "negative";
+              return (
+                <div className={`period-change ${direction}`} key={period.label}>
+                  <span>{period.label}</span>
+                  <strong>{signedMoney(period.amount)}</strong>
+                  <small>{signedPercent(period.percent)}</small>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -227,8 +245,8 @@ export default function Home() {
 async function PortfolioHome() {
   await connection();
   const valuationDate = new Date().toISOString().slice(0, 10);
-  const { summary, history, priceHistory } = await getCachedPortfolioDashboard(valuationDate);
+  const { summary, history, priceHistory, periodChanges } = await getCachedPortfolioDashboard(valuationDate);
   const hasData = summary.accountTotals.length || summary.holdings.length || summary.cash.length;
 
-  return hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} /> : <EmptyDashboard />;
+  return hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} periodChanges={periodChanges} /> : <EmptyDashboard />;
 }

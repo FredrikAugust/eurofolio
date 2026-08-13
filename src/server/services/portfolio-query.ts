@@ -13,7 +13,7 @@ import {
   type LedgerEventRow,
 } from "@/server/db/schema";
 import type { Database } from "@/server/db/types";
-import { add, compare, multiply } from "@/server/domain/decimal";
+import { add, compare, divide, multiply, subtract } from "@/server/domain/decimal";
 import { replayLedger } from "@/server/domain/ledger";
 import {
   nativeToEur,
@@ -93,6 +93,13 @@ export type PriceHistoryPoint = {
 export type InstrumentPriceHistory = {
   instrumentId: string;
   points: PriceHistoryPoint[];
+};
+
+export type PortfolioPeriodChange = {
+  label: "1D" | "1W" | "1M" | "3M";
+  from: string;
+  amount: string | null;
+  percent: string | null;
 };
 
 type PortfolioRows = {
@@ -300,6 +307,42 @@ function monthSampleDates(firstDate: string, endDate: string, limit: number): st
   return [...candidates].sort();
 }
 
+function shiftedDate(value: string, days = 0, months = 0): string {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (months) {
+    const day = date.getUTCDate();
+    date.setUTCDate(1);
+    date.setUTCMonth(date.getUTCMonth() - months);
+    const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
+    date.setUTCDate(Math.min(day, lastDay));
+  }
+  if (days) date.setUTCDate(date.getUTCDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+function portfolioPeriodChanges(
+  rows: PortfolioRows,
+  current: PortfolioSummary,
+  options: PortfolioOptions,
+): PortfolioPeriodChange[] {
+  const periods = [
+    { label: "1D" as const, from: shiftedDate(current.valuationDate, 1) },
+    { label: "1W" as const, from: shiftedDate(current.valuationDate, 7) },
+    { label: "1M" as const, from: shiftedDate(current.valuationDate, 0, 1) },
+    { label: "3M" as const, from: shiftedDate(current.valuationDate, 0, 3) },
+  ];
+
+  return periods.map(({ label, from }) => {
+    const previous = buildPortfolio(rows, from, options);
+    if (!current.complete || !previous.complete || compare(previous.eurTotal, "0") === 0) {
+      return { label, from, amount: null, percent: null };
+    }
+    const amount = subtract(current.eurTotal, previous.eurTotal);
+    const percent = multiply(divide(amount, previous.eurTotal), "100");
+    return { label, from, amount, percent };
+  });
+}
+
 export async function queryPortfolioHistory(
   db: Database,
   valuationDate: string,
@@ -361,15 +404,17 @@ export async function queryPortfolioDashboard(
   summary: PortfolioSummary;
   history: PortfolioHistoryPoint[];
   priceHistory: InstrumentPriceHistory[];
+  periodChanges: PortfolioPeriodChange[];
 }> {
   const rows = await loadPortfolioRows(db, valuationDate);
   const summary = buildPortfolio(rows, valuationDate, options);
   const priceHistory = instrumentPriceHistory(rows.priceRows);
-  if (rows.eventRows.length === 0) return { summary, history: [], priceHistory };
+  const periodChanges = portfolioPeriodChanges(rows, summary, options);
+  if (rows.eventRows.length === 0) return { summary, history: [], priceHistory, periodChanges };
   const history = monthSampleDates(
     rows.eventRows[0].effectiveDate,
     valuationDate,
     25,
   ).map((time) => historyPoint(buildPortfolio(rows, time, options)));
-  return { summary, history, priceHistory };
+  return { summary, history, priceHistory, periodChanges };
 }
