@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
 import { login } from "@/app/actions";
@@ -40,6 +41,7 @@ export default function LoginPage({ searchParams }: LoginPageProps) {
 }
 
 async function LoginGate({ searchParams }: LoginPageProps) {
+  await connection();
   const session = await auth.api.getSession({ headers: await headers() });
   if (session) redirect("/");
   const params = await searchParams;

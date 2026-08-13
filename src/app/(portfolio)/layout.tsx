@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Suspense, type ReactNode } from "react";
 
 import { AppFrame } from "@/app/app-frame";
@@ -13,6 +14,7 @@ export default function PortfolioLayout({ children }: { children: ReactNode }) {
 }
 
 async function OwnerFrame({ children }: { children: ReactNode }) {
+  await connection();
   await requireOwner();
   return <AppFrame>{children}</AppFrame>;
 }
