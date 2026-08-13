@@ -1,24 +1,29 @@
+import { Suspense } from "react";
+
 import { AppFrame, PageHeading } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { requireOwner } from "@/app/require-owner";
+import { PagePending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
-import { getDatabase } from "@/server/db/client";
-import { getEnvironment } from "@/server/env";
-import { queryPortfolioDashboard } from "@/server/services/portfolio-query";
+import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 
-export const dynamic = "force-dynamic";
-
-export default async function HoldingsPage() {
-  await requireOwner();
-  const valuationDate = new Date().toISOString().slice(0, 10);
-  const environment = getEnvironment();
-  const { summary, priceHistory } = await queryPortfolioDashboard(getDatabase(), valuationDate, {
-    priceStaleAfterDays: environment.PRICE_STALE_AFTER_DAYS,
-    fxStaleAfterDays: environment.FX_STALE_AFTER_DAYS,
-  });
-  const trends = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
+export default function HoldingsPage() {
   return (
     <AppFrame current="Holdings">
+      <Suspense fallback={<PagePending title="Holdings" />}>
+        <HoldingsRegister />
+      </Suspense>
+    </AppFrame>
+  );
+}
+
+async function HoldingsRegister() {
+  await requireOwner();
+  const valuationDate = new Date().toISOString().slice(0, 10);
+  const { summary, priceHistory } = await getCachedPortfolioDashboard(valuationDate);
+  const trends = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
+  return (
+    <>
       <PageHeading title="Holdings" facts={[
         { label: "Positions", value: String(summary.holdings.length) },
         { label: "Value EUR", value: money(summary.eurTotal) },
@@ -63,6 +68,6 @@ export default async function HoldingsPage() {
           ))}
         </div>
       </section>
-    </AppFrame>
+    </>
   );
 }

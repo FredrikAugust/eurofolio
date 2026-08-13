@@ -1,24 +1,22 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { login } from "@/app/actions";
 import { AppFrame, Chevron } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { PortfolioBackdrop } from "@/app/portfolio-backdrop";
 import { PortfolioChart } from "@/app/portfolio-chart";
+import { OverviewPending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
 import { auth } from "@/server/better-auth";
-import { getDatabase } from "@/server/db/client";
-import { getEnvironment } from "@/server/env";
+import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 import {
-  queryPortfolioDashboard,
   type InstrumentPriceHistory,
   type PortfolioHistoryPoint,
   type PortfolioSummary,
   type ValuedHolding,
 } from "@/server/services/portfolio-query";
-
-export const dynamic = "force-dynamic";
 
 const accountColors: Record<string, string> = {
   Endavu: "#f04d23",
@@ -244,17 +242,21 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
   );
 }
 
-export default async function Home({ searchParams }: PageProps<"/">) {
+export default function Home({ searchParams }: PageProps<"/">) {
+  return (
+    <Suspense fallback={<AppFrame current="Overview"><OverviewPending /></AppFrame>}>
+      <AuthenticatedHome searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function AuthenticatedHome({ searchParams }: Pick<PageProps<"/">, "searchParams">) {
   const session = await auth.api.getSession({ headers: await headers() });
   const params = await searchParams;
   if (!session) return <Login invalid={params.error === "invalid"} />;
 
-  const environment = getEnvironment();
   const valuationDate = new Date().toISOString().slice(0, 10);
-  const { summary, history, priceHistory } = await queryPortfolioDashboard(getDatabase(), valuationDate, {
-    priceStaleAfterDays: environment.PRICE_STALE_AFTER_DAYS,
-    fxStaleAfterDays: environment.FX_STALE_AFTER_DAYS,
-  });
+  const { summary, history, priceHistory } = await getCachedPortfolioDashboard(valuationDate);
   const hasData = summary.accountTotals.length || summary.holdings.length || summary.cash.length;
 
   return <AppFrame current="Overview">{hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} /> : <EmptyDashboard />}</AppFrame>;

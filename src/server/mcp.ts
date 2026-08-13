@@ -13,6 +13,7 @@ import {
   ledgerEventInputSchema,
 } from "@/server/domain/schemas";
 import { getEnvironment } from "@/server/env";
+import { invalidatePortfolioReadCache } from "@/server/services/cached-queries";
 import { getLedgerService, getMarketService } from "@/server/services/services";
 import { queryPortfolio } from "@/server/services/portfolio-query";
 
@@ -34,6 +35,14 @@ async function tool<T>(operation: () => Promise<T>) {
         : { code: "INTERNAL_ERROR", message: error instanceof Error ? error.message : "Unknown error" };
     return { ...result(payload), isError: true };
   }
+}
+
+async function mutation<T>(operation: () => Promise<T>) {
+  return tool(async () => {
+    const value = await operation();
+    invalidatePortfolioReadCache();
+    return value;
+  });
 }
 
 const pagination = {
@@ -116,27 +125,27 @@ export const mcpHandler = createMcpHandler(
     server.registerTool(
       "create_account",
       { description: "Create a portfolio account.", inputSchema: accountInputSchema },
-      (input) => tool(() => getLedgerService().createAccount(input)),
+      (input) => mutation(() => getLedgerService().createAccount(input)),
     );
     server.registerTool(
       "archive_account",
       { description: "Archive an account while preserving history.", inputSchema: z.object({ id: z.uuid() }) },
-      ({ id }) => tool(() => getLedgerService().archiveAccount(id)),
+      ({ id }) => mutation(() => getLedgerService().archiveAccount(id)),
     );
     server.registerTool(
       "register_instrument",
       { description: "Register a listed instrument.", inputSchema: instrumentInputSchema },
-      (input) => tool(() => getLedgerService().createInstrument(input)),
+      (input) => mutation(() => getLedgerService().createInstrument(input)),
     );
     server.registerTool(
       "archive_instrument",
       { description: "Archive an instrument while preserving history.", inputSchema: z.object({ id: z.uuid() }) },
-      ({ id }) => tool(() => getLedgerService().archiveInstrument(id)),
+      ({ id }) => mutation(() => getLedgerService().archiveInstrument(id)),
     );
     server.registerTool(
       "create_ledger_event",
       { description: "Create one exact ledger event.", inputSchema: ledgerEventInputSchema },
-      (input) => tool(() => getLedgerService().createEvent(input)),
+      (input) => mutation(() => getLedgerService().createEvent(input)),
     );
     server.registerTool(
       "correct_ledger_event",
@@ -144,17 +153,17 @@ export const mcpHandler = createMcpHandler(
         description: "Replace an existing ledger event and replay affected holdings.",
         inputSchema: z.object({ id: z.uuid(), event: ledgerEventInputSchema }),
       },
-      ({ id, event }) => tool(() => getLedgerService().correctEvent(id, event)),
+      ({ id, event }) => mutation(() => getLedgerService().correctEvent(id, event)),
     );
     server.registerTool(
       "delete_ledger_event",
       { description: "Delete an event and replay affected holdings.", inputSchema: z.object({ id: z.uuid() }) },
-      ({ id }) => tool(() => getLedgerService().deleteEvent(id)),
+      ({ id }) => mutation(() => getLedgerService().deleteEvent(id)),
     );
     server.registerTool(
       "ingest_ledger_events",
       { description: "Atomically ingest up to 100 exact ledger events.", inputSchema: z.object({ events: ledgerEventBatchSchema }) },
-      ({ events }) => tool(() => getLedgerService().ingestEvents(events)),
+      ({ events }) => mutation(() => getLedgerService().ingestEvents(events)),
     );
     server.registerTool(
       "set_manual_price",
@@ -168,7 +177,7 @@ export const mcpHandler = createMcpHandler(
           reason: z.string().min(1).max(500),
         }),
       },
-      (input) => tool(() => getMarketService().setManualPrice(input)),
+      (input) => mutation(() => getMarketService().setManualPrice(input)),
     );
     server.registerTool(
       "set_manual_fx",
@@ -181,12 +190,12 @@ export const mcpHandler = createMcpHandler(
           reason: z.string().min(1).max(500),
         }),
       },
-      (input) => tool(() => getMarketService().setManualFx(input)),
+      (input) => mutation(() => getMarketService().setManualFx(input)),
     );
     server.registerTool(
       "refresh_market_data",
       { description: "Refresh ECB FX and delayed security prices with per-item results.", inputSchema: z.object({}) },
-      () => tool(() => getMarketService().refresh()),
+      () => mutation(() => getMarketService().refresh()),
     );
   },
   {

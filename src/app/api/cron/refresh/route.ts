@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 
 import { getEnvironment } from "@/server/env";
+import { invalidatePortfolioReadCache } from "@/server/services/cached-queries";
 import { getMarketService } from "@/server/services/services";
 
 function matches(left: string, right: string): boolean {
@@ -16,5 +17,6 @@ export async function GET(request: Request): Promise<Response> {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const result = await getMarketService().refresh();
+  invalidatePortfolioReadCache();
   return Response.json(result);
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { logout } from "@/app/actions";
+import { NavigationLink } from "@/app/navigation-link";
 
 const navigation = [
   { href: "/", label: "Overview", short: "Overview" },
@@ -28,7 +29,7 @@ export function AppFrame({ current, children }: { current: PortfolioPage; childr
         <header className="register-nav">
           <Link href="/" className="register-nav-brand">Eurofolio</Link>
           <nav aria-label="Portfolio navigation">
-            {navigation.map((item) => <Link href={item.href} aria-current={item.label === current ? "page" : undefined} key={item.href}>{item.label}</Link>)}
+            {navigation.map((item) => <NavigationLink href={item.href} current={item.label === current} key={item.href}>{item.label}</NavigationLink>)}
           </nav>
           <form action={logout}><button type="submit">Sign out</button></form>
         </header>
@@ -36,7 +37,7 @@ export function AppFrame({ current, children }: { current: PortfolioPage; childr
       </main>
       <footer><span>EUR / SINGLE OWNER / DELAYED MARKET DATA</span><span>Not investment advice</span></footer>
       <nav className="mobile-nav" aria-label="Portfolio navigation">
-        {navigation.map((item) => <Link href={item.href} aria-current={item.label === current ? "page" : undefined} key={item.href}>{item.short}</Link>)}
+        {navigation.map((item) => <NavigationLink href={item.href} current={item.label === current} key={item.href}>{item.short}</NavigationLink>)}
       </nav>
     </div>
   );

@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 import { getEnvironment } from "@/server/env";
+import { invalidatePortfolioReadCache } from "@/server/services/cached-queries";
 import { getMarketService } from "@/server/services/services";
 
 export const maxDuration = 300;
@@ -27,5 +28,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = bodySchema.parse(await request.json());
-  return Response.json(await getMarketService().backfill(body.startOn, body.endOn));
+  const result = await getMarketService().backfill(body.startOn, body.endOn);
+  invalidatePortfolioReadCache();
+  return Response.json(result);
 }

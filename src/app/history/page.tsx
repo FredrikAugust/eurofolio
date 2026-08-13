@@ -1,26 +1,32 @@
+import { Suspense } from "react";
+
 import { AppFrame, PageHeading } from "@/app/app-frame";
 import { displayDate, money } from "@/app/format";
 import { PortfolioChart } from "@/app/portfolio-chart";
 import { requireOwner } from "@/app/require-owner";
+import { PagePending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
-import { getDatabase } from "@/server/db/client";
-import { getEnvironment } from "@/server/env";
-import { queryPortfolioDashboard } from "@/server/services/portfolio-query";
+import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 
-export const dynamic = "force-dynamic";
 const colors = ["#f04d23", "#1748ba", "#0c0c0d", "#657080"];
 
-export default async function HistoryPage() {
-  await requireOwner();
-  const valuationDate = new Date().toISOString().slice(0, 10);
-  const environment = getEnvironment();
-  const { summary, history } = await queryPortfolioDashboard(getDatabase(), valuationDate, {
-    priceStaleAfterDays: environment.PRICE_STALE_AFTER_DAYS,
-    fxStaleAfterDays: environment.FX_STALE_AFTER_DAYS,
-  });
-  const complete = history.filter((point) => point.complete);
+export default function HistoryPage() {
   return (
     <AppFrame current="History">
+      <Suspense fallback={<PagePending title="History" />}>
+        <HistoryRegister />
+      </Suspense>
+    </AppFrame>
+  );
+}
+
+async function HistoryRegister() {
+  await requireOwner();
+  const valuationDate = new Date().toISOString().slice(0, 10);
+  const { summary, history } = await getCachedPortfolioDashboard(valuationDate);
+  const complete = history.filter((point) => point.complete);
+  return (
+    <>
       <PageHeading title="History" facts={[
         { label: "Complete portfolio", value: String(complete.length) },
         { label: "Current", value: money(summary.eurTotal) },
@@ -44,6 +50,6 @@ export default async function HistoryPage() {
         <h2 id="snapshot-register-heading">Snapshot ledger</h2>
         <div className="desktop-table"><table><thead><tr><th>Date</th><th>Status</th>{summary.accountTotals.map((account) => <th className="number-cell" key={account.accountId}>{account.accountName}</th>)}<th className="number-cell">Total EUR</th></tr></thead><tbody>{history.toReversed().map((point) => <tr key={point.time}><td>{displayDate(point.time)}</td><td>{point.complete ? "Complete" : "Partial"}</td>{point.accounts.map((account) => <td className="number-cell" key={account.accountId}>{account.value === null ? "—" : money(String(account.value))}</td>)}<td className="number-cell"><strong>{point.complete ? money(String(point.value)) : "—"}</strong></td></tr>)}</tbody></table></div>
       </section>
-    </AppFrame>
+    </>
   );
 }
