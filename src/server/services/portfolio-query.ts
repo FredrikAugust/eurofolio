@@ -117,15 +117,34 @@ type PortfolioOptions = {
 
 function selectPrice(
   rows: readonly SecurityPriceRow[],
+  events: readonly LedgerEventRow[],
   instrumentId: string,
   valuationDate: string,
   threshold: number,
 ) {
-  return selectObservation(
+  const marketPrice = selectObservation(
     rows.filter((row) => row.instrumentId === instrumentId),
     valuationDate,
     threshold,
   );
+  if (marketPrice.observation) return marketPrice;
+
+  const tradePrices: SecurityPriceRow[] = events.flatMap((event) => {
+    if (event.instrumentId !== instrumentId || !event.unitPrice || event.effectiveDate > valuationDate) return [];
+    return [{
+      id: `trade:${event.id}`,
+      instrumentId,
+      provider: "trade",
+      price: event.unitPrice,
+      currency: event.currency,
+      observedOn: event.effectiveDate,
+      retrievedAt: event.createdAt,
+      isManual: true,
+      reason: "Recorded execution price",
+      rawMetadata: null,
+    }];
+  });
+  return selectObservation(tradePrices, valuationDate, threshold);
 }
 
 async function loadPortfolioRows(db: Database, valuationDate: string): Promise<PortfolioRows> {
@@ -186,6 +205,7 @@ export function buildPortfolio(
     if (!account || !instrument) continue;
     const selectedPrice = selectPrice(
       priceRows,
+      eventRows,
       instrumentId,
       valuationDate,
       priceThreshold,

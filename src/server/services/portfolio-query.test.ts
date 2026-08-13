@@ -95,7 +95,7 @@ test("portfolio values EUR, USD, GBP, and DKK with partial diagnostics", async (
   assert.equal(result.missing.length, 2);
   assert.deepEqual(
     result.missing.map((item) => item.kind).sort(),
-    ["fx", "price"],
+    ["fx", "fx"],
   );
   assert.equal(result.holdings.find((item) => item.nativeCurrency === "EUR")?.eurValue, "20");
   assert.equal(result.holdings.find((item) => item.nativeCurrency === "USD")?.eurValue, "20");
@@ -152,7 +152,6 @@ test("dashboard reports exact portfolio changes for standard periods", async () 
     { type: "buy", accountId: account.id, instrumentId: instrument.id, effectiveDate: "2026-05-01", currency: "EUR", quantity: "1", unitPrice: "100" },
   ]);
   await db.insert(securityPrices).values([
-    { id: "may", instrumentId: instrument.id, provider: "manual", price: "80", currency: "EUR", observedOn: "2026-05-10", retrievedAt: "2026-05-10T18:00:00.000Z", isManual: true },
     { id: "previous", instrumentId: instrument.id, provider: "manual", price: "100", currency: "EUR", observedOn: "2026-08-09", retrievedAt: "2026-08-09T18:00:00.000Z", isManual: true },
     { id: "current", instrumentId: instrument.id, provider: "manual", price: "110", currency: "EUR", observedOn: "2026-08-10", retrievedAt: "2026-08-10T18:00:00.000Z", isManual: true },
   ]);
@@ -161,7 +160,7 @@ test("dashboard reports exact portfolio changes for standard periods", async () 
   assert.deepEqual(dashboard.periodChanges.map((change) => change.label), ["1D", "1W", "1M", "3M"]);
   assert.equal(dashboard.periodChanges[0].amount, "10");
   assert.equal(dashboard.periodChanges[0].percent, "10");
-  assert.equal(dashboard.periodChanges[3].amount, "30");
-  assert.equal(dashboard.periodChanges[3].percent, "37.5");
+  assert.equal(dashboard.periodChanges[3].amount, "10");
+  assert.equal(dashboard.periodChanges[3].percent, "10");
   close();
 });

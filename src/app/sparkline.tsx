@@ -7,9 +7,9 @@ type SparklineProps = {
   className?: string;
 };
 
-function shortDate(value: string): string {
+function shortDate(value: string, includeYear = false): string {
   const date = new Date(`${value}T12:00:00Z`);
-  return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short" }).format(date);
+  return new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: includeYear ? "2-digit" : undefined }).format(date);
 }
 
 export function Sparkline({ points, label, color = "currentColor", className = "" }: SparklineProps) {
@@ -49,8 +49,9 @@ export function Sparkline({ points, label, color = "currentColor", className = "
   const change = comparisonPoint ? ((valid.at(-1)?.value ?? 0) / comparisonPoint.value - 1) * 100 : null;
   const direction = change === null || change === 0 ? "flat" : change > 0 ? "positive" : "negative";
   const changeLabel = nonZero.length === 1 ? "New" : change === null ? "—" : `${change > 0 ? "+" : ""}${change.toFixed(1)}%`;
-  const firstDate = shortDate(valid[0].time);
-  const lastDate = shortDate(valid.at(-1)!.time);
+  const spansYears = valid[0].time.slice(0, 4) !== valid.at(-1)!.time.slice(0, 4);
+  const firstDate = shortDate(valid[0].time, spansYears);
+  const lastDate = shortDate(valid.at(-1)!.time, spansYears);
 
   return (
     <span className={`sparkline-wrap ${className}`} style={{ color }} role="img" aria-label={`${label}: ${valid.length} observations from ${firstDate} to ${lastDate}, ${change === null ? "change unavailable" : `${change >= 0 ? "up" : "down"} ${Math.abs(change).toFixed(1)} percent`}`}>
