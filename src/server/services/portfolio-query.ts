@@ -77,6 +77,12 @@ export type PortfolioSummary = {
 export type PortfolioHistoryPoint = {
   time: string;
   value: number;
+  complete: boolean;
+  accounts: {
+    accountId: string;
+    accountName: string;
+    value: number | null;
+  }[];
 };
 
 type PortfolioRows = {
@@ -292,11 +298,22 @@ export async function queryPortfolioHistory(
 
   const rows = { accountRows, instrumentRows, eventRows, priceRows, fxRows };
   return monthSampleDates(eventRows[0].effectiveDate, valuationDate, sampleLimit).map(
-    (time) => ({
-      time,
-      value: Number(buildPortfolio(rows, time, options).eurTotal),
-    }),
+    (time) => historyPoint(buildPortfolio(rows, time, options)),
   );
+}
+
+function historyPoint(summary: PortfolioSummary): PortfolioHistoryPoint {
+  const incompleteAccounts = new Set(summary.missing.map((item) => item.accountId));
+  return {
+    time: summary.valuationDate,
+    value: Number(summary.eurTotal),
+    complete: summary.complete,
+    accounts: summary.accountTotals.map((account) => ({
+      accountId: account.accountId,
+      accountName: account.accountName,
+      value: incompleteAccounts.has(account.accountId) ? null : Number(account.eurValue),
+    })),
+  };
 }
 
 export async function queryPortfolioDashboard(
@@ -311,9 +328,6 @@ export async function queryPortfolioDashboard(
     rows.eventRows[0].effectiveDate,
     valuationDate,
     25,
-  ).map((time) => ({
-    time,
-    value: Number(buildPortfolio(rows, time, options).eurTotal),
-  }));
+  ).map((time) => historyPoint(buildPortfolio(rows, time, options)));
   return { summary, history };
 }

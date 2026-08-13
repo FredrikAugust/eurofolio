@@ -3,7 +3,10 @@ import test from "node:test";
 
 import { fxRates, securityPrices } from "@/server/db/schema";
 import { LedgerService } from "@/server/services/ledger-service";
-import { queryPortfolio } from "@/server/services/portfolio-query";
+import {
+  queryPortfolio,
+  queryPortfolioHistory,
+} from "@/server/services/portfolio-query";
 import { createTestDatabase } from "@/server/test/database";
 
 test("portfolio values EUR, USD, GBP, and DKK with partial diagnostics", async () => {
@@ -101,6 +104,10 @@ test("portfolio values EUR, USD, GBP, and DKK with partial diagnostics", async (
     "2.68096514745308311",
   );
   assert.equal(result.holdings.find((item) => item.nativeCurrency === "USD")?.priceFreshness, "manual");
+
+  const history = await queryPortfolioHistory(db, "2026-08-09");
+  assert.equal(history.at(-1)?.complete, false);
+  assert.equal(history.at(-1)?.accounts[0].value, null);
   close();
 });
 
