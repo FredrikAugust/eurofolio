@@ -32,6 +32,13 @@ export function createEurofolioAuth({
       disableSignUp: !allowBootstrap,
       minPasswordLength: 12,
     },
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 300,
+        strategy: "compact",
+      },
+    },
     databaseHooks: {
       user: {
         create: {
