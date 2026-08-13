@@ -60,7 +60,9 @@ export function subtract(left: string, right: string): string {
 }
 
 export function multiply(left: string, right: string): string {
-  return canonicalDecimal(new Decimal(left).times(right).toFixed());
+  return canonicalDecimal(
+    new Decimal(left).times(right).toDecimalPlaces(MAX_DECIMAL_SCALE).toFixed(),
+  );
 }
 
 export function divide(left: string, right: string): string {

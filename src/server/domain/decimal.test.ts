@@ -28,3 +28,10 @@ test("display rounding is half-even", () => {
   assert.equal(formatDecimal("2.355", 2), "2.36");
   assert.equal(formatDecimal("-2.345", 2), "-2.34");
 });
+
+test("multiplication rounds half-even at the domain scale boundary", () => {
+  assert.equal(
+    multiply("0.123456789", "123.123456789012"),
+    "15.200426625751672002",
+  );
+});
