@@ -19,7 +19,7 @@ export default async function HoldingsPage() {
   const trends = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
   return (
     <AppFrame current="Holdings">
-      <PageHeading title="Holdings" measure="REGISTER" facts={[
+      <PageHeading title="Holdings" facts={[
         { label: "Positions", value: String(summary.holdings.length) },
         { label: "Value EUR", value: money(summary.eurTotal) },
         { label: "As at", value: displayDate(summary.valuationDate) as string },
@@ -28,7 +28,7 @@ export default async function HoldingsPage() {
         <h2 className="sr-only" id="holdings-page-heading">Portfolio positions</h2>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th>Account</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Value EUR</th><th>32 observations</th><th className="number-cell">Share</th><th>Data</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Instrument</th><th>Account</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Value EUR</th><th>Trend / return</th><th className="number-cell">Share</th><th>Data</th></tr></thead>
             <tbody>{summary.holdings.map((holding, index) => (
               <tr key={`${holding.accountId}:${holding.instrumentId}`}>
                 <td className="rank-cell">{String(index + 1).padStart(2, "0")}</td>

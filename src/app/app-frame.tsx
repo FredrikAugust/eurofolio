@@ -13,19 +13,25 @@ const navigation = [
 
 export type PortfolioPage = (typeof navigation)[number]["label"];
 
+export function Chevron({ direction }: { direction: "right" | "down" }) {
+  return (
+    <svg className={`chevron chevron-${direction}`} viewBox="0 0 16 16" aria-hidden="true">
+      <path d={direction === "right" ? "M5 3.5 9.5 8 5 12.5" : "M3.5 5.5 8 10l4.5-4.5"} />
+    </svg>
+  );
+}
+
 export function AppFrame({ current, children }: { current: PortfolioPage; children: ReactNode }) {
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <Link href="/" className="topbar-brand">Eurofolio</Link>
-        <nav aria-label="Portfolio navigation">
-          {navigation.map((item) => <Link href={item.href} aria-current={item.label === current ? "page" : undefined} key={item.href}>{item.label}</Link>)}
-        </nav>
-        <form action={logout}><button type="submit">Sign out</button></form>
-      </header>
       <main className="quotation-sheet">
-        <i className="crop-mark crop-ne" aria-hidden="true" />
-        <i className="crop-mark crop-sw" aria-hidden="true" />
+        <header className="register-nav">
+          <Link href="/" className="register-nav-brand">Eurofolio</Link>
+          <nav aria-label="Portfolio navigation">
+            {navigation.map((item) => <Link href={item.href} aria-current={item.label === current ? "page" : undefined} key={item.href}>{item.label}</Link>)}
+          </nav>
+          <form action={logout}><button type="submit">Sign out</button></form>
+        </header>
         {children}
       </main>
       <footer><span>EUR / SINGLE OWNER / DELAYED MARKET DATA</span><span>Not investment advice</span></footer>
@@ -36,14 +42,11 @@ export function AppFrame({ current, children }: { current: PortfolioPage; childr
   );
 }
 
-export function PageHeading({ title, measure, facts }: { title: string; measure: string; facts: { label: string; value: string }[] }) {
+export function PageHeading({ title, facts }: { title: string; facts: { label: string; value: string }[] }) {
   return (
-    <>
-      <div className="measure-axis" aria-hidden="true"><span>{measure}</span><span>75</span><i /><span>100</span><span>125</span><span>150</span></div>
-      <header className="page-heading">
-        <h1>{title}</h1>
-        <dl>{facts.map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
-      </header>
-    </>
+    <header className="page-heading">
+      <h1>{title}</h1>
+      <dl>{facts.map((fact) => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
+    </header>
   );
 }

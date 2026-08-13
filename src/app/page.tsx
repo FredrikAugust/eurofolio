@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 import { login } from "@/app/actions";
-import { AppFrame } from "@/app/app-frame";
+import { AppFrame, Chevron } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { PortfolioBackdrop } from "@/app/portfolio-backdrop";
 import { PortfolioChart } from "@/app/portfolio-chart";
@@ -135,15 +135,11 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
   const priceHistoryMap = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
   const accountHistory = new Map(summary.accountTotals.map((account) => [account.accountId, history.flatMap((point) => {
     const value = point.accounts.find((candidate) => candidate.accountId === account.accountId)?.value;
-    return point.complete && value !== null && value !== undefined ? [{ time: point.time, value }] : [];
+    return value !== null && value !== undefined ? [{ time: point.time, value }] : [];
   })]));
 
   return (
     <>
-      <div className="measure-axis" aria-hidden="true">
-        <span>WIDTH</span><span>75</span><i /><span>100</span><span>125</span><span>150</span>
-      </div>
-
       <section className="value-field" aria-labelledby="portfolio-heading">
         <div className="weight-axis" aria-hidden="true"><span>WGT</span><b>900</b><i>700</i></div>
         <div className="value-lockup">
@@ -190,7 +186,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
       </section>
 
       <section className="top-register" aria-labelledby="leaders-heading">
-        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend</span><span>% of portfolio</span></header>
+        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend / return</span><span>% of portfolio</span></header>
         <ol>
           {topHoldings.map((holding, index) => (
             <li key={`${holding.accountId}:${holding.instrumentId}`}>
@@ -202,12 +198,12 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
             </li>
           ))}
         </ol>
-        <a href="#holdings-heading">+{Math.max(0, summary.holdings.length - topHoldings.length)} more positions <i className="arrow-down" aria-hidden="true" /></a>
+        <a href="#holdings-heading">+{Math.max(0, summary.holdings.length - topHoldings.length)} more positions <Chevron direction="down" /></a>
       </section>
 
       <nav className="fact-strip" aria-label="Portfolio facts and shortcuts">
-        <a href="#holdings-heading"><span>All holdings</span><strong>View</strong><i className="arrow-right" aria-hidden="true" /></a>
-        <a href="#history-heading"><span>History</span><strong>{valuedHistory.length >= 2 ? "View" : "Collecting"}</strong><i className="arrow-down" aria-hidden="true" /></a>
+        <a href="#holdings-heading"><span>All holdings</span><strong>View</strong><Chevron direction="right" /></a>
+        <a href="#history-heading"><span>History</span><strong>{valuedHistory.length >= 2 ? "View" : "Collecting"}</strong><Chevron direction="down" /></a>
         <div><span>Base currency</span><strong>EUR</strong></div>
         <div><span>Prices as at</span><strong>{displayDate(observedOn)}</strong></div>
         <div><span>Valuation</span><strong>{summary.complete ? "Complete" : "Partial"}</strong></div>
@@ -222,7 +218,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
           <div className="history-empty">
             <span>HISTORY / T+0</span>
             <strong>First complete valuation recorded.</strong>
-            <p>Future complete snapshots will form the account-stacked series. Missing historical observations are never rendered as zero.</p>
+            <p>Trade dates already reconstruct quantities. The stacked total begins when every held instrument also has a price and FX observation for the same month.</p>
           </div>
         )}
       </section>
@@ -231,7 +227,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
         <header><div><h2 id="holdings-heading">All holdings</h2><p>{summary.holdings.length} positions · {summary.accountTotals.length} custodians · EUR reporting</p></div></header>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend</th><th>Data</th></tr></thead>
+            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend / return</th><th>Data</th></tr></thead>
             <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
           </table>
         </div>

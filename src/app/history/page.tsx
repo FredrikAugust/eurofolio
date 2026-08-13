@@ -21,24 +21,24 @@ export default async function HistoryPage() {
   const complete = history.filter((point) => point.complete);
   return (
     <AppFrame current="History">
-      <PageHeading title="History" measure="TIME" facts={[
-        { label: "Snapshots", value: String(complete.length) },
+      <PageHeading title="History" facts={[
+        { label: "Complete portfolio", value: String(complete.length) },
         { label: "Current", value: money(summary.eurTotal) },
         { label: "Begins", value: history[0] ? displayDate(history[0].time) as string : "Not recorded" },
       ]} />
       <section className="account-history-register" aria-labelledby="account-history-heading">
         <h2 id="account-history-heading">Accounts over time</h2>
         {summary.accountTotals.map((account, index) => {
-          const points = complete.flatMap((point) => {
+          const points = history.flatMap((point) => {
             const value = point.accounts.find((candidate) => candidate.accountId === account.accountId)?.value;
             return value === null || value === undefined ? [] : [{ time: point.time, value }];
           });
-          return <div className="history-account-line" style={{ color: colors[index % colors.length] }} key={account.accountId}><strong>{account.accountName}</strong><Sparkline points={points} label={`${account.accountName} account history`} color="currentColor" /><span>{money(account.eurValue)}</span>{points.length >= 2 ? <small>{points.length} obs</small> : null}</div>;
+          return <div className="history-account-line" style={{ color: colors[index % colors.length] }} key={account.accountId}><strong>{account.accountName}</strong><Sparkline points={points} label={`${account.accountName} account history`} color="currentColor" /><span className="history-account-value">{money(account.eurValue)}</span><small>{points.length} obs</small></div>;
         })}
       </section>
       <section className="history-register history-page-chart" aria-labelledby="history-chart-heading">
         <header><div><h2 id="history-chart-heading">Consolidated register</h2><p>Complete monthly closing values · EUR</p></div></header>
-        {complete.length >= 2 ? <PortfolioChart data={complete} colors={colors} /> : <div className="history-empty"><span>HISTORY / T+0</span><strong>One complete observation.</strong><p>The stacked account chart begins after the next complete snapshot. Missing observations remain absent.</p></div>}
+        {complete.length >= 2 ? <PortfolioChart data={complete} colors={colors} /> : <div className="history-empty"><span>HISTORY / T+0</span><strong>One complete observation.</strong><p>Trade dates reconstruct quantities; the consolidated line begins when every held instrument also has price and FX data for the same month.</p></div>}
       </section>
       <section className="page-register" aria-labelledby="snapshot-register-heading">
         <h2 id="snapshot-register-heading">Snapshot ledger</h2>

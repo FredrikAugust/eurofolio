@@ -26,7 +26,7 @@ export default async function ActivityPage({ searchParams }: ActivityPageProps) 
   const filtered = eventRows.filter((event) => (!filters.account || event.accountId === filters.account) && (!filters.type || event.type === filters.type));
   return (
     <AppFrame current="Activity">
-      <PageHeading title="Activity" measure="LEDGER" facts={[
+      <PageHeading title="Activity" facts={[
         { label: "Visible", value: String(filtered.length) },
         { label: "All events", value: String(eventRows.length) },
         { label: "Latest", value: eventRows[0] ? displayDate(eventRows[0].effectiveDate) as string : "No events" },

@@ -16,7 +16,7 @@ export default async function DataPage() {
   const latestRun = runRows[0];
   return (
     <AppFrame current="Data">
-      <PageHeading title="Data" measure="PROVENANCE" facts={[
+      <PageHeading title="Data" facts={[
         { label: "Instruments", value: String(instrumentRows.length) },
         { label: "Price observations", value: String(priceRows.length) },
         { label: "Last refresh", value: latestRun ? new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(latestRun.startedAt)) : "Never" },
