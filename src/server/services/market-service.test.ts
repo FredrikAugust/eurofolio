@@ -142,12 +142,25 @@ test("backfill stores only real month-end observations and is idempotent", async
     ],
   };
   const service = new MarketService(fixture.db, new Map([["fixture", priceProvider]]), fxProvider);
+  await fixture.db.insert(securityPrices).values({
+    id: "over-precise",
+    instrumentId: instrument.id,
+    provider: "fixture",
+    price: "10.1234567890123456789",
+    currency: "USD",
+    observedOn: "2026-06-15",
+    retrievedAt: "2026-08-12T00:00:00Z",
+    isManual: false,
+  });
   const first = await service.backfill("2026-06-01", "2026-07-31");
   const second = await service.backfill("2026-06-01", "2026-07-31");
   assert.equal(first.priceObservationsStored, 2);
   assert.equal(first.fxObservationsStored, 2);
+  assert.equal(first.observationsRepaired, 1);
   assert.equal(second.errors.length, 0);
-  assert.equal((await fixture.db.select().from(securityPrices)).length, 2);
+  const storedPrices = await fixture.db.select().from(securityPrices);
+  assert.equal(storedPrices.length, 3);
+  assert.equal(storedPrices.find((row) => row.id === "over-precise")?.price, "10.123456789012");
   assert.equal((await fixture.db.select().from(fxRates)).length, 2);
   fixture.close();
 });

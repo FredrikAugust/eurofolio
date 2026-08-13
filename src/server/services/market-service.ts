@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
-import { and, asc, eq, isNull } from "drizzle-orm";
+import Decimal from "decimal.js-light";
+import { and, asc, eq, gte, isNull, lte } from "drizzle-orm";
 
 import {
   fxRates,
@@ -46,6 +47,7 @@ export type BackfillResult = {
   instrumentsSucceeded: number;
   priceObservationsStored: number;
   fxObservationsStored: number;
+  observationsRepaired: number;
   errors: RefreshItemError[];
 };
 
@@ -226,17 +228,44 @@ export class MarketService {
       });
   }
 
-  private async persistMany(
-    statements: Array<
-      ReturnType<MarketService["persistPrice"]> | ReturnType<MarketService["persistFx"]>
-    >,
-  ) {
+  private async persistMany(statements: unknown[]) {
     for (let offset = 0; offset < statements.length; offset += 100) {
       const batch = statements.slice(offset, offset + 100);
       if (batch.length) {
         await this.db.batch(batch as unknown as Parameters<Database["batch"]>[0]);
       }
     }
+  }
+
+  private async repairProviderPrecision(startOn: string, endOn: string): Promise<number> {
+    const [prices, rates] = await this.db.batch([
+      this.db.select().from(securityPrices).where(and(
+        eq(securityPrices.isManual, false),
+        gte(securityPrices.observedOn, startOn),
+        lte(securityPrices.observedOn, endOn),
+      )),
+      this.db.select().from(fxRates).where(and(
+        eq(fxRates.isManual, false),
+        gte(fxRates.observedOn, startOn),
+        lte(fxRates.observedOn, endOn),
+      )),
+    ]);
+    const statements = [
+      ...prices.flatMap((row) => {
+        if ((row.price.split(".")[1]?.length ?? 0) <= 18) return [];
+        return [this.db.update(securityPrices)
+          .set({ price: new Decimal(row.price).toDecimalPlaces(12).toFixed() })
+          .where(eq(securityPrices.id, row.id))];
+      }),
+      ...rates.flatMap((row) => {
+        if ((row.rate.split(".")[1]?.length ?? 0) <= 18) return [];
+        return [this.db.update(fxRates)
+          .set({ rate: new Decimal(row.rate).toDecimalPlaces(12).toFixed() })
+          .where(eq(fxRates.id, row.id))];
+      }),
+    ];
+    await this.persistMany(statements);
+    return statements.length;
   }
 
   async backfill(startDate: string, endDate: string): Promise<BackfillResult> {
@@ -257,6 +286,7 @@ export class MarketService {
     let instrumentsSucceeded = 0;
     let priceObservationsStored = 0;
     let fxObservationsStored = 0;
+    const observationsRepaired = await this.repairProviderPrecision(startOn, endOn);
 
     if (this.fxProvider.fetchHistory) {
       try {
@@ -306,6 +336,7 @@ export class MarketService {
       instrumentsSucceeded,
       priceObservationsStored,
       fxObservationsStored,
+      observationsRepaired,
       errors,
     };
   }
