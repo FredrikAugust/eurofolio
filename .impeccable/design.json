@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-13T12:43:38+02:00",
+  "title": "Design System: Eurofolio",
+  "extensions": {
+    "colorMeta": {
+      "proof-stock": {
+        "role": "neutral",
+        "displayName": "Proof Stock",
+        "canonical": "#fbfaf6",
+        "tonalRamp": ["oklch(15% 0.006 90)", "oklch(27% 0.006 90)", "oklch(39% 0.006 90)", "oklch(51% 0.006 90)", "oklch(63% 0.006 90)", "oklch(75% 0.006 90)", "oklch(87% 0.006 90)", "oklch(95% 0.006 90)"]
+      },
+      "surrounding-paper": {
+        "role": "neutral",
+        "displayName": "Surrounding Paper",
+        "canonical": "#f2f0e9",
+        "tonalRamp": ["oklch(15% 0.012 90)", "oklch(27% 0.012 90)", "oklch(39% 0.012 90)", "oklch(51% 0.012 90)", "oklch(63% 0.012 90)", "oklch(75% 0.012 90)", "oklch(87% 0.012 90)", "oklch(95% 0.012 90)"]
+      },
+      "registration-ink": {
+        "role": "neutral",
+        "displayName": "Registration Ink",
+        "canonical": "#0c0c0d",
+        "tonalRamp": ["oklch(15% 0.002 285)", "oklch(27% 0.002 285)", "oklch(39% 0.002 285)", "oklch(51% 0.002 285)", "oklch(63% 0.002 285)", "oklch(75% 0.002 285)", "oklch(87% 0.002 285)", "oklch(95% 0.002 285)"]
+      },
+      "signal-orange": {
+        "role": "primary",
+        "displayName": "Signal Orange",
+        "canonical": "#f04d23",
+        "tonalRamp": ["oklch(15% 0.15 35)", "oklch(27% 0.15 35)", "oklch(39% 0.15 35)", "oklch(51% 0.15 35)", "oklch(63% 0.15 35)", "oklch(75% 0.15 35)", "oklch(87% 0.15 35)", "oklch(95% 0.15 35)"]
+      },
+      "custody-cobalt": {
+        "role": "secondary",
+        "displayName": "Custody Cobalt",
+        "canonical": "#1748ba",
+        "tonalRamp": ["oklch(15% 0.15 263)", "oklch(27% 0.15 263)", "oklch(39% 0.15 263)", "oklch(51% 0.15 263)", "oklch(63% 0.15 263)", "oklch(75% 0.15 263)", "oklch(87% 0.15 263)", "oklch(95% 0.15 263)"]
+      },
+      "register-line": {
+        "role": "neutral",
+        "displayName": "Register Line",
+        "canonical": "#b9b8b2",
+        "tonalRamp": ["oklch(15% 0.006 90)", "oklch(27% 0.006 90)", "oklch(39% 0.006 90)", "oklch(51% 0.006 90)", "oklch(63% 0.006 90)", "oklch(75% 0.006 90)", "oklch(87% 0.006 90)", "oklch(95% 0.006 90)"]
+      },
+      "baseline-soft": {
+        "role": "neutral",
+        "displayName": "Baseline Soft",
+        "canonical": "#dbdad4",
+        "tonalRamp": ["oklch(15% 0.006 90)", "oklch(27% 0.006 90)", "oklch(39% 0.006 90)", "oklch(51% 0.006 90)", "oklch(63% 0.006 90)", "oklch(75% 0.006 90)", "oklch(87% 0.006 90)", "oklch(95% 0.006 90)"]
+      },
+      "annotation-dim": {
+        "role": "neutral",
+        "displayName": "Annotation Dim",
+        "canonical": "#676763",
+        "tonalRamp": ["oklch(15% 0.006 90)", "oklch(27% 0.006 90)", "oklch(39% 0.006 90)", "oklch(51% 0.006 90)", "oklch(63% 0.006 90)", "oklch(75% 0.006 90)", "oklch(87% 0.006 90)", "oklch(95% 0.006 90)"]
+      },
+      "error-rust": {
+        "role": "primary",
+        "displayName": "Error Rust",
+        "canonical": "#a52e19",
+        "tonalRamp": ["oklch(15% 0.11 33)", "oklch(27% 0.11 33)", "oklch(39% 0.11 33)", "oklch(51% 0.11 33)", "oklch(63% 0.11 33)", "oklch(75% 0.11 33)", "oklch(87% 0.11 33)", "oklch(95% 0.11 33)"]
+      },
+      "chart-slate": {
+        "role": "neutral",
+        "displayName": "Chart Slate",
+        "canonical": "#657080",
+        "tonalRamp": ["oklch(15% 0.025 250)", "oklch(27% 0.025 250)", "oklch(39% 0.025 250)", "oklch(51% 0.025 250)", "oklch(63% 0.025 250)", "oklch(75% 0.025 250)", "oklch(87% 0.025 250)", "oklch(95% 0.025 250)"]
+      },
+      "chart-label": {
+        "role": "neutral",
+        "displayName": "Chart Label",
+        "canonical": "#69717b",
+        "tonalRamp": ["oklch(15% 0.018 250)", "oklch(27% 0.018 250)", "oklch(39% 0.018 250)", "oklch(51% 0.018 250)", "oklch(63% 0.018 250)", "oklch(75% 0.018 250)", "oklch(87% 0.018 250)", "oklch(95% 0.018 250)"]
+      },
+      "chart-grid": {
+        "role": "neutral",
+        "displayName": "Chart Grid",
+        "canonical": "#e6e9ec",
+        "tonalRamp": ["oklch(15% 0.01 250)", "oklch(27% 0.01 250)", "oklch(39% 0.01 250)", "oklch(51% 0.01 250)", "oklch(63% 0.01 250)", "oklch(75% 0.01 250)", "oklch(87% 0.01 250)", "oklch(95% 0.01 250)"]
+      },
+      "chart-crosshair": {
+        "role": "neutral",
+        "displayName": "Chart Crosshair",
+        "canonical": "#9ca5af",
+        "tonalRamp": ["oklch(15% 0.018 250)", "oklch(27% 0.018 250)", "oklch(39% 0.018 250)", "oklch(51% 0.018 250)", "oklch(63% 0.018 250)", "oklch(75% 0.018 250)", "oklch(87% 0.018 250)", "oklch(95% 0.018 250)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Consolidated Value", "purpose": "The sole spectacle: the consolidated EUR total." },
+      "headline": { "displayName": "Register Headline", "purpose": "Major history and holdings section headings." },
+      "title": { "displayName": "Custody Title", "purpose": "Prominent account names and major register labels." },
+      "body": { "displayName": "Reading Text", "purpose": "Explanations and ordinary content with tabular lining numerals." },
+      "label": { "displayName": "Measurement Label", "purpose": "Axes, navigation, metadata, table headers, and operational status." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "quotation-arrival", "value": "380ms cubic-bezier(.2, .8, .2, 1)", "purpose": "A single short upward arrival for the value lockup; suppressed under reduced motion." },
+      { "name": "control-state", "value": "160ms ease-out", "purpose": "Color changes on the sign-in button." }
+    ],
+    "breakpoints": [
+      { "name": "intermediate", "value": "1100px" },
+      { "name": "phone", "value": "760px" },
+      { "name": "narrow-phone", "value": "360px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Quotation Sheet",
+      "kind": "custom",
+      "refersTo": "quotation-sheet",
+      "description": "The ruled proof-stock canvas that connects every portfolio register.",
+      "html": "<section class=\"ds-quotation-sheet\"><i class=\"ds-crop ds-crop-ne\" aria-hidden=\"true\"></i><div class=\"ds-sheet-label\">WIDTH&nbsp;&nbsp;&nbsp;75&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;125&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150</div><strong>Eurofolio register</strong></section>",
+      "css": ".ds-quotation-sheet { position: relative; width: min(calc(100% - 3rem), 96rem); margin: 1rem auto; padding: 0 1.5rem 2rem; border: 1px solid var(--ink, #0c0c0d); border-radius: 0; color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; } .ds-sheet-label { min-height: 2.75rem; display: flex; align-items: center; border-bottom: 1px solid var(--line, #b9b8b2); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; } .ds-quotation-sheet strong { display: block; padding-top: 1rem; font-size: 2rem; letter-spacing: -.045em; } .ds-crop { position: absolute; width: 1.8rem; height: 1.8rem; pointer-events: none; } .ds-crop-ne { top: -.65rem; right: -.65rem; border-top: 1px solid var(--ink, #0c0c0d); border-right: 1px solid var(--ink, #0c0c0d); }"
+    },
+    {
+      "name": "Sign-in Button",
+      "kind": "button",
+      "refersTo": "sign-in-button",
+      "description": "The single solid control used to enter the private register.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">SIGN IN →</button>",
+      "css": ".ds-btn-primary { min-height: 3rem; width: 100%; border: 1px solid var(--ink, #0c0c0d); border-radius: 0; padding: .75rem 1rem; color: var(--proof, #fbfaf6); background: var(--ink, #0c0c0d); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-align: left; text-transform: uppercase; cursor: pointer; transition: color .16s ease-out, background .16s ease-out; } .ds-btn-primary:hover { color: var(--ink, #0c0c0d); background: var(--orange, #f04d23); } .ds-btn-primary:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    },
+    {
+      "name": "Baseline Text Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "A transparent authentication field held by a single registration baseline.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-email\">EMAIL</label><input class=\"ds-field\" id=\"ds-email\" type=\"email\" value=\"owner@example.com\">",
+      "css": ".ds-field-label { display: block; margin-top: .65rem; color: var(--ink, #0c0c0d); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-transform: uppercase; } .ds-field { width: 100%; min-height: 2.9rem; border: 0; border-bottom: 1px solid var(--ink, #0c0c0d); border-radius: 0; padding: .5rem 0; color: var(--ink, #0c0c0d); background: transparent; font-family: var(--font-archivo), Archivo, sans-serif; outline: none; } .ds-field:focus { border-bottom-color: var(--orange, #f04d23); } .ds-field:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav-label",
+      "description": "A compact sticky-bar navigation with a signal-orange registration underline.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Portfolio navigation\"><a aria-current=\"page\" href=\"#\">OVERVIEW</a><a href=\"#\">HOLDINGS</a><a href=\"#\">HISTORY</a></nav>",
+      "css": ".ds-nav { display: flex; min-height: 3rem; gap: 2rem; border-bottom: 1px solid var(--ink, #0c0c0d); background: rgba(251, 250, 246, .96); } .ds-nav a { display: grid; place-items: center; border-bottom: 3px solid transparent; color: var(--ink, #0c0c0d); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-decoration: none; text-transform: uppercase; } .ds-nav a[aria-current=\"page\"] { border-color: var(--orange, #f04d23); } .ds-nav a:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    },
+    {
+      "name": "Consolidated Value Field",
+      "kind": "custom",
+      "description": "The signature instrument pairing the sole oversized total with valuation status and date.",
+      "html": "<section class=\"ds-value-field\"><div class=\"ds-value-lockup\"><span>Eurofolio</span><strong>€92,288.82</strong></div><div class=\"ds-valuation\"><small>FULLY VALUED</small><i aria-hidden=\"true\"></i><time>13<br>AUG<br>2026</time></div></section>",
+      "css": ".ds-value-field { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; min-height: 13.6rem; border-bottom: 1px solid var(--ink, #0c0c0d); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; } .ds-value-lockup { min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: .9rem 2rem 1rem; } .ds-value-lockup span { margin-bottom: .3rem; font-size: 2.85rem; font-weight: 900; letter-spacing: -.055em; line-height: 1; } .ds-value-lockup strong { overflow: hidden; font-size: clamp(3rem, 10vw, 10rem); font-weight: 900; letter-spacing: -.075em; line-height: .82; white-space: nowrap; } .ds-valuation { display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 0 1.25rem 2rem; border-left: 1px solid var(--line, #b9b8b2); text-transform: uppercase; } .ds-valuation small { font: .75rem/1.2 ui-monospace, SFMono-Regular, Roboto Mono, monospace; letter-spacing: .05em; } .ds-valuation i { position: relative; width: 1.4rem; height: 1.4rem; margin: 1rem 0; } .ds-valuation i::before, .ds-valuation i::after { position: absolute; background: var(--orange, #f04d23); content: \"\"; } .ds-valuation i::before { top: 50%; width: 100%; height: 1px; } .ds-valuation i::after { left: 50%; width: 1px; height: 100%; } .ds-valuation time { color: var(--orange, #f04d23); font-size: 3rem; font-weight: 750; letter-spacing: -.055em; line-height: .92; }"
+    },
+    {
+      "name": "Account Register Row",
+      "kind": "custom",
+      "description": "A ranked custody line with exact value and portfolio share columns.",
+      "html": "<div class=\"ds-account-line ds-account-cobalt\"><span>02</span><strong>Nordnet</strong><b>€84,395.03</b><em>91.4%</em></div>",
+      "css": ".ds-account-line { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) minmax(12rem, 30%) minmax(6rem, 11%); align-items: center; min-height: 3.6rem; border-bottom: 1px dotted var(--line, #b9b8b2); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-account-cobalt { color: var(--blue, #1748ba); } .ds-account-line > span { padding-left: 1rem; font-size: 1.4rem; } .ds-account-line > strong { overflow: hidden; font-size: 2.15rem; font-weight: 750; letter-spacing: -.045em; text-overflow: ellipsis; white-space: nowrap; } .ds-account-line > b, .ds-account-line > em { font-size: 2rem; font-weight: 650; font-style: normal; letter-spacing: -.04em; text-align: right; } .ds-account-line > em { padding-right: 1rem; }"
+    },
+    {
+      "name": "Fact Shortcut",
+      "kind": "custom",
+      "description": "An equal-width utility cell pairing an operational label with a terse value and line arrow.",
+      "html": "<a class=\"ds-fact\" href=\"#\"><span>ALL HOLDINGS</span><strong>VIEW</strong><i aria-hidden=\"true\"></i></a>",
+      "css": ".ds-fact { position: relative; display: flex; min-height: 4.6rem; flex-direction: column; justify-content: center; gap: .45rem; padding: .6rem 1rem; border-right: 1px solid var(--line, #b9b8b2); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); text-decoration: none; } .ds-fact span { font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-transform: uppercase; } .ds-fact strong { font-family: var(--font-archivo), Archivo, sans-serif; font-size: .9rem; font-weight: 500; } .ds-fact i { position: absolute; right: 1rem; bottom: .85rem; width: .8rem; height: .8rem; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(-45deg); } .ds-fact:hover strong, .ds-fact:hover i { color: var(--orange, #f04d23); } .ds-fact:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    },
+    {
+      "name": "Mobile Position Disclosure",
+      "kind": "custom",
+      "description": "The phone replacement for the dense holdings table, preserving rank, name, value, and expandable provenance.",
+      "html": "<details class=\"ds-position\"><summary><span>01</span><strong>Nordnet Norge Indeks<small>Nordnet · Fund</small></strong><b>€13,679.56<small>124.8 units</small></b></summary><dl><div><dt>Observation</dt><dd>13 Aug 2026</dd></div><div><dt>Source</dt><dd>Manual · Fresh</dd></div></dl></details>",
+      "css": ".ds-position { border-bottom: 1px dotted var(--line, #b9b8b2); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-position summary { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; min-height: 4.5rem; align-items: center; gap: .5rem; cursor: pointer; list-style: none; } .ds-position summary > span { color: var(--orange, #f04d23); font-size: 1rem; } .ds-position summary > strong, .ds-position summary > b { font-size: .84rem; font-weight: 600; } .ds-position summary > b { text-align: right; } .ds-position small { display: block; margin-top: .2rem; color: var(--dim, #676763); font: .75rem/1.2 ui-monospace, SFMono-Regular, Roboto Mono, monospace; } .ds-position dl { margin: 0 0 .75rem 3rem; } .ds-position dl div { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px dotted var(--line, #b9b8b2); font-size: .78rem; } .ds-position dt { color: var(--dim, #676763); } .ds-position dd { margin: 0; } .ds-position summary:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quotation Specimen",
+    "overview": "Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.\n\nThe atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, and hairline rules create the authority of a printed working document. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.",
+    "keyCharacteristics": [
+      "One oversized numerical event, surrounded by dense but legible registers.",
+      "Warm paper and black ink with orange and cobalt used only as semantic signals.",
+      "Tabular numerals, tight tracking, explicit ranks, dates, provenance, and measurement marks.",
+      "Flat construction: hierarchy comes from scale, rules, spacing, and alignment.",
+      "Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first."
+    ],
+    "rules": [
+      { "name": "The Sparse Signal Rule", "body": "Signal Orange and Custody Cobalt identify state, custody, or action; they never become broad decorative fills.", "section": "colors" },
+      { "name": "The Ink-on-Stock Rule", "body": "Primary reading surfaces remain Proof Stock with Registration Ink. Neutral paper variation separates the sheet from its surroundings without simulated elevation.", "section": "colors" },
+      { "name": "The Sole Spectacle Rule", "body": "Only the consolidated EUR total may use the extreme display treatment; all other figures step down into aligned register sizes.", "section": "typography" },
+      { "name": "The Numeric Alignment Rule", "body": "Financial values use tabular lining figures and align to the right whenever they share a column.", "section": "typography" },
+      { "name": "The Two-Voice Rule", "body": "Archivo carries names and values; monospace carries coordinates, labels, metadata, and operational status.", "section": "typography" },
+      { "name": "The Register Continuity Rule", "body": "Sections share edges and rules; do not separate related data into floating containers.", "section": "layout" },
+      { "name": "The Yield Order Rule", "body": "On narrow screens, remove secondary axes and percentages before reducing names or primary values beyond legibility.", "section": "layout" },
+      { "name": "The Flat Proof Rule", "body": "Surfaces remain on one physical plane; hierarchy is earned by rules, scale, spacing, and alignment, never simulated elevation.", "section": "elevation" },
+      { "name": "The Square Register Rule", "body": "Do not round structural surfaces or controls. Reserve the 50% radius exclusively for status dots.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do make exact values, dates, ranks, completeness, and provenance visible at the point of use.",
+      "Do use Proof Stock, Registration Ink, hairlines, crop marks, and aligned baselines to construct hierarchy.",
+      "Do keep the giant EUR total as the sole typographic spectacle.",
+      "Do preserve tabular lining numerals and right alignment for comparable financial values.",
+      "Do preserve the desktop-to-phone reading order and let secondary percentages and axes yield first.",
+      "Do keep interactions keyboard-visible and reduce the entrance motion when the user requests reduced motion."
+    ],
+    "donts": [
+      "Don't introduce rounded KPI cards, floating panels, a sidebar shell, pills, donut charts, or generic AI-dashboard conventions.",
+      "Don't use shadows, gradients, blur, or decorative elevation.",
+      "Don't spread Signal Orange or Custody Cobalt across large surfaces; color must retain semantic purpose.",
+      "Don't invent trading controls, performance claims, broker branding, or ornamental financial graphics.",
+      "Don't hide stale, missing, manual, or partial valuation state behind visual polish.",
+      "Don't break register alignment or allow the phone layout to overflow horizontally."
+    ]
+  }
+}

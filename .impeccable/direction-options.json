@@ -1,0 +1,88 @@
+{
+  "title": "Choose Eurofolio’s visual world",
+  "question": "Three directions use the same real portfolio facts. Choose the one that should become the product.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Capital Map",
+      "kicker": "THE ROLL",
+      "lineage": "Scandinavian transit diagrams × securities ownership maps",
+      "thesis": "Accounts become visible ownership rails: three institutions converge into one EUR total, then branch into assets and positions.",
+      "palette": ["#F4F1E8", "#121B24", "#1956A3", "#C44F32", "#617A3A"],
+      "materials": ["uncoated map stock", "route ink", "registration marks"],
+      "viewport": "A left account rail feeds a large central EUR balance; the portfolio branches across the page into allocation and ranked holdings without card shells.",
+      "risk": "The map logic must remain immediately readable rather than becoming decorative data art.",
+      "raised": [
+        {"from": "Nixie counter", "raise": "Fixed-place precision: all important values align and hold their decimal positions."},
+        {"from": "Cassette fascia", "raise": "Explicit state: every source, date, and valuation state has a permanent labeled position."},
+        {"from": "Tensegrity", "raise": "Structural honesty: account relationships determine the layout rather than a generic page grid."}
+      ],
+      "comp": ".impeccable/mocks/decision/assigned.png"
+    },
+    {
+      "id": "model-pick",
+      "label": "Custody Register",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Nordic private-bank statements × exchange closing bulletins",
+      "thesis": "A beautifully typeset custody statement makes the portfolio feel official, calm, and exceptionally legible.",
+      "palette": ["#E7EEF0", "#172027", "#7C2431", "#2F6155", "#FFFFFF"],
+      "materials": ["security paper", "hairline rules", "ink stamps"],
+      "viewport": "A compact masthead, statement balance, account ledger, allocation strip, and ranked positions share one rigorous ruled sheet.",
+      "risk": "It is the most familiar and safest direction, and could feel like a polished statement rather than a new product.",
+      "comp": ".impeccable/mocks/decision/model-pick.png"
+    },
+    {
+      "id": "challenger-specimen",
+      "label": "Quotation Specimen",
+      "kicker": "QUALITY BAR",
+      "verdict": "competitive",
+      "lineage": "Variable-type specimens × exchange quotation boards",
+      "thesis": "The numerical typography is the interface: scale, weight, and alignment encode portfolio hierarchy before any container does.",
+      "palette": ["#FBFAF6", "#0C0C0D", "#F05A28", "#2457D6"],
+      "materials": ["foundry proof", "baseline grid", "crop marks"],
+      "viewport": "The total occupies the upper field as a typographic instrument; accounts and holdings lock to an exposed baseline grid below it.",
+      "case": "Matches Capital Map on clarity and exceeds it in typographic character, but explains account provenance less naturally.",
+      "risk": "Extreme scale contrast can become poster-like if the utility details are not disciplined.",
+      "comp": ".impeccable/mocks/decision/challenger-specimen.png"
+    },
+    {
+      "id": "challenger-nixie",
+      "label": "Settlement Counter",
+      "verdict": "declined",
+      "lineage": "Nixie laboratory counters",
+      "thesis": "Every balance is a fixed-place instrument reading.",
+      "palette": ["#121212", "#F47B20", "#C5CCD0"],
+      "materials": ["blackened steel", "engraved labels", "orange numerals"],
+      "viewport": "Three counter banks report the institutions and total like laboratory instruments.",
+      "case": "Strong numerical drama, but retro equipment weakens the quiet trust expected from a daily portfolio tool.",
+      "kept": "Fixed-place numeric precision and a single warm state color.",
+      "risk": "Too easily reads as themed novelty."
+    },
+    {
+      "id": "challenger-tensegrity",
+      "label": "Exposure Structure",
+      "verdict": "declined",
+      "lineage": "Tensegrity force diagrams",
+      "thesis": "Holdings and currencies appear as a visible network of counterbalanced exposures.",
+      "palette": ["#E9E5DC", "#18191B", "#C5342D"],
+      "materials": ["engineering plot", "force lines", "node annotations"],
+      "viewport": "Account nodes support a central portfolio value through labeled holding and currency forces.",
+      "case": "Expresses relationships boldly, but overstates causal structure and makes exact comparison slower.",
+      "kept": "Let the data relationships—not arbitrary cards—determine composition.",
+      "risk": "Can imply financial relationships the ledger does not actually model."
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "comp", "toggle": true},
+  "canon": true,
+  "canonCard": {
+    "label": "Conventional fintech dashboard",
+    "thesis": "Rounded KPI cards, a blue line chart, allocation widgets, and a sortable holdings table—executed carefully.",
+    "palette": ["#FFFFFF", "#111827", "#2563EB", "#F3F4F6"],
+    "materials": ["component cards", "soft neutral canvas"],
+    "viewport": "A header above a four-card KPI row, chart-and-donut grid, and holdings table.",
+    "risk": "Immediately familiar and almost impossible to distinguish from generated finance dashboards.",
+    "comp": ".impeccable/mocks/decision/canon.png"
+  },
+  "steer": true
+}
