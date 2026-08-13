@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingIncludes: {
-    "/api/setup/migrate": ["./drizzle/**/*"],
-  },
   async headers() {
     return [
       {
