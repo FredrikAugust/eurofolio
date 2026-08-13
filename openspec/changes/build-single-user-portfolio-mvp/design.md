@@ -100,6 +100,33 @@ Record baseline cold and warm `pnpm build` time and peak memory. For the MVP:
 
 These are regression budgets rather than promises about absolute timings on unknown hardware.
 
+### 12. Redesign as a quiet financial workbench, not a card template
+
+Replace the editorial landing-page treatment with a compact, neutral financial interface. The visual system uses one sans-serif family, tabular numerals, semantic CSS tokens, six-to-eight-pixel radii, one-pixel borders, and no decorative gradients or ambient shadows. Account colors are reserved for the history chart; status colors are reserved for freshness, gaps, and errors. Remove ornamental badges, repeated uppercase eyebrow text, oversized serif metrics, and containers that exist only to create another rounded card.
+
+The information architecture becomes four owner workflows:
+
+- **Overview:** consolidated EUR value, valuation date/completeness, account-stacked history, account balances, allocation, and the largest positions.
+- **Holdings:** the complete sortable position register, grouped or filtered by account and asset class, with native/EUR values and expandable provenance.
+- **Activity:** a read-only chronological ledger with account, event-type, and date filters. Portfolio writes remain MCP-only.
+- **Data:** refresh status, last observation per provider, stale/manual/missing diagnostics, and concise MCP guidance.
+
+Desktop uses a slim top navigation rather than a persistent sidebar. Mobile uses a bottom navigation with safe-area padding and keeps the current section visible. The same semantic content is rendered on the server; navigation creates smaller route-specific payloads instead of hydrating one large client dashboard.
+
+### 13. Account-stacked history without another chart dependency
+
+Extend each historical sample with the EUR value of every account, the consolidated total, and a completeness flag. Build samples from the already batch-loaded ledger, price, and FX rows. Do not fabricate values or interpolate across missing observations.
+
+Keep Lightweight Charts. Render a true visual stack by calculating cumulative account boundaries on the server, adding one area series per cumulative boundary from largest to smallest, and retaining the raw per-account values for the legend and crosshair detail. Multiple series and their drawing order are already supported, so this adds no production chart dependency. Account order and colors remain stable across dates and sessions.
+
+The default range is the longest range with honest observations. Range controls offer only densities the data can support. The crosshair detail shows date, total, every visible account, and incomplete-data status. On touch screens, the detail appears in a fixed panel below the chart rather than as a pointer-following tooltip. The chart has an adjacent server-rendered account summary so portfolio values remain available without JavaScript.
+
+### 14. Mobile is a first-class layout
+
+At narrow widths, use 16-pixel page gutters, a 32-pixel primary value, a roughly 220-pixel chart, horizontally scrollable account-filter pills, and 44-pixel frequent-action targets. Replace the wide holdings table with semantic disclosure rows: instrument and EUR value remain visible; quantity, native value, provider, FX, and dates expand in place. Do not require hover, precision dragging, or horizontal page scrolling.
+
+Test at 320, 375, 390, 430, 768, and 1024 CSS pixels, with keyboard navigation, reduced motion, 200% zoom, long instrument names, missing data, and three or more currencies. Desktop tables remain real tables; the mobile representation preserves equivalent labels and reading order.
+
 ## Risks / Trade-offs
 
 - **Unofficial Yahoo endpoints can change or block requests** → Isolate the adapter, retain last-known-good data, support manual observations, and keep a keyed fallback interface.

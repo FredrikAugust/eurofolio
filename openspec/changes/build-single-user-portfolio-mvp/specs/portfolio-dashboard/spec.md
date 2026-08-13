@@ -46,3 +46,43 @@ The dashboard SHALL fetch portfolio inputs without per-holding database or provi
 #### Scenario: Render many holdings
 - **WHEN** the dashboard renders a portfolio containing many registered holdings
 - **THEN** database access remains bounded by a fixed number of batched operations independent of the holding count
+
+### Requirement: Deliberate financial visual system
+The dashboard SHALL use a restrained, token-driven financial visual system with compact sans-serif typography, tabular numerals, neutral surfaces, limited radii, and decoration only when it communicates state. It SHALL NOT rely on gradients, ambient shadows, ornamental badges, repeated uppercase labels, or card containers as the primary means of hierarchy.
+
+#### Scenario: Scan the overview
+- **WHEN** the owner opens the overview
+- **THEN** typography, alignment, spacing, and rules establish the hierarchy before color or decoration
+
+### Requirement: Account-stacked portfolio history
+The dashboard SHALL show historical portfolio value as stacked account contributions in EUR, with stable account colors, a consolidated boundary, honest missing-data treatment, and accessible values outside the canvas.
+
+#### Scenario: Inspect a historical date
+- **WHEN** the owner focuses or touches a chart date
+- **THEN** the dashboard shows the date, consolidated EUR total, each visible account's EUR contribution, and whether the sample is complete
+
+#### Scenario: Historical price is unavailable
+- **WHEN** an account cannot be valued on a sample date
+- **THEN** the chart marks the sample incomplete and does not silently treat the missing account as zero
+
+### Requirement: Task-oriented portfolio navigation
+The dashboard SHALL organize read-only portfolio use into Overview, Holdings, Activity, and Data sections while keeping all portfolio mutations MCP-only.
+
+#### Scenario: Audit an imported transaction
+- **WHEN** the owner opens Activity and filters by account and event type
+- **THEN** matching ledger events are presented chronologically with exact native values and notes
+
+#### Scenario: Diagnose a stale valuation
+- **WHEN** the owner opens Data
+- **THEN** provider dates, refresh status, manual observations, stale inputs, and missing inputs are visible without scanning the holdings register
+
+### Requirement: Mobile-first portfolio access
+The dashboard SHALL support 320 CSS pixel and wider viewports without horizontal page scrolling, hover-only behavior, obscured focus, or loss of financial context. Frequent mobile controls SHALL provide at least 44 by 44 CSS pixel targets.
+
+#### Scenario: Review holdings on a phone
+- **WHEN** the owner opens Holdings on a narrow touch viewport
+- **THEN** each position shows its instrument and EUR value immediately and exposes quantity, native value, account, source, FX, and dates through an accessible disclosure
+
+#### Scenario: Use the history chart on a phone
+- **WHEN** the owner touches or keyboard-focuses a history sample
+- **THEN** account values appear in a stable detail region that does not obscure the chart

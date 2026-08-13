@@ -8,7 +8,7 @@ The owner needs one fast, private view of investments held across several accoun
 - Preserve native transaction and instrument currencies while reporting all portfolio totals in EUR.
 - Store delayed/end-of-day security prices and daily EUR foreign-exchange observations with provenance and timestamps.
 - Add provider adapters, beginning with broad free market data and ECB reference rates, plus manual price overrides.
-- Add a fast, server-first dashboard for holdings, account totals, allocation, data freshness, and interactive portfolio charts.
+- Add a fast, server-first, mobile-first dashboard organized around overview, holdings, activity, and data-quality workflows, with account totals, allocation, freshness, and an account-stacked portfolio chart.
 - Add an authenticated, stateless Streamable HTTP MCP server as the only programmatic integration surface, including portfolio reads and ledger writes.
 - Keep portfolio reads and writes direct-to-database; do not add a general portfolio REST API, broker OAuth, background workers, or realtime quotes. Better Auth's standard route is the sole non-MCP API exception and handles authentication only.
 - Optimize the first vertical slice for minimal dependencies, client JavaScript, build memory, query count, and cold-start work.
