@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { AppFrame, PageHeading } from "@/app/app-frame";
+import { PageHeading } from "@/app/app-frame";
 import { displayDate, money, quantity } from "@/app/format";
-import { requireOwner } from "@/app/require-owner";
 import { PagePending } from "@/app/route-pending";
 import { getCachedActivityRegister } from "@/server/services/cached-queries";
 
@@ -20,16 +20,14 @@ function eventValue(event: { type: string; amount: string | null; quantity: stri
 
 export default function ActivityPage({ searchParams }: ActivityPageProps) {
   return (
-    <AppFrame current="Activity">
-      <Suspense fallback={<PagePending title="Activity" />}>
-        <ActivityRegister searchParams={searchParams} />
-      </Suspense>
-    </AppFrame>
+    <Suspense fallback={<PagePending title="Activity" />}>
+      <ActivityRegister searchParams={searchParams} />
+    </Suspense>
   );
 }
 
 async function ActivityRegister({ searchParams }: ActivityPageProps) {
-  await requireOwner();
+  await connection();
   const filters = await searchParams;
   const { eventRows, accountRows, instrumentRows } = await getCachedActivityRegister();
   const accountMap = new Map(accountRows.map((account) => [account.id, account.name]));

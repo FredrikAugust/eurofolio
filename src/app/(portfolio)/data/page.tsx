@@ -1,23 +1,21 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { AppFrame, PageHeading } from "@/app/app-frame";
+import { PageHeading } from "@/app/app-frame";
 import { displayDate, money } from "@/app/format";
-import { requireOwner } from "@/app/require-owner";
 import { PagePending } from "@/app/route-pending";
 import { getCachedDataRegister } from "@/server/services/cached-queries";
 
 export default function DataPage() {
   return (
-    <AppFrame current="Data">
-      <Suspense fallback={<PagePending title="Data" />}>
-        <DataRegister />
-      </Suspense>
-    </AppFrame>
+    <Suspense fallback={<PagePending title="Data" />}>
+      <DataRegister />
+    </Suspense>
   );
 }
 
 async function DataRegister() {
-  await requireOwner();
+  await connection();
   const { instrumentRows, priceRows, rateRows, runRows } = await getCachedDataRegister();
   const latestPrices = new Map<string, (typeof priceRows)[number]>();
   priceRows.forEach((row) => { if (!latestPrices.has(row.instrumentId)) latestPrices.set(row.instrumentId, row); });

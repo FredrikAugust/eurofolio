@@ -9,7 +9,7 @@ export async function login(formData: FormData): Promise<void> {
   const email = formData.get("email");
   const password = formData.get("password");
   if (typeof email !== "string" || typeof password !== "string") {
-    redirect("/?error=invalid");
+    redirect("/login?error=invalid");
   }
 
   try {
@@ -18,7 +18,7 @@ export async function login(formData: FormData): Promise<void> {
       headers: await headers(),
     });
   } catch {
-    redirect("/?error=invalid");
+    redirect("/login?error=invalid");
   }
   redirect("/");
 }

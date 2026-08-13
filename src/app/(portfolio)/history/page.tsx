@@ -1,9 +1,9 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { AppFrame, PageHeading } from "@/app/app-frame";
+import { PageHeading } from "@/app/app-frame";
 import { displayDate, money } from "@/app/format";
 import { PortfolioChart } from "@/app/portfolio-chart";
-import { requireOwner } from "@/app/require-owner";
 import { PagePending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
 import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
@@ -12,16 +12,14 @@ const colors = ["#f04d23", "#1748ba", "#0c0c0d", "#657080"];
 
 export default function HistoryPage() {
   return (
-    <AppFrame current="History">
-      <Suspense fallback={<PagePending title="History" />}>
-        <HistoryRegister />
-      </Suspense>
-    </AppFrame>
+    <Suspense fallback={<PagePending title="History" />}>
+      <HistoryRegister />
+    </Suspense>
   );
 }
 
 async function HistoryRegister() {
-  await requireOwner();
+  await connection();
   const valuationDate = new Date().toISOString().slice(0, 10);
   const { summary, history } = await getCachedPortfolioDashboard(valuationDate);
   const complete = history.filter((point) => point.complete);

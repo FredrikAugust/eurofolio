@@ -1,15 +1,12 @@
-import { headers } from "next/headers";
-import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { login } from "@/app/actions";
-import { AppFrame, Chevron } from "@/app/app-frame";
+import { Chevron } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { PortfolioBackdrop } from "@/app/portfolio-backdrop";
 import { PortfolioChart } from "@/app/portfolio-chart";
 import { OverviewPending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
-import { auth } from "@/server/better-auth";
 import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 import {
   type InstrumentPriceHistory,
@@ -46,29 +43,6 @@ function latestObservation(summary: PortfolioSummary): string {
     .filter((date): date is string => Boolean(date))
     .sort()
     .at(-1) ?? summary.valuationDate;
-}
-
-function Login({ invalid }: { invalid: boolean }) {
-  return (
-    <main className="login-shell">
-      <section className="login-sheet" aria-labelledby="login-heading">
-        <div className="login-axis" aria-hidden="true"><span>WGT</span><span>700</span></div>
-        <div className="login-content">
-          <Link href="/" className="login-brand">Eurofolio</Link>
-          <h1 id="login-heading">Sign in</h1>
-          <p>Private portfolio register · EUR reporting</p>
-          <form action={login} className="login-form">
-            <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" autoComplete="username" required />
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" minLength={12} autoComplete="current-password" required />
-            {invalid ? <p className="form-error" role="alert">Email or password not accepted.</p> : null}
-            <button type="submit">Sign in</button>
-          </form>
-        </div>
-      </section>
-    </main>
-  );
 }
 
 function EmptyDashboard() {
@@ -242,22 +216,19 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
   );
 }
 
-export default function Home({ searchParams }: PageProps<"/">) {
+export default function Home() {
   return (
-    <Suspense fallback={<AppFrame current="Overview"><OverviewPending /></AppFrame>}>
-      <AuthenticatedHome searchParams={searchParams} />
+    <Suspense fallback={<OverviewPending />}>
+      <PortfolioHome />
     </Suspense>
   );
 }
 
-async function AuthenticatedHome({ searchParams }: Pick<PageProps<"/">, "searchParams">) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const params = await searchParams;
-  if (!session) return <Login invalid={params.error === "invalid"} />;
-
+async function PortfolioHome() {
+  await connection();
   const valuationDate = new Date().toISOString().slice(0, 10);
   const { summary, history, priceHistory } = await getCachedPortfolioDashboard(valuationDate);
   const hasData = summary.accountTotals.length || summary.holdings.length || summary.cash.length;
 
-  return <AppFrame current="Overview">{hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} /> : <EmptyDashboard />}</AppFrame>;
+  return hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} /> : <EmptyDashboard />;
 }

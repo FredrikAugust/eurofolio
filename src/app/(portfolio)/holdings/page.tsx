@@ -1,24 +1,22 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { AppFrame, PageHeading } from "@/app/app-frame";
+import { PageHeading } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
-import { requireOwner } from "@/app/require-owner";
 import { PagePending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
 import { getCachedPortfolioDashboard } from "@/server/services/cached-queries";
 
 export default function HoldingsPage() {
   return (
-    <AppFrame current="Holdings">
-      <Suspense fallback={<PagePending title="Holdings" />}>
-        <HoldingsRegister />
-      </Suspense>
-    </AppFrame>
+    <Suspense fallback={<PagePending title="Holdings" />}>
+      <HoldingsRegister />
+    </Suspense>
   );
 }
 
 async function HoldingsRegister() {
-  await requireOwner();
+  await connection();
   const valuationDate = new Date().toISOString().slice(0, 10);
   const { summary, priceHistory } = await getCachedPortfolioDashboard(valuationDate);
   const trends = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
