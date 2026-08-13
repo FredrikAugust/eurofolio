@@ -18,7 +18,7 @@ colors:
 typography:
   display:
     fontFamily: "Archivo, sans-serif"
-    fontSize: "clamp(9rem, 13.8vw, 13.4rem)"
+    fontSize: "clamp(5.4rem, 17cqi, 13.4rem)"
     fontWeight: 900
     lineHeight: 0.78
     letterSpacing: "-0.082em"
@@ -69,7 +69,7 @@ components:
     textColor: "{colors.registration-ink}"
     rounded: "{rounded.square}"
     padding: "0 1.5rem 2rem"
-    width: "min(calc(100% - 3rem), 96rem)"
+    width: "min(100%, 96rem)"
   sign-in-button:
     backgroundColor: "{colors.registration-ink}"
     textColor: "{colors.proof-stock}"
@@ -121,14 +121,14 @@ components:
 
 Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.
 
-The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, hairline rules, and miniature quotation traces create the authority of a printed working document. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, or decorative chrome. The one purposeful gradient is the low-contrast value-history wash behind the consolidated figure; it encodes observed progression and never decorates an empty surface.
+The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, hairline rules, and miniature quotation traces create the authority of a printed working document. The proof sheet is deliberately unframed and has no crop corners; its compact sticky in-sheet navigation supplies the opening datum formerly carried by a WIDTH ruler. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, or decorative chrome. The one purposeful gradient is the low-contrast value-history wash behind the consolidated figure; it encodes observed progression and never decorates an empty surface.
 
 **Key Characteristics:**
 
 - One oversized numerical event, surrounded by dense but legible registers.
 - Warm paper and black ink with orange and cobalt used only as semantic signals.
 - Tabular numerals, tight tracking, explicit ranks, dates, provenance, and measurement marks.
-- Stored observations drawn as restrained server-rendered quotation traces, never decorative or fabricated charts.
+- Stored observations drawn as restrained server-rendered quotation traces with baselines, midlines, translucent areas, lines, endpoints, and concise observation/date/change metadata—never decorative or fabricated charts.
 - The consolidated value field may carry a pale cobalt line-and-area trace behind the number. It uses complete observations only and resolves to an explicitly labelled start point until a second complete valuation exists.
 - Flat construction: hierarchy comes from scale, rules, spacing, and alignment.
 - Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first; phone adds a safe-area five-item register navigation.
@@ -149,7 +149,7 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 - **Proof Stock** (`proof-stock`): the main sheet and authentication surface.
 - **Surrounding Paper** (`surrounding-paper`): the page outside the proof sheet and scrollbar track.
-- **Registration Ink** (`registration-ink`): primary copy, values, borders, crop marks, and the Revolut custody line.
+- **Registration Ink** (`registration-ink`): primary copy, values, section rules, SVG chevrons, and the Revolut custody line.
 - **Register Line** (`register-line`): measurement ticks, column divisions, and dotted row separators.
 - **Baseline Soft** (`baseline-soft`): faint historical baselines and quiet grid structure.
 - **Annotation Dim** (`annotation-dim`): secondary facts, metadata, inactive controls, and explanatory copy.
@@ -172,7 +172,7 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 ### Hierarchy
 
-- **Display** (900, `display`, 0.78 line-height): the consolidated EUR total only; it uses a `clamp(9rem, 13.8vw, 13.4rem)` desktop range, then steps to 6rem at the intermediate breakpoint and 2.8rem on phone.
+- **Display** (900, `display`, 0.78 line-height): the consolidated EUR total only; its lockup establishes an inline-size container and sizes the total with `clamp(5.4rem, 17cqi, 13.4rem)` so the numeral responds to its actual column rather than the viewport and does not clip against the date gutter. Phone uses a deliberate 2.8rem override, stepping to 2.55rem at 360px.
 - **Page Title** (900, `page-title`, 0.9 line-height): the secondary Holdings, History, Activity, and Data headings; it steps from 4.8rem to 4rem at the intermediate breakpoint and 3rem on phone.
 - **Headline** (700, `headline`, 1 line-height): history and holdings section headings.
 - **Title** (750, `title`, 1 line-height): prominent account names and major register labels.
@@ -189,13 +189,13 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 ## Layout
 
-The primary canvas is a centered proof sheet capped at 96rem, inset 1.5rem from the viewport and framed by a one-pixel Registration Ink rule. A sticky three-column top bar holds brand, centered five-item navigation, and session action. Inside the sheet, sections connect vertically without card gaps: solid hairlines define major boundaries, dotted lines divide register rows, and fixed rank/value gutters make every number comparable.
+The primary canvas is a centered, unframed proof sheet capped at 96rem and padded 1.5rem on desktop. A compact 2.45rem sticky in-sheet register replaces the decorative WIDTH ruler and holds the brand, centered five-item navigation, and session action. Inside the sheet, sections connect vertically without card gaps: solid hairlines define major boundaries, dotted lines divide register rows, and fixed rank/value gutters make every number comparable.
 
-The opening value field is a three-column instrument with a 15.65rem minimum height: a 3.5rem weight axis, a fluid value lockup padded 0.9rem 1rem 1rem 0.75rem, and a 14rem valuation-date gutter. Its wordmark is 3.55rem with 0.92 line-height and -0.06em tracking; the hero total uses `clamp(9rem, 13.8vw, 13.4rem)` with 0.78 line-height and -0.082em tracking; the valuation date is 3.35rem with 0.88 line-height. Desktop account rows read rank, name, value, trace, share, with 2.55rem account names and 2.3rem values. Desktop leader rows use the same rank, name, value, trace, share order, with 1.95rem names and 1.8rem values. Both registers retain a 4.5rem rank column, fluid name column, right-aligned value and share columns, and a quotation-trace column. The four-cell allocation register replaces ornamental measurement ticks with current-percentage micro bars; Stock is Signal Orange, Fund is Custody Cobalt, ETF is Registration Ink, and Cash is Annotation Dim. The 6-cell fact strip continues the horizontal divisions. Major below-fold sections begin after a 3rem interval.
+The opening value field is a three-column instrument with a 15.65rem minimum height: a 3.5rem weight axis, a fluid value lockup padded 0.9rem 1rem 1rem 0.75rem, and a 14rem valuation-date gutter. The lockup is an inline-size container; its wordmark uses `clamp(2.4rem, 4.5cqi, 3.55rem)` and the hero total uses `clamp(5.4rem, 17cqi, 13.4rem)`, keeping both proportional to the space left after fixed gutters. The valuation date is 3.35rem with 0.88 line-height. Account and leader registers share one rank → name → value → trace → share grid: a 4.5rem rank column, fluid name column, right-aligned value and share columns, a 10rem quotation-trace column, and 1rem gaps. Type scale changes by register, but column geometry does not. The four-cell allocation register replaces ornamental measurement ticks with current-percentage micro bars; Stock is Signal Orange, Fund is Custody Cobalt, ETF is Registration Ink, and Cash is Annotation Dim. The 6-cell fact strip continues the horizontal divisions. Major below-fold sections begin after a 3rem interval.
 
-Secondary pages reuse the width axis, then place a compact page title beside exactly three fact cells. The heading is 12rem high on wide screens; its facts occupy three equal ruled columns. Holdings, History, Activity, and Data then continue as connected tables, ledgers, filters, status stamps, or split registers on the same stock rather than becoming separate panels.
+Secondary pages begin immediately below the same compact sticky navigation, then place a compact page title beside exactly three fact cells. The heading is 12rem high on wide screens; its facts occupy three equal ruled columns. Holdings, History, Activity, and Data then continue as connected tables, ledgers, filters, status stamps, or split registers on the same stock rather than becoming separate panels.
 
-At 1100px, type and fixed gutters contract while the structure remains intact. At 760px, the sheet becomes edge-to-edge, crop marks and the weight axis disappear, the date gutter narrows to 6.5rem, top navigation hides, allocation and overview facts become two-column grids, account percentages and position shares yield, and the Holdings, Activity, and instrument registers become disclosure rows. Narrow secondary ledgers remain ruled and may scroll within their register. Secondary titles stack above their three facts: the title occupies a 7rem field at 3rem, followed by a 4.5rem fact strip. A fixed five-item bottom register respects `env(safe-area-inset-bottom)`, and footer clearance prevents overlap. At 360px, the value and date type contract once more. The page retains a 20rem minimum width and must not scroll horizontally at 390px.
+At 1100px, type and fixed gutters contract while the structure remains intact. At 760px, the sheet becomes edge-to-edge, the weight axis disappears, the date gutter narrows to 6.5rem, top destinations hide, and account and leader registers reflow into two-row summaries: rank, name, and value occupy row one; the quotation trace and its metadata span row two; share yields. Allocation and overview facts become two-column grids, while Holdings, Activity, and instrument registers become disclosure rows. Narrow secondary ledgers remain ruled and may scroll within their register. Secondary titles stack above their three facts: the title occupies a 7rem field at 3rem, followed by a 4.5rem fact strip. The same five destinations move to a fixed bottom register that respects `env(safe-area-inset-bottom)`, and footer clearance prevents overlap. At 360px, the value and date type contract once more. The page retains a 20rem minimum width and must not scroll horizontally at 390px.
 
 **The Register Continuity Rule.** Sections share edges and rules; do not separate related data into floating containers.
 
@@ -205,13 +205,13 @@ At 1100px, type and fixed gutters contract while the structure remains intact. A
 
 ## Elevation & Depth
 
-The system is flat. It uses no box shadows, translucent blur, or lifted surfaces. Depth is conveyed by the contrast between Surrounding Paper and Proof Stock, the framed sheet, sticky top bar, crop marks, line weights, and the hierarchy of typographic scale. Its sole gradient is functional: the consolidated value field fades a pale vertical Custody Cobalt history wash toward Proof Stock beneath the hero number.
+The system is flat. It uses no box shadows, translucent blur, lifted surfaces, or perimeter frame. Depth is conveyed by the contrast between Surrounding Paper and Proof Stock, the sticky navigation, line weights, and the hierarchy of typographic scale. Its sole gradient is functional: the consolidated value field fades a pale vertical Custody Cobalt history wash toward Proof Stock beneath the hero number.
 
 **The Flat Proof Rule.** Surfaces remain on one physical plane; hierarchy is earned by rules, scale, spacing, and alignment, never simulated elevation.
 
 ## Shapes
 
-The form language is square, ruled, and mechanically registered. Containers, controls, fields, and navigation have no corner radius. One-pixel solid borders frame sheets and section boundaries; one-pixel dotted rules separate rows. L-shaped crop marks extend beyond the proof-sheet frame, crosses mark valuation coordinates, and right-angle line icons provide directional cues. Circles are reserved for source-status indicators and observed trace points, where the shape has explicit state meaning.
+The form language is square, ruled, and mechanically registered. Containers, controls, fields, and navigation have no corner radius. The proof sheet has neither a perimeter border nor crop corners; one-pixel solid borders mark section boundaries and one-pixel dotted rules separate rows. Crosses mark valuation coordinates, and directional cues are crisp inline SVG chevrons with open stroked paths—never font glyph arrows. Circles are reserved for source-status indicators and observed trace points, where the shape has explicit state meaning.
 
 **The Square Register Rule.** Do not round structural surfaces or controls. Reserve the 50% radius for status dots and observed trace points.
 
@@ -231,7 +231,7 @@ Components are measured and exact. Their identity comes from alignment, typograp
 - **Corner Style:** square (`square`).
 - **Background:** Proof Stock for the primary quotation sheet and login sheet.
 - **Shadow Strategy:** none; refer to the Flat Proof Rule.
-- **Border:** one-pixel Registration Ink frame with lighter internal register lines.
+- **Border:** no perimeter frame on the product proof sheet; one-pixel Registration Ink section rules and lighter internal register lines provide structure. The authentication sheet remains explicitly bordered.
 - **Internal Padding:** 1.5rem horizontal and 2rem bottom on the desktop quotation sheet; 0.85rem horizontal on phone.
 
 ### Inputs / Fields
@@ -242,11 +242,11 @@ Components are measured and exact. Their identity comes from alignment, typograp
 
 ### Navigation
 
-The desktop top navigation exposes Overview, Holdings, History, Activity, and Data in 0.75rem uppercase monospace labels inside the 3rem sticky bar. The active page receives a 3px Signal Orange underline; inactive links remain Registration Ink. Below 760px those same five destinations move to a fixed 3.2rem bottom register on Proof Stock; equal cells use vertical rules, the active item returns to Registration Ink with an inset orange top line, and bottom padding follows the device safe area. The brand and sign-out action remain in the top bar.
+The desktop top navigation replaces the old WIDTH ruler and exposes Overview, Holdings, History, Activity, and Data in compact uppercase monospace labels inside a 2.45rem sticky in-sheet bar. The active page receives a 2px Signal Orange underline; inactive links remain Registration Ink. Below 760px those same five destinations move to a fixed 3.2rem bottom register on Proof Stock; equal cells use vertical rules, the active item returns to Registration Ink with an inset orange top line, and bottom padding follows the device safe area. The brand and sign-out action remain in the top bar.
 
 ### Value Field
 
-The value field is the signature component: a 15.65rem-minimum measurement instrument where the axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. The lockup uses 0.9rem 1rem 1rem 0.75rem padding; its 3.55rem wordmark uses 0.92 line-height and -0.06em tracking, its total uses `clamp(9rem, 13.8vw, 13.4rem)` with 0.78 line-height and -0.082em tracking, and its 3.35rem valuation date uses 0.88 line-height. Behind the value, a server-rendered line uses complete monthly observations only; with two or more points it carries a pale vertical Custody Cobalt area wash and a labelled observation count, while one point resolves to an open endpoint on the baseline labelled `Complete history starts here`. A quiet Proof Stock fade behind the copy protects numeral contrast without hiding the trace. The field has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
+The value field is the signature component: a 15.65rem-minimum measurement instrument where the axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. The lockup uses 0.9rem 1rem 1rem 0.75rem padding and establishes an inline-size container; the wordmark uses `clamp(2.4rem, 4.5cqi, 3.55rem)` and the total uses `clamp(5.4rem, 17cqi, 13.4rem)` with 0.78 line-height and -0.082em tracking. Behind the value, a server-rendered line uses complete monthly observations only; with two or more points it carries a pale vertical Custody Cobalt area wash and a labelled observation count, while one point resolves to an open endpoint on the baseline labelled `Complete history starts here`. A quiet Proof Stock fade behind the copy protects numeral contrast without hiding the trace. The field has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
 
 ### Secondary Page Heading
 
@@ -254,7 +254,11 @@ Holdings, History, Activity, and Data begin with the shared measurement axis fol
 
 ### Quotation Trace
 
-The quotation trace is a server-rendered 128 × 30 SVG built only from stored finite observations. A 1.6px open polyline sits on a dotted Baseline Soft rule. Security and position traces use Registration Ink; account traces inherit custody color. One valid observation is plotted as an open start dot on the baseline; zero observations become an explicit `No trace` label. The accessible name reports the observation count and, when a line exists, its direction; a trace never interpolates missing history or treats it as zero.
+The quotation trace is a server-rendered 160 × 34 SVG built only from stored finite observations. Two or more points render a dotted Register Line baseline, a quieter dotted Baseline Soft midline, a 9%-opacity area, a 1.55px square-jointed line, and an open endpoint. The metadata row shows observation count and a signed percentage change; when only one non-zero comparison exists it says `New`. One valid observation is plotted as an open endpoint on the baseline with its observation date and `Start`; zero observations become an explicit `No trace` label. Security and position traces use Registration Ink; account traces inherit custody color. The accessible name reports count, date range, and direction, and a trace never interpolates missing history or treats it as zero.
+
+### Directional Chevrons
+
+Right and down cues are inline 16 × 16 SVGs with unfilled, square-capped, miter-joined paths. They inherit the surrounding ink, turn Signal Orange with the associated link, and remain decorative to assistive technology because the adjacent text names the destination.
 
 ### Allocation Micro Bar
 
@@ -262,7 +266,11 @@ Each asset-class cell pairs its exact percentage with a square horizontal bar sc
 
 ### Account and Position Registers
 
-Desktop account and leader rows occupy stable rank → name → value → trace → share columns with dotted row separators. Account names are 2.55rem and account values are 2.3rem; leader names are 1.95rem and leader values are 1.8rem. Custodian color is applied to whole account rows and their traces; security lines remain neutral except for orange ranks and state indicators. Desktop holdings use a dense table. Phone holdings use native disclosure rows in the name/value → trace → disclosure hierarchy, with trace height contracting from 1.9rem to approximately 1.35rem.
+Desktop account and leader rows use the same stable rank → name → value → trace → share grid with dotted row separators; only their type scale and row height differ. Account names are 2.55rem and values are 2.3rem; leader names are 1.95rem and values are 1.8rem. Custodian color is applied to whole account rows and their traces; security lines remain neutral except for orange ranks and state indicators. On phone, both registers become two-row summaries: rank/name/value first, then the full-width trace with observation metadata; share is removed. Desktop holdings use a dense table, while phone holdings use native disclosure rows in the name/value → trace → disclosure hierarchy.
+
+### History Registers
+
+Account histories expose every stored observation that has a finite value for that account, even when another account makes the same portfolio snapshot partial. The consolidated history, consolidated chart, and hero backdrop remain complete-only: they filter to observations where every required holding, price, and FX input is available. Snapshot rows may show partial status and account values, but a partial consolidated total is rendered as an em dash rather than a misleading aggregate.
 
 ### Fact Strip
 
@@ -281,11 +289,12 @@ The Data page is an evidence register, not an administration console. A square r
 ### Do:
 
 - **Do** make exact values, dates, ranks, completeness, and provenance visible at the point of use.
-- **Do** use Proof Stock, Registration Ink, hairlines, crop marks, and aligned baselines to construct hierarchy.
+- **Do** use Proof Stock, Registration Ink, hairlines, and aligned baselines to construct hierarchy on an unframed sheet.
 - **Do** keep the giant EUR total as the sole typographic spectacle.
 - **Do** preserve tabular lining numerals and right alignment for comparable financial values.
 - **Do** preserve the desktop-to-phone reading order and let secondary percentages and axes yield first.
-- **Do** use stored observations for traces, neutral ink for securities, and custody color for account histories; plot one observation as a start point and label a genuinely empty trace `No trace`.
+- **Do** give multi-point traces a baseline, midline, translucent area, line, endpoint, and observation/change metadata; show one observation with its date and `Start`, use `New` when only one non-zero comparison exists, and label a genuinely empty trace `No trace`.
+- **Do** expose account-specific finite observations while keeping consolidated totals and charts complete-only.
 - **Do** open every secondary register with one compact page title and exactly three factual cells.
 - **Do** keep Activity filtering and Data provenance read-only; portfolio changes remain MCP-only.
 - **Do** keep interactions keyboard-visible and reduce the entrance motion when the user requests reduced motion.
@@ -300,3 +309,4 @@ The Data page is an evidence register, not an administration console. A square r
 - **Don't** fabricate quotation points, smooth across missing history, or substitute zero for absent observations.
 - **Don't** turn filters, provenance, refresh status, or disclosure rows into mutation affordances.
 - **Don't** break register alignment or allow the phone layout to overflow horizontally.
+- **Don't** restore a WIDTH ruler, perimeter frame, crop corners, or font-glyph arrows to the product sheet.
