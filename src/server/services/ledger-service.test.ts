@@ -112,3 +112,37 @@ test("correction and deletion produce a repeatable projection", async () => {
   assert.equal((await service.listEvents()).length, 0);
   close();
 });
+
+test("a corporate action transfer is persisted without a cash leg", async () => {
+  const { service, account, instrument, close } = await fixture();
+  await service.createEvent({
+    type: "transfer_in",
+    accountId: account.id,
+    instrumentId: instrument.id,
+    effectiveDate: "2026-04-23",
+    currency: "EUR",
+    quantity: "12",
+    idempotencyKey: "spin-off-1",
+  });
+  const projection = replayLedger(await service.listEvents());
+  assert.equal(projection.holdings.get(`${account.id}:${instrument.id}`), "12");
+  assert.equal(projection.cash.size, 0);
+  close();
+});
+
+test("a trade may settle in an account currency different from the instrument quote currency", async () => {
+  const { service, account, instrument, close } = await fixture();
+  await service.createEvent({
+    type: "buy",
+    accountId: account.id,
+    instrumentId: instrument.id,
+    effectiveDate: "2026-08-01",
+    currency: "DKK",
+    quantity: "2",
+    unitPrice: "750",
+  });
+  const projection = replayLedger(await service.listEvents());
+  assert.equal(projection.holdings.get(`${account.id}:${instrument.id}`), "2");
+  assert.equal(projection.cash.get(`${account.id}:DKK`), "-1500");
+  close();
+});

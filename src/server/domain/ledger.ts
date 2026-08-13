@@ -9,7 +9,7 @@ export type ReplayEvent = {
   id: string;
   accountId: string;
   instrumentId: string | null;
-  type: "buy" | "sell" | "deposit" | "withdrawal" | "dividend" | "fee" | "tax";
+  type: "buy" | "sell" | "transfer_in" | "transfer_out" | "deposit" | "withdrawal" | "dividend" | "fee" | "tax";
   effectiveDate: string;
   currency: string;
   quantity: string | null;
@@ -76,6 +76,32 @@ export function replayLedger(events: readonly ReplayEvent[]): LedgerProjection {
         holdings.set(key, subtract(currentQuantity, event.quantity));
         cash.set(cashKey(event), add(currentCash, cashValue));
       }
+      continue;
+    }
+
+    if (event.type === "transfer_in" || event.type === "transfer_out") {
+      if (!event.instrumentId || !event.quantity || event.unitPrice || event.amount) {
+        throw new LedgerReplayError(
+          "INVALID_EVENT_SHAPE",
+          "Security transfers require an instrument and quantity only.",
+          event.id,
+        );
+      }
+      const key = holdingKey(event);
+      const currentQuantity = holdings.get(key) ?? "0";
+      if (event.type === "transfer_out" && compare(currentQuantity, event.quantity) < 0) {
+        throw new LedgerReplayError(
+          "UNSUPPORTED_SHORT",
+          "Transfer would reduce the holding below zero.",
+          event.id,
+        );
+      }
+      holdings.set(
+        key,
+        event.type === "transfer_in"
+          ? add(currentQuantity, event.quantity)
+          : subtract(currentQuantity, event.quantity),
+      );
       continue;
     }
 

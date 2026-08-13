@@ -58,6 +58,13 @@ const tradeEventSchema = z.object({
   unitPrice: positiveDecimalSchema,
 });
 
+const securityTransferEventSchema = z.object({
+  ...eventBase,
+  type: z.enum(["transfer_in", "transfer_out"]),
+  instrumentId: identifierSchema,
+  quantity: positiveDecimalSchema,
+});
+
 const cashEventSchema = z.object({
   ...eventBase,
   type: z.enum(["deposit", "withdrawal", "dividend", "fee", "tax"]),
@@ -67,6 +74,7 @@ const cashEventSchema = z.object({
 
 export const ledgerEventInputSchema = z.discriminatedUnion("type", [
   tradeEventSchema,
+  securityTransferEventSchema,
   cashEventSchema,
 ]);
 

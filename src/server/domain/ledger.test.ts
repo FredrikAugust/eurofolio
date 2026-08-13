@@ -62,3 +62,31 @@ test("a sale that would create a short is rejected", () => {
       error instanceof Error && "code" in error && error.code === "UNSUPPORTED_SHORT",
   );
 });
+
+test("security transfers change holdings without changing cash", () => {
+  const transferred: ReplayEvent[] = [
+    {
+      ...base,
+      id: "spin-off-in",
+      type: "transfer_in",
+      effectiveDate: "2026-04-23",
+      quantity: "12",
+      unitPrice: null,
+      amount: null,
+      createdAt: "2026-04-23T12:00:00.000Z",
+    },
+    {
+      ...base,
+      id: "transfer-out",
+      type: "transfer_out",
+      effectiveDate: "2026-04-24",
+      quantity: "2",
+      unitPrice: null,
+      amount: null,
+      createdAt: "2026-04-24T12:00:00.000Z",
+    },
+  ];
+  const projection = replayLedger(transferred);
+  assert.equal(projection.holdings.get("account:instrument"), "10");
+  assert.equal(projection.cash.size, 0);
+});

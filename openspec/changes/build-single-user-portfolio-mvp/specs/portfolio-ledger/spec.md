@@ -27,11 +27,15 @@ The system SHALL store each instrument independently from accounts with a stable
 - **THEN** the system rejects the duplicate and identifies the existing instrument
 
 ### Requirement: Supported ledger events
-The system SHALL record buy, sell, deposit, withdrawal, dividend, fee, and tax events with an account, effective date, native currency, exact decimal amounts, and an optional idempotency key. Buy and sell events SHALL additionally require an instrument, exact quantity, and exact unit price.
+The system SHALL record buy, sell, security transfer in/out, deposit, withdrawal, dividend, fee, and tax events with an account, effective date, ISO 4217 settlement currency, exact decimal values, and an optional idempotency key. Buy and sell events SHALL additionally require an instrument, exact quantity, and an exact unit price denominated in the settlement currency. The settlement currency MAY differ from the instrument's native quote currency. Security transfers SHALL require an instrument and exact quantity without affecting cash.
 
 #### Scenario: Record a buy
 - **WHEN** the owner submits a valid buy with positive quantity and unit price
 - **THEN** the ledger stores the event and the calculated holding increases by that exact quantity
+
+#### Scenario: Record a trade settled in another currency
+- **WHEN** a broker settles an instrument trade in a currency different from the instrument's native quote currency
+- **THEN** the ledger adjusts cash in the settlement currency while retaining the instrument's native quote currency for valuation
 
 #### Scenario: Retry an idempotent write
 - **WHEN** the owner repeats a write with an idempotency key already accepted for the same operation
@@ -40,6 +44,10 @@ The system SHALL record buy, sell, deposit, withdrawal, dividend, fee, and tax e
 #### Scenario: Reject an unsupported short sale
 - **WHEN** a sell would reduce an instrument holding below zero
 - **THEN** the system rejects the event and leaves the ledger unchanged
+
+#### Scenario: Record a non-cash corporate action
+- **WHEN** a demerger delivers shares without a cash payment
+- **THEN** a security transfer-in increases the exact holding quantity without changing cash
 
 ### Requirement: Deterministic holdings and cash
 The system SHALL derive current quantities and cash balances from ordered ledger events and SHALL produce the same result whenever the same valid event set is replayed.
@@ -58,4 +66,3 @@ The system SHALL accept bounded batches of ledger events and commit either the c
 #### Scenario: One event in a batch is invalid
 - **WHEN** any event in an ingestion batch fails validation
 - **THEN** no event from that batch is persisted and the response identifies the failing item
-

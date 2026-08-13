@@ -73,6 +73,8 @@ export const ledgerEvents = sqliteTable(
       enum: [
         "buy",
         "sell",
+        "transfer_in",
+        "transfer_out",
         "deposit",
         "withdrawal",
         "dividend",
@@ -96,7 +98,7 @@ export const ledgerEvents = sqliteTable(
     check("ledger_events_currency_check", currencyCheck(table.currency)),
     check(
       "ledger_events_shape_check",
-      sql`((${table.type} IN ('buy', 'sell')) AND ${table.instrumentId} IS NOT NULL AND ${table.quantity} IS NOT NULL AND ${table.unitPrice} IS NOT NULL AND ${table.amount} IS NULL) OR ((${table.type} NOT IN ('buy', 'sell')) AND ${table.quantity} IS NULL AND ${table.unitPrice} IS NULL AND ${table.amount} IS NOT NULL)`,
+      sql`((${table.type} IN ('buy', 'sell')) AND ${table.instrumentId} IS NOT NULL AND ${table.quantity} IS NOT NULL AND ${table.unitPrice} IS NOT NULL AND ${table.amount} IS NULL) OR ((${table.type} IN ('transfer_in', 'transfer_out')) AND ${table.instrumentId} IS NOT NULL AND ${table.quantity} IS NOT NULL AND ${table.unitPrice} IS NULL AND ${table.amount} IS NULL) OR ((${table.type} NOT IN ('buy', 'sell', 'transfer_in', 'transfer_out')) AND ${table.quantity} IS NULL AND ${table.unitPrice} IS NULL AND ${table.amount} IS NOT NULL)`,
     ),
     index("ledger_events_replay_idx").on(
       table.accountId,

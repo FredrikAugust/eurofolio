@@ -15,6 +15,13 @@
       "when": 1786569588120,
       "tag": "0001_lame_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1786610911200,
+      "tag": "0002_happy_jackal",
+      "breakpoints": true
     }
   ]
 }

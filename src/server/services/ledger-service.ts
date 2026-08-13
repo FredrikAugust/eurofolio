@@ -250,12 +250,6 @@ export class LedgerService {
         if (instrument.archivedAt) {
           throw new DomainError("ARCHIVED", "Cannot add events for an archived instrument.");
         }
-        if ((input.type === "buy" || input.type === "sell") && input.currency !== instrument.nativeCurrency) {
-          throw new DomainError(
-            "CURRENCY_MISMATCH",
-            `Trade currency must be ${instrument.nativeCurrency}.`,
-          );
-        }
       }
     }
   }
