@@ -26,7 +26,7 @@ const client = {
   chart: async () => ({
     meta: { currency: "EUR" },
     quotes: [
-      { date: new Date("2026-06-29T00:00:00.000Z"), close: 136.5 },
+      { date: new Date("2026-06-29T00:00:00.000Z"), close: 136.12345678901234567 },
       { date: new Date("2026-06-30T00:00:00.000Z"), close: 137.25 },
       { date: new Date("2026-07-31T00:00:00.000Z"), close: 139.75 },
     ],
@@ -57,6 +57,6 @@ test("Yahoo adapter normalizes search and delayed quote fixtures", async () => {
   assert.equal(quote.observedOn, "2026-08-11");
   const history = await provider.fetchHistory(instrument, "2026-06-01", "2026-07-31");
   assert.equal(history.length, 3);
-  assert.equal(history[0].price, "136.5");
+  assert.equal(history[0].price, "136.123456789012");
   assert.equal(history[2].observedOn, "2026-07-31");
 });

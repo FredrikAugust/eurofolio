@@ -1,4 +1,5 @@
 import YahooFinance from "yahoo-finance2";
+import Decimal from "decimal.js-light";
 
 import { positiveDecimal } from "@/server/domain/decimal";
 import type {
@@ -13,6 +14,11 @@ function assetClass(quoteType?: string): SymbolSearchResult["assetClass"] {
   if (quoteType === "MUTUALFUND") return "fund";
   if (quoteType === "EQUITY") return "stock";
   return "other";
+}
+
+function providerPrice(value: number): string {
+  if (!Number.isFinite(value)) throw new Error("Yahoo returned a non-finite price.");
+  return positiveDecimal(new Decimal(value).toDecimalPlaces(12).toFixed());
 }
 
 export class YahooProvider implements SecurityPriceProvider {
@@ -57,7 +63,7 @@ export class YahooProvider implements SecurityPriceProvider {
     return {
       instrumentId: instrument.id,
       provider: this.id,
-      price: positiveDecimal(String(quote.regularMarketPrice)),
+      price: providerPrice(quote.regularMarketPrice),
       currency: quote.currency,
       observedOn: quote.regularMarketTime.toISOString().slice(0, 10),
       retrievedAt: new Date().toISOString(),
@@ -85,7 +91,7 @@ export class YahooProvider implements SecurityPriceProvider {
       return [{
         instrumentId: instrument.id,
         provider: this.id,
-        price: positiveDecimal(String(quote.close)),
+        price: providerPrice(quote.close),
         currency,
         observedOn: quote.date.toISOString().slice(0, 10),
         retrievedAt,
