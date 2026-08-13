@@ -155,8 +155,8 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
           <div className="account-line" style={{ color: accountColors[account.accountName] ?? "#0c0c0d" }} key={account.accountId}>
             <span className="register-rank">{String(index + 1).padStart(2, "0")}</span>
             <strong>{account.accountName}</strong>
-            <Sparkline points={accountHistory.get(account.accountId) ?? []} label={`${account.accountName} account value`} color="currentColor" />
             <span className="account-value">{money(account.eurValue)}</span>
+            <Sparkline points={accountHistory.get(account.accountId) ?? []} label={`${account.accountName} account value`} color="currentColor" />
             <span className="account-percent">{percent(account.eurValue, summary.eurTotal)}</span>
           </div>
         ))}
@@ -167,7 +167,7 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
         <div className="allocation-values">
           {summary.allocation.map((item) => (
             <div key={item.assetClass} style={{ width: `${Math.max(13, (Number(item.eurValue) / total) * 100)}%` }}>
-              <span>{item.assetClass}</span><strong>{percent(item.eurValue, total)}</strong>
+              <span>{item.assetClass === "etf" ? "ETF" : item.assetClass}</span><strong>{percent(item.eurValue, total)}</strong>
             </div>
           ))}
         </div>
@@ -175,15 +175,15 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
       </section>
 
       <section className="top-register" aria-labelledby="leaders-heading">
-        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Trend</span><span>Value (EUR)</span><span>% of portfolio</span></header>
+        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend</span><span>% of portfolio</span></header>
         <ol>
           {topHoldings.map((holding, index) => (
             <li key={`${holding.accountId}:${holding.instrumentId}`}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <strong>{holding.instrumentName}</strong>
+              <span className="leader-value">{money(holding.eurValue)}</span>
               <Sparkline points={priceHistoryMap.get(holding.instrumentId) ?? []} label={`${holding.instrumentName} price trend`} />
-              <span>{money(holding.eurValue)}</span>
-              <span>{percent(holding.eurValue ?? 0, total)}</span>
+              <span className="leader-percent">{percent(holding.eurValue ?? 0, total)}</span>
             </li>
           ))}
         </ol>

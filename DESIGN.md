@@ -18,10 +18,10 @@ colors:
 typography:
   display:
     fontFamily: "Archivo, sans-serif"
-    fontSize: "10rem"
+    fontSize: "clamp(9rem, 13.8vw, 13.4rem)"
     fontWeight: 900
-    lineHeight: 0.82
-    letterSpacing: "-0.075em"
+    lineHeight: 0.78
+    letterSpacing: "-0.082em"
     fontFeature: "tabular-nums lining-nums"
   headline:
     fontFamily: "Archivo, sans-serif"
@@ -37,10 +37,10 @@ typography:
     letterSpacing: "-0.06em"
   title:
     fontFamily: "Archivo, sans-serif"
-    fontSize: "2.15rem"
+    fontSize: "2.55rem"
     fontWeight: 750
     lineHeight: 1
-    letterSpacing: "-0.045em"
+    letterSpacing: "-0.055em"
   body:
     fontFamily: "Archivo, sans-serif"
     fontSize: "1rem"
@@ -172,7 +172,7 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 ### Hierarchy
 
-- **Display** (900, `display`, 0.82 line-height): the consolidated EUR total only; it scales from 10rem on wide screens to 6rem at the intermediate breakpoint and 2.8rem on phone.
+- **Display** (900, `display`, 0.78 line-height): the consolidated EUR total only; it uses a `clamp(9rem, 13.8vw, 13.4rem)` desktop range, then steps to 6rem at the intermediate breakpoint and 2.8rem on phone.
 - **Page Title** (900, `page-title`, 0.9 line-height): the secondary Holdings, History, Activity, and Data headings; it steps from 4.8rem to 4rem at the intermediate breakpoint and 3rem on phone.
 - **Headline** (700, `headline`, 1 line-height): history and holdings section headings.
 - **Title** (750, `title`, 1 line-height): prominent account names and major register labels.
@@ -191,7 +191,7 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 The primary canvas is a centered proof sheet capped at 96rem, inset 1.5rem from the viewport and framed by a one-pixel Registration Ink rule. A sticky three-column top bar holds brand, centered five-item navigation, and session action. Inside the sheet, sections connect vertically without card gaps: solid hairlines define major boundaries, dotted lines divide register rows, and fixed rank/value gutters make every number comparable.
 
-The opening value field is a three-column instrument: a 3.5rem weight axis, a fluid value lockup, and a 14rem valuation-date gutter. Account and position registers use a 4.5rem rank column, fluid name column, a quotation-trace column, and right-aligned value/percentage columns. The 4-step allocation register and 6-cell fact strip establish repeated horizontal divisions. Major below-fold sections begin after a 3rem interval.
+The opening value field is a three-column instrument with a 15.65rem minimum height: a 3.5rem weight axis, a fluid value lockup padded 0.9rem 1rem 1rem 0.75rem, and a 14rem valuation-date gutter. Its wordmark is 3.55rem with 0.92 line-height and -0.06em tracking; the hero total uses `clamp(9rem, 13.8vw, 13.4rem)` with 0.78 line-height and -0.082em tracking; the valuation date is 3.35rem with 0.88 line-height. Desktop account rows read rank, name, value, trace, share, with 2.55rem account names and 2.3rem values. Desktop leader rows use the same rank, name, value, trace, share order, with 1.95rem names and 1.8rem values. Both registers retain a 4.5rem rank column, fluid name column, right-aligned value and share columns, and a quotation-trace column. The 4-step allocation register and 6-cell fact strip establish repeated horizontal divisions. Major below-fold sections begin after a 3rem interval.
 
 Secondary pages reuse the width axis, then place a compact page title beside exactly three fact cells. The heading is 12rem high on wide screens; its facts occupy three equal ruled columns. Holdings, History, Activity, and Data then continue as connected tables, ledgers, filters, status stamps, or split registers on the same stock rather than becoming separate panels.
 
@@ -246,7 +246,7 @@ The desktop top navigation exposes Overview, Holdings, History, Activity, and Da
 
 ### Value Field
 
-The value field is the signature component: a measurement axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. Behind the value, a server-rendered line uses complete monthly observations only; with two or more points it carries a pale vertical Custody Cobalt area wash and a labelled observation count, while one point resolves to an open endpoint on the baseline labelled `Complete history starts here`. A quiet Proof Stock fade behind the copy protects numeral contrast without hiding the trace. The field has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
+The value field is the signature component: a 15.65rem-minimum measurement instrument where the axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. The lockup uses 0.9rem 1rem 1rem 0.75rem padding; its 3.55rem wordmark uses 0.92 line-height and -0.06em tracking, its total uses `clamp(9rem, 13.8vw, 13.4rem)` with 0.78 line-height and -0.082em tracking, and its 3.35rem valuation date uses 0.88 line-height. Behind the value, a server-rendered line uses complete monthly observations only; with two or more points it carries a pale vertical Custody Cobalt area wash and a labelled observation count, while one point resolves to an open endpoint on the baseline labelled `Complete history starts here`. A quiet Proof Stock fade behind the copy protects numeral contrast without hiding the trace. The field has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
 
 ### Secondary Page Heading
 
@@ -258,7 +258,7 @@ The quotation trace is a server-rendered 128 × 30 SVG built only from stored fi
 
 ### Account and Position Registers
 
-Ranks, names, values, shares, traces, and provenance occupy stable columns with dotted row separators. Custodian color is applied to whole account rows and their traces; security lines remain neutral except for orange ranks and state indicators. Desktop holdings use a dense table. Phone holdings use native disclosure rows in the name/value → trace → disclosure hierarchy, with trace height contracting from 1.9rem to approximately 1.35rem.
+Desktop account and leader rows occupy stable rank → name → value → trace → share columns with dotted row separators. Account names are 2.55rem and account values are 2.3rem; leader names are 1.95rem and leader values are 1.8rem. Custodian color is applied to whole account rows and their traces; security lines remain neutral except for orange ranks and state indicators. Desktop holdings use a dense table. Phone holdings use native disclosure rows in the name/value → trace → disclosure hierarchy, with trace height contracting from 1.9rem to approximately 1.35rem.
 
 ### Fact Strip
 
