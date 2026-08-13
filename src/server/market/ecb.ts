@@ -6,6 +6,8 @@ import type { FxObservation, FxProvider } from "@/server/market/contracts";
 
 const ECB_URL =
   "https://data-api.ecb.europa.eu/service/data/EXR/D..EUR.SP00.A?lastNObservations=1&format=csvdata";
+const ECB_HISTORY_URL =
+  "https://data-api.ecb.europa.eu/service/data/EXR/D..EUR.SP00.A";
 
 const rowSchema = z.object({
   CURRENCY: z.string().regex(/^[A-Z]{3}$/),
@@ -74,6 +76,21 @@ export class EcbProvider implements FxProvider {
       8_000,
     );
     if (!response.ok) throw new Error(`ECB request failed with ${response.status}.`);
+    return parseEcbCsv(await response.text(), retrievedAt);
+  }
+
+  async fetchHistory(startOn: string, endOn: string): Promise<FxObservation[]> {
+    const retrievedAt = new Date().toISOString();
+    const url = new URL(ECB_HISTORY_URL);
+    url.searchParams.set("startPeriod", startOn);
+    url.searchParams.set("endPeriod", endOn);
+    url.searchParams.set("format", "csvdata");
+    const response = await this.request(
+      url,
+      { headers: { Accept: "text/csv" } },
+      15_000,
+    );
+    if (!response.ok) throw new Error(`ECB history request failed with ${response.status}.`);
     return parseEcbCsv(await response.text(), retrievedAt);
   }
 }

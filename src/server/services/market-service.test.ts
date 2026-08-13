@@ -112,3 +112,42 @@ test("manual observations update one row and retain reason metadata", async () =
   assert.equal((await fixture.db.select().from(fxRates))[0].isManual, true);
   fixture.close();
 });
+
+test("backfill stores only real month-end observations and is idempotent", async () => {
+  const fixture = await createTestDatabase();
+  const ledger = new LedgerService(fixture.db);
+  const instrument = await ledger.createInstrument({
+    name: "History",
+    assetClass: "etf",
+    nativeCurrency: "USD",
+    provider: "fixture",
+    providerSymbol: "HISTORY",
+  });
+  const priceProvider: SecurityPriceProvider = {
+    id: "fixture",
+    search: async () => [],
+    fetchPrice: async () => { throw new Error("unused"); },
+    fetchHistory: async () => [
+      { instrumentId: instrument.id, provider: "fixture", price: "10", currency: "USD", observedOn: "2026-06-29", retrievedAt: "2026-08-12T00:00:00Z" },
+      { instrumentId: instrument.id, provider: "fixture", price: "11", currency: "USD", observedOn: "2026-06-30", retrievedAt: "2026-08-12T00:00:00Z" },
+      { instrumentId: instrument.id, provider: "fixture", price: "12", currency: "USD", observedOn: "2026-07-31", retrievedAt: "2026-08-12T00:00:00Z" },
+    ],
+  };
+  const fxProvider: FxProvider = {
+    id: "fixture-fx",
+    fetchLatest: async () => [],
+    fetchHistory: async () => [
+      { baseCurrency: "EUR", quoteCurrency: "USD", provider: "fixture-fx", rate: "1.1", observedOn: "2026-06-30", retrievedAt: "2026-08-12T00:00:00Z" },
+      { baseCurrency: "EUR", quoteCurrency: "USD", provider: "fixture-fx", rate: "1.2", observedOn: "2026-07-31", retrievedAt: "2026-08-12T00:00:00Z" },
+    ],
+  };
+  const service = new MarketService(fixture.db, new Map([["fixture", priceProvider]]), fxProvider);
+  const first = await service.backfill("2026-06-01", "2026-07-31");
+  const second = await service.backfill("2026-06-01", "2026-07-31");
+  assert.equal(first.priceObservationsStored, 2);
+  assert.equal(first.fxObservationsStored, 2);
+  assert.equal(second.errors.length, 0);
+  assert.equal((await fixture.db.select().from(securityPrices)).length, 2);
+  assert.equal((await fixture.db.select().from(fxRates)).length, 2);
+  fixture.close();
+});

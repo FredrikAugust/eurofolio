@@ -33,6 +33,13 @@ The system SHALL uniquely identify a market observation by instrument or currenc
 - **WHEN** the same provider observation is ingested twice
 - **THEN** exactly one effective observation remains for that provider and date
 
+### Requirement: Bounded historical backfill
+The system SHALL support an owner-authorized, bounded historical import that stores real provider observations without interpolation or fabricated dates.
+
+#### Scenario: Backfill portfolio charts
+- **WHEN** the owner requests a historical range supported by the configured providers
+- **THEN** the system stores the last real security and FX observation in each month with its original date and provider provenance
+
 ### Requirement: Manual price override
 The system SHALL let the owner provide an exact manual security price or FX rate with a reason, and a valid manual observation SHALL take precedence for its specified date.
 
@@ -46,4 +53,3 @@ The system SHALL classify every effective price and FX rate as current, stale, m
 #### Scenario: Market has not refreshed
 - **WHEN** the newest eligible security price is older than the configured threshold
 - **THEN** the holding remains valued from that observation but is visibly classified as stale
-

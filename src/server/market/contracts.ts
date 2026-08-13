@@ -32,9 +32,15 @@ export interface SecurityPriceProvider {
   readonly id: string;
   search(query: string): Promise<SymbolSearchResult[]>;
   fetchPrice(instrument: InstrumentRow): Promise<SecurityPriceObservation>;
+  fetchHistory?(
+    instrument: InstrumentRow,
+    startOn: string,
+    endOn: string,
+  ): Promise<SecurityPriceObservation[]>;
 }
 
 export interface FxProvider {
   readonly id: string;
   fetchLatest(): Promise<FxObservation[]>;
+  fetchHistory?(startOn: string, endOn: string): Promise<FxObservation[]>;
 }

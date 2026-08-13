@@ -40,6 +40,7 @@
 - [x] 5.5 Implement bounded-concurrency refresh orchestration, idempotent batch persistence, per-item error capture, and last-known-good preservation.
 - [x] 5.6 Add the optional Twelve Data adapter behind configuration and verify that the application remains functional when it is absent.
 - [x] 5.7 Add a `CRON_SECRET`-protected daily refresh route that delegates to the same refresh service used by MCP.
+- [x] 5.8 Add bounded Yahoo and ECB historical backfill with month-end downsampling, idempotent persistence, and an owner-authorized one-time route.
 
 ## 6. Single-owner security and MCP
 

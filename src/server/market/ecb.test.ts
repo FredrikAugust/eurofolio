@@ -27,3 +27,15 @@ test("ECB provider rejects HTTP failures and malformed responses", async () => {
   const malformed = new EcbProvider(async () => new Response("wrong,columns\na,b"));
   await assert.rejects(() => malformed.fetchLatest(), /missing required columns/);
 });
+
+test("ECB provider requests a bounded historical range", async () => {
+  let requested = "";
+  const provider = new EcbProvider(async (input) => {
+    requested = String(input);
+    return new Response(fixture);
+  });
+  const observations = await provider.fetchHistory("2026-08-01", "2026-08-11");
+  assert.match(requested, /startPeriod=2026-08-01/);
+  assert.match(requested, /endPeriod=2026-08-11/);
+  assert.equal(observations.length, 2);
+});

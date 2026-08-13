@@ -68,6 +68,8 @@ Every accepted observation stores provider, provider symbol, native currency, ef
 
 One refresh service performs bounded parallel provider calls, validates results, and batch-writes observations. It is invoked either by an authenticated MCP tool or a Vercel Cron Route Handler protected by `CRON_SECRET`. Concurrency remains deliberately small to respect free providers and weak local hardware.
 
+Historical backfill fetches daily Yahoo closes and official ECB observations, then stores only the last real observation in each calendar month. The original market date is preserved to avoid look-ahead bias; no prices are interpolated. A bounded, separately secret-gated Route Handler supports deliberate one-time imports without adding work to normal dashboard requests.
+
 No resident worker, queue, or realtime subscription is needed for daily data. Refresh failures are recorded and do not delete last-known-good observations.
 
 ### 8. Stateless MCP through `mcp-handler` v2

@@ -64,4 +64,33 @@ export class YahooProvider implements SecurityPriceProvider {
       rawMetadata: { symbol: quote.symbol },
     };
   }
+
+  async fetchHistory(
+    instrument: InstrumentRow,
+    startOn: string,
+    endOn: string,
+  ): Promise<SecurityPriceObservation[]> {
+    const exclusiveEnd = new Date(`${endOn}T00:00:00.000Z`);
+    exclusiveEnd.setUTCDate(exclusiveEnd.getUTCDate() + 1);
+    const result = await this.client.chart(instrument.providerSymbol, {
+      period1: startOn,
+      period2: exclusiveEnd,
+      interval: "1d",
+      events: "history",
+    });
+    const currency = result.meta.currency || instrument.nativeCurrency;
+    const retrievedAt = new Date().toISOString();
+    return result.quotes.flatMap((quote) => {
+      if (quote.close == null || !quote.date) return [];
+      return [{
+        instrumentId: instrument.id,
+        provider: this.id,
+        price: positiveDecimal(String(quote.close)),
+        currency,
+        observedOn: quote.date.toISOString().slice(0, 10),
+        retrievedAt,
+        rawMetadata: { symbol: instrument.providerSymbol, interval: "1d" },
+      }];
+    });
+  }
 }

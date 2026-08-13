@@ -13,6 +13,7 @@ import {
 import type { Database } from "@/server/db/types";
 import { positiveDecimal } from "@/server/domain/decimal";
 import { currencySchema, financialDateSchema } from "@/server/domain/schemas";
+import { latestObservationPerMonth } from "@/server/market/history";
 import type {
   FxObservation,
   FxProvider,
@@ -35,6 +36,16 @@ export type RefreshResult = {
   attempted: number;
   succeeded: number;
   failed: number;
+  errors: RefreshItemError[];
+};
+
+export type BackfillResult = {
+  startOn: string;
+  endOn: string;
+  instrumentsAttempted: number;
+  instrumentsSucceeded: number;
+  priceObservationsStored: number;
+  fxObservationsStored: number;
   errors: RefreshItemError[];
 };
 
@@ -213,6 +224,90 @@ export class MarketService {
           rawMetadata: metadata(observation.rawMetadata),
         },
       });
+  }
+
+  private async persistMany(
+    statements: Array<
+      ReturnType<MarketService["persistPrice"]> | ReturnType<MarketService["persistFx"]>
+    >,
+  ) {
+    for (let offset = 0; offset < statements.length; offset += 100) {
+      const batch = statements.slice(offset, offset + 100);
+      if (batch.length) {
+        await this.db.batch(batch as unknown as Parameters<Database["batch"]>[0]);
+      }
+    }
+  }
+
+  async backfill(startDate: string, endDate: string): Promise<BackfillResult> {
+    const startOn = financialDateSchema.parse(startDate);
+    const endOn = financialDateSchema.parse(endDate);
+    if (startOn > endOn) throw new Error("Backfill start must not be after its end.");
+    const spanDays = Math.ceil(
+      (Date.parse(`${endOn}T00:00:00Z`) - Date.parse(`${startOn}T00:00:00Z`)) / 86_400_000,
+    );
+    if (spanDays > 800) throw new Error("Backfill is limited to 800 days per run.");
+
+    const activeInstruments = await this.db
+      .select()
+      .from(instruments)
+      .where(isNull(instruments.archivedAt))
+      .orderBy(asc(instruments.id));
+    const errors: RefreshItemError[] = [];
+    let instrumentsSucceeded = 0;
+    let priceObservationsStored = 0;
+    let fxObservationsStored = 0;
+
+    if (this.fxProvider.fetchHistory) {
+      try {
+        const observations = latestObservationPerMonth(
+          await this.fxProvider.fetchHistory(startOn, endOn),
+        );
+        await this.persistMany(observations.map((observation) => this.persistFx(observation)));
+        fxObservationsStored = observations.length;
+      } catch (error) {
+        errors.push({
+          target: "EUR FX history",
+          provider: this.fxProvider.id,
+          message: error instanceof Error ? error.message : "Unknown FX history error",
+        });
+      }
+    }
+
+    const results = await settleBounded(activeInstruments, 2, async (instrument) => {
+      const provider = this.securityProviders.get(instrument.provider);
+      if (!provider?.fetchHistory) {
+        throw new Error(`No historical provider configured for ${instrument.provider}.`);
+      }
+      const observations = latestObservationPerMonth(
+        await provider.fetchHistory(instrument, startOn, endOn),
+      );
+      await this.persistMany(observations.map((observation) => this.persistPrice(observation)));
+      return observations.length;
+    });
+    results.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        instrumentsSucceeded += 1;
+        priceObservationsStored += result.value;
+      } else {
+        const instrument = activeInstruments[index];
+        errors.push({
+          target: instrument.providerSymbol,
+          provider: instrument.provider,
+          message: result.reason instanceof Error ? result.reason.message : "Unknown history error",
+        });
+      }
+    });
+
+    return {
+      startOn,
+      endOn,
+      instrumentsAttempted: activeInstruments.length,
+      instrumentsSucceeded,
+      priceObservationsStored,
+      fxObservationsStored,
+      errors,
+    };
   }
 
   async refresh(): Promise<RefreshResult> {
