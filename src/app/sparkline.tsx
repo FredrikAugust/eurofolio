@@ -9,8 +9,17 @@ type SparklineProps = {
 
 export function Sparkline({ points, label, color = "currentColor", className = "" }: SparklineProps) {
   const valid = points.filter((point) => Number.isFinite(point.value));
-  if (valid.length < 2) {
-    return <span className={`sparkline-empty ${className}`} aria-label={`${label}: ${valid.length} observation`}>{valid.length} obs</span>;
+  if (valid.length === 0) {
+    return <span className={`sparkline-empty ${className}`} aria-label={`${label}: no observations`}>No trace</span>;
+  }
+  if (valid.length === 1) {
+    return (
+      <svg className={`sparkline sparkline-start ${className}`} viewBox="0 0 128 30" role="img" aria-label={`${label}: one observation`}>
+        <title>{label}</title>
+        <line x1="0" y1="23" x2="128" y2="23" className="sparkline-baseline" />
+        <circle cx="124" cy="23" r="2.6" className="sparkline-start-point" />
+      </svg>
+    );
   }
 
   const width = 128;

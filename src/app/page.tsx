@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { login } from "@/app/actions";
 import { AppFrame } from "@/app/app-frame";
-import { displayDate, freshnessLabel, money, percent, quantity } from "@/app/format";
+import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
+import { PortfolioBackdrop } from "@/app/portfolio-backdrop";
 import { PortfolioChart } from "@/app/portfolio-chart";
 import { Sparkline } from "@/app/sparkline";
 import { auth } from "@/server/better-auth";
@@ -88,7 +89,7 @@ function RegisterRow({ holding, rank, trend }: { holding: ValuedHolding; rank: n
       <td className="trend-cell"><Sparkline points={trend} label={`${holding.instrumentName} price trend`} /></td>
       <td>
         <span className={`source-state ${holding.priceFreshness}`}>{freshnessLabel(holding.priceFreshness)}</span>
-        <small>{holding.priceProvider ?? "No source"}</small>
+        <small>{priceSourceLabel(holding.priceProvider, holding.priceFreshness)}</small>
       </td>
     </tr>
   );
@@ -107,7 +108,7 @@ function MobileRegisterRow({ holding, rank, trend }: { holding: ValuedHolding; r
         <div><dt>Price</dt><dd>{holding.price ? money(holding.price, holding.nativeCurrency) : "Missing"}</dd></div>
         <div><dt>Native value</dt><dd>{money(holding.nativeValue, holding.nativeCurrency)}</dd></div>
         <div><dt>Observation</dt><dd>{holding.priceDate ? displayDate(holding.priceDate) : "Missing"}</dd></div>
-        <div><dt>Source</dt><dd>{holding.priceProvider ?? "Missing"} · {freshnessLabel(holding.priceFreshness)}</dd></div>
+        <div><dt>Source</dt><dd>{priceSourceLabel(holding.priceProvider, holding.priceFreshness)} · {freshnessLabel(holding.priceFreshness)}</dd></div>
       </dl>
     </details>
   );
@@ -134,8 +135,11 @@ function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSumma
       <section className="value-field" aria-labelledby="portfolio-heading">
         <div className="weight-axis" aria-hidden="true"><span>WGT</span><b>900</b><i>700</i></div>
         <div className="value-lockup">
-          <span className="wordmark">Eurofolio</span>
-          <h1 id="portfolio-heading">{money(summary.eurTotal)}</h1>
+          <PortfolioBackdrop points={history} />
+          <div className="value-copy">
+            <span className="wordmark">Eurofolio</span>
+            <h1 id="portfolio-heading">{money(summary.eurTotal)}</h1>
+          </div>
         </div>
         <div className={`valuation-block ${summary.complete ? "complete" : "partial"}`}>
           <span>{summary.complete ? "Fully valued" : "Partial valuation"}</span>

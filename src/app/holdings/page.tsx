@@ -1,5 +1,5 @@
 import { AppFrame, PageHeading } from "@/app/app-frame";
-import { displayDate, freshnessLabel, money, percent, quantity } from "@/app/format";
+import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { requireOwner } from "@/app/require-owner";
 import { Sparkline } from "@/app/sparkline";
 import { getDatabase } from "@/server/db/client";
@@ -39,7 +39,7 @@ export default async function HoldingsPage() {
                 <td className="number-cell"><strong>{money(holding.eurValue)}</strong></td>
                 <td className="trend-cell"><Sparkline points={trends.get(holding.instrumentId) ?? []} label={`${holding.instrumentName} price trend`} /></td>
                 <td className="number-cell">{percent(holding.eurValue ?? 0, summary.eurTotal)}</td>
-                <td><span className={`source-state ${holding.priceFreshness}`}>{freshnessLabel(holding.priceFreshness)}</span><small>{holding.priceProvider ?? "No source"}</small></td>
+                <td><span className={`source-state ${holding.priceFreshness}`}>{freshnessLabel(holding.priceFreshness)}</span><small>{priceSourceLabel(holding.priceProvider, holding.priceFreshness)}</small></td>
               </tr>
             ))}</tbody>
           </table>
@@ -57,7 +57,7 @@ export default async function HoldingsPage() {
                 <div><dt>Quantity</dt><dd>{quantity(holding.quantity)}</dd></div>
                 <div><dt>Price</dt><dd>{holding.price ? money(holding.price, holding.nativeCurrency) : "Missing"}</dd></div>
                 <div><dt>Observation</dt><dd>{holding.priceDate ? displayDate(holding.priceDate) : "Missing"}</dd></div>
-                <div><dt>Source</dt><dd>{holding.priceProvider ?? "Missing"} · {freshnessLabel(holding.priceFreshness)}</dd></div>
+                <div><dt>Source</dt><dd>{priceSourceLabel(holding.priceProvider, holding.priceFreshness)} · {freshnessLabel(holding.priceFreshness)}</dd></div>
               </dl>
             </details>
           ))}

@@ -121,7 +121,7 @@ components:
 
 Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.
 
-The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, hairline rules, and miniature quotation traces create the authority of a printed working document. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.
+The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, hairline rules, and miniature quotation traces create the authority of a printed working document. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, or decorative chrome. The one purposeful gradient is the low-contrast value-history wash behind the consolidated figure; it encodes observed progression and never decorates an empty surface.
 
 **Key Characteristics:**
 
@@ -129,6 +129,7 @@ The atmosphere is calm because it is disciplined, not because it is soft. Warm p
 - Warm paper and black ink with orange and cobalt used only as semantic signals.
 - Tabular numerals, tight tracking, explicit ranks, dates, provenance, and measurement marks.
 - Stored observations drawn as restrained server-rendered quotation traces, never decorative or fabricated charts.
+- The consolidated value field may carry a pale cobalt line-and-area trace behind the number. It uses complete observations only and resolves to an explicitly labelled start point until a second complete valuation exists.
 - Flat construction: hierarchy comes from scale, rules, spacing, and alignment.
 - Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first; phone adds a safe-area five-item register navigation.
 
@@ -204,15 +205,15 @@ At 1100px, type and fixed gutters contract while the structure remains intact. A
 
 ## Elevation & Depth
 
-The system is flat. It uses no box shadows, gradients, translucent blur, or lifted surfaces. Depth is conveyed by the contrast between Surrounding Paper and Proof Stock, the framed sheet, sticky top bar, crop marks, line weights, and the hierarchy of typographic scale.
+The system is flat. It uses no box shadows, translucent blur, or lifted surfaces. Depth is conveyed by the contrast between Surrounding Paper and Proof Stock, the framed sheet, sticky top bar, crop marks, line weights, and the hierarchy of typographic scale. Its sole gradient is functional: the consolidated value field fades a pale vertical Custody Cobalt history wash toward Proof Stock beneath the hero number.
 
 **The Flat Proof Rule.** Surfaces remain on one physical plane; hierarchy is earned by rules, scale, spacing, and alignment, never simulated elevation.
 
 ## Shapes
 
-The form language is square, ruled, and mechanically registered. Containers, controls, fields, and navigation have no corner radius. One-pixel solid borders frame sheets and section boundaries; one-pixel dotted rules separate rows. L-shaped crop marks extend beyond the proof-sheet frame, crosses mark valuation coordinates, and right-angle line icons provide directional cues. The only circles are small source-status indicators, where circular shape has explicit state meaning.
+The form language is square, ruled, and mechanically registered. Containers, controls, fields, and navigation have no corner radius. One-pixel solid borders frame sheets and section boundaries; one-pixel dotted rules separate rows. L-shaped crop marks extend beyond the proof-sheet frame, crosses mark valuation coordinates, and right-angle line icons provide directional cues. Circles are reserved for source-status indicators and observed trace points, where the shape has explicit state meaning.
 
-**The Square Register Rule.** Do not round structural surfaces or controls. Reserve the 50% radius exclusively for status dots.
+**The Square Register Rule.** Do not round structural surfaces or controls. Reserve the 50% radius for status dots and observed trace points.
 
 ## Components
 
@@ -245,7 +246,7 @@ The desktop top navigation exposes Overview, Holdings, History, Activity, and Da
 
 ### Value Field
 
-The value field is the signature component: a measurement axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. It has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
+The value field is the signature component: a measurement axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. Behind the value, a server-rendered line uses complete monthly observations only; with two or more points it carries a pale vertical Custody Cobalt area wash and a labelled observation count, while one point resolves to an open endpoint on the baseline labelled `Complete history starts here`. A quiet Proof Stock fade behind the copy protects numeral contrast without hiding the trace. The field has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
 
 ### Secondary Page Heading
 
@@ -253,7 +254,7 @@ Holdings, History, Activity, and Data begin with the shared measurement axis fol
 
 ### Quotation Trace
 
-The quotation trace is a server-rendered 128 × 30 SVG built only from stored finite observations. A 1.6px open polyline sits on a dotted Baseline Soft rule. Security and position traces use Registration Ink; account traces inherit custody color. With fewer than two valid points, the trace becomes an explicit `0 obs` or `1 obs` label on a dotted baseline. The accessible name reports observation count and direction; a trace never interpolates missing history or treats it as zero.
+The quotation trace is a server-rendered 128 × 30 SVG built only from stored finite observations. A 1.6px open polyline sits on a dotted Baseline Soft rule. Security and position traces use Registration Ink; account traces inherit custody color. One valid observation is plotted as an open start dot on the baseline; zero observations become an explicit `No trace` label. The accessible name reports the observation count and, when a line exists, its direction; a trace never interpolates missing history or treats it as zero.
 
 ### Account and Position Registers
 
@@ -280,7 +281,7 @@ The Data page is an evidence register, not an administration console. A square r
 - **Do** keep the giant EUR total as the sole typographic spectacle.
 - **Do** preserve tabular lining numerals and right alignment for comparable financial values.
 - **Do** preserve the desktop-to-phone reading order and let secondary percentages and axes yield first.
-- **Do** use stored observations for traces, neutral ink for securities, and custody color for account histories; show the observation count when a line cannot be drawn.
+- **Do** use stored observations for traces, neutral ink for securities, and custody color for account histories; plot one observation as a start point and label a genuinely empty trace `No trace`.
 - **Do** open every secondary register with one compact page title and exactly three factual cells.
 - **Do** keep Activity filtering and Data provenance read-only; portfolio changes remain MCP-only.
 - **Do** keep interactions keyboard-visible and reduce the entrance motion when the user requests reduced motion.
@@ -288,7 +289,7 @@ The Data page is an evidence register, not an administration console. A square r
 ### Don't:
 
 - **Don't** introduce rounded KPI cards, floating panels, a sidebar shell, pills, donut charts, or generic AI-dashboard conventions.
-- **Don't** use shadows, gradients, blur, or decorative elevation.
+- **Don't** use shadows, blur, decorative elevation, or gradients outside the observed value-history wash and its local readability fade.
 - **Don't** spread Signal Orange or Custody Cobalt across large surfaces; color must retain semantic purpose.
 - **Don't** invent trading controls, performance claims, broker branding, or ornamental financial graphics.
 - **Don't** hide stale, missing, manual, or partial valuation state behind visual polish.

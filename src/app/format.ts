@@ -38,3 +38,8 @@ export function displayDate(value: string, stacked = false): string | string[] {
 export function freshnessLabel(value: string): string {
   return value === "manual" ? "Manual" : value[0].toUpperCase() + value.slice(1);
 }
+
+export function priceSourceLabel(provider: string | null, freshness: string): string {
+  if (freshness === "manual" && provider === "manual") return "Recorded override";
+  return provider ?? "No source";
+}
