@@ -1,7 +1,7 @@
 import Decimal from "decimal.js-light";
 
-export const MAX_DECIMAL_SCALE = 18;
-export const MAX_DECIMAL_DIGITS = 36;
+const MAX_DECIMAL_SCALE = 18;
+const MAX_DECIMAL_DIGITS = 36;
 
 Decimal.set({
   precision: 48,
@@ -12,7 +12,7 @@ Decimal.set({
 
 const decimalPattern = /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/;
 
-export class DecimalInputError extends Error {
+class DecimalInputError extends Error {
   readonly code = "INVALID_DECIMAL";
 
   constructor(message: string) {

@@ -49,7 +49,3 @@ export function getAuthBaseURL(environment = getEnvironment()): string {
   const deploymentHost = process.env.VERCEL_URL;
   return deploymentHost ? `https://${deploymentHost}` : environment.BETTER_AUTH_URL;
 }
-
-export function resetEnvironmentForTests(): void {
-  cachedEnvironment = undefined;
-}

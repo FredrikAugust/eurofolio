@@ -121,24 +121,14 @@ export class MarketService {
       reason,
       rawMetadata: null,
     };
-    await this.db
+    const [stored] = await this.db
       .insert(securityPrices)
       .values(row)
       .onConflictDoUpdate({
         target: [securityPrices.instrumentId, securityPrices.provider, securityPrices.observedOn],
         set: { price, currency, retrievedAt: row.retrievedAt, reason, isManual: true },
-      });
-    const [stored] = await this.db
-      .select()
-      .from(securityPrices)
-      .where(
-        and(
-          eq(securityPrices.instrumentId, input.instrumentId),
-          eq(securityPrices.provider, "manual"),
-          eq(securityPrices.observedOn, observedOn),
-        ),
-      )
-      .limit(1);
+      })
+      .returning();
     return stored ?? row;
   }
 
@@ -165,25 +155,14 @@ export class MarketService {
       reason,
       rawMetadata: null,
     };
-    await this.db
+    const [stored] = await this.db
       .insert(fxRates)
       .values(row)
       .onConflictDoUpdate({
         target: [fxRates.baseCurrency, fxRates.quoteCurrency, fxRates.provider, fxRates.observedOn],
         set: { rate, retrievedAt: row.retrievedAt, reason, isManual: true },
-      });
-    const [stored] = await this.db
-      .select()
-      .from(fxRates)
-      .where(
-        and(
-          eq(fxRates.baseCurrency, "EUR"),
-          eq(fxRates.quoteCurrency, quoteCurrency),
-          eq(fxRates.provider, "manual"),
-          eq(fxRates.observedOn, observedOn),
-        ),
-      )
-      .limit(1);
+      })
+      .returning();
     return stored ?? row;
   }
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { positiveDecimal } from "@/server/domain/decimal";
 
-export const identifierSchema = z.uuid();
+const identifierSchema = z.uuid();
 export const currencySchema = z
   .string()
   .regex(/^[A-Z]{3}$/, "Expected an uppercase ISO 4217 currency code");
@@ -14,7 +14,7 @@ export const financialDateSchema = z
     return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
   }, "Invalid calendar date");
 
-export const positiveDecimalSchema = z.string().transform((value, context) => {
+const positiveDecimalSchema = z.string().transform((value, context) => {
   try {
     return positiveDecimal(value);
   } catch (error) {

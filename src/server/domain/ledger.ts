@@ -39,16 +39,20 @@ const holdingKey = (event: ReplayEvent) =>
   `${event.accountId}:${event.instrumentId ?? ""}`;
 
 export function replayLedger(events: readonly ReplayEvent[]): LedgerProjection {
-  const cash = new Map<string, string>();
-  const holdings = new Map<string, string>();
   const ordered = [...events].sort(
     (left, right) =>
       left.effectiveDate.localeCompare(right.effectiveDate) ||
       left.createdAt.localeCompare(right.createdAt) ||
       left.id.localeCompare(right.id),
   );
+  return replayOrderedLedger(ordered);
+}
 
-  for (const event of ordered) {
+export function replayOrderedLedger(events: readonly ReplayEvent[]): LedgerProjection {
+  const cash = new Map<string, string>();
+  const holdings = new Map<string, string>();
+
+  for (const event of events) {
     const currentCash = cash.get(cashKey(event)) ?? "0";
 
     if (event.type === "buy" || event.type === "sell") {

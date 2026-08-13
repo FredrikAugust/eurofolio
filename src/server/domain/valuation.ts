@@ -14,6 +14,34 @@ export type SelectedObservation<T extends DatedObservation> = {
   freshness: Freshness;
 };
 
+function isPreferredObservation<T extends DatedObservation>(candidate: T, current: T): boolean {
+  return (
+    candidate.observedOn > current.observedOn ||
+    (candidate.observedOn === current.observedOn && candidate.isManual && !current.isManual) ||
+    (candidate.observedOn === current.observedOn &&
+      candidate.isManual === current.isManual &&
+      candidate.retrievedAt > current.retrievedAt)
+  );
+}
+
+function selectMatchingObservation<T extends DatedObservation>(
+  observations: readonly T[],
+  valuationDate: string,
+  matches: (observation: T) => boolean,
+): T | null {
+  let selected: T | null = null;
+  for (const observation of observations) {
+    if (
+      observation.observedOn <= valuationDate &&
+      matches(observation) &&
+      (!selected || isPreferredObservation(observation, selected))
+    ) {
+      selected = observation;
+    }
+  }
+  return selected;
+}
+
 function daysBetween(left: string, right: string): number {
   const leftTime = Date.parse(`${left}T00:00:00.000Z`);
   const rightTime = Date.parse(`${right}T00:00:00.000Z`);
@@ -25,15 +53,7 @@ export function selectObservation<T extends DatedObservation>(
   valuationDate: string,
   staleAfterDays: number,
 ): SelectedObservation<T> {
-  const eligible = observations
-    .filter((observation) => observation.observedOn <= valuationDate)
-    .sort(
-      (left, right) =>
-        right.observedOn.localeCompare(left.observedOn) ||
-        Number(right.isManual) - Number(left.isManual) ||
-        right.retrievedAt.localeCompare(left.retrievedAt),
-    );
-  const observation = eligible[0] ?? null;
+  const observation = selectMatchingObservation(observations, valuationDate, () => true);
   if (!observation) return { observation: null, freshness: "missing" };
   if (observation.isManual) return { observation, freshness: "manual" };
   return {
@@ -71,18 +91,23 @@ export function selectFxRate(
       isManual: false,
     };
   }
-  const selected = selectObservation(
-    observations.filter((observation) => observation.quoteCurrency === currency),
+  const observation = selectMatchingObservation(
+    observations,
     valuationDate,
-    staleAfterDays,
+    (candidate) => candidate.quoteCurrency === currency,
   );
-  if (!selected.observation) return null;
+  if (!observation) return null;
+  const freshness = observation.isManual
+    ? "manual"
+    : daysBetween(observation.observedOn, valuationDate) > staleAfterDays
+      ? "stale"
+      : "current";
   return {
-    rate: selected.observation.rate,
-    observedOn: selected.observation.observedOn,
-    provider: selected.observation.provider,
-    freshness: selected.freshness,
-    isManual: selected.observation.isManual,
+    rate: observation.rate,
+    observedOn: observation.observedOn,
+    provider: observation.provider,
+    freshness,
+    isManual: observation.isManual,
   };
 }
 

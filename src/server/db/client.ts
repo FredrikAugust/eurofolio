@@ -9,7 +9,7 @@ import type { Database } from "@/server/db/types";
 
 let singleton: { client: Client; db: Database } | undefined;
 
-export function createDatabase(url: string, authToken?: string) {
+function createDatabase(url: string, authToken?: string) {
   const client = createClient({ url, authToken });
   return { client, db: drizzle(client, { schema }) };
 }
@@ -23,9 +23,4 @@ export function getDatabase(): Database {
     );
   }
   return singleton.db;
-}
-
-export function resetDatabaseForTests(): void {
-  singleton?.client.close();
-  singleton = undefined;
 }

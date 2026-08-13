@@ -3,11 +3,11 @@ import "server-only";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 
 import { getDatabase } from "@/server/db/client";
-import { getEnvironment } from "@/server/env";
 import { queryPortfolioDashboard } from "@/server/services/portfolio-query";
 import { queryActivityRegister, queryDataRegister } from "@/server/services/read-pages";
+import { getPortfolioOptions } from "@/server/services/services";
 
-export const PORTFOLIO_CACHE_TAG = "eurofolio:portfolio";
+const PORTFOLIO_CACHE_TAG = "eurofolio:portfolio";
 
 function portfolioCachePolicy() {
   cacheLife({
@@ -21,11 +21,7 @@ function portfolioCachePolicy() {
 export async function getCachedPortfolioDashboard(valuationDate: string) {
   "use cache";
   portfolioCachePolicy();
-  const environment = getEnvironment();
-  return queryPortfolioDashboard(getDatabase(), valuationDate, {
-    priceStaleAfterDays: environment.PRICE_STALE_AFTER_DAYS,
-    fxStaleAfterDays: environment.FX_STALE_AFTER_DAYS,
-  });
+  return queryPortfolioDashboard(getDatabase(), valuationDate, getPortfolioOptions());
 }
 
 export async function getCachedActivityRegister() {

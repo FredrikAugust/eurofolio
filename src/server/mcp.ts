@@ -12,9 +12,8 @@ import {
   ledgerEventBatchSchema,
   ledgerEventInputSchema,
 } from "@/server/domain/schemas";
-import { getEnvironment } from "@/server/env";
 import { invalidatePortfolioReadCache } from "@/server/services/cached-queries";
-import { getLedgerService, getMarketService } from "@/server/services/services";
+import { getLedgerService, getMarketService, getPortfolioOptions } from "@/server/services/services";
 import { queryPortfolio } from "@/server/services/portfolio-query";
 
 function today(): string {
@@ -50,6 +49,17 @@ const pagination = {
   offset: z.number().int().min(0).default(0),
 };
 
+function paginate<T>(items: readonly T[], limit: number, offset: number) {
+  return {
+    items: items.slice(offset, offset + limit),
+    nextOffset: items.length > offset + limit ? offset + limit : null,
+  };
+}
+
+function portfolioSummary(valuationDate: string) {
+  return queryPortfolio(getDatabase(), valuationDate, getPortfolioOptions());
+}
+
 export const mcpHandler = createMcpHandler(
   (server) => {
     server.registerTool(
@@ -57,7 +67,7 @@ export const mcpHandler = createMcpHandler(
       { description: "List portfolio accounts with bounded pagination.", inputSchema: z.object({ includeArchived: z.boolean().default(false), ...pagination }) },
       ({ includeArchived, limit, offset }) => tool(async () => {
         const rows = await getLedgerService().listAccounts(includeArchived);
-        return { items: rows.slice(offset, offset + limit), nextOffset: rows.length > offset + limit ? offset + limit : null };
+        return paginate(rows, limit, offset);
       }),
     );
     server.registerTool(
@@ -65,7 +75,7 @@ export const mcpHandler = createMcpHandler(
       { description: "List registered instruments with bounded pagination.", inputSchema: z.object({ includeArchived: z.boolean().default(false), ...pagination }) },
       ({ includeArchived, limit, offset }) => tool(async () => {
         const rows = await getLedgerService().listInstruments(includeArchived);
-        return { items: rows.slice(offset, offset + limit), nextOffset: rows.length > offset + limit ? offset + limit : null };
+        return paginate(rows, limit, offset);
       }),
     );
     server.registerTool(
@@ -87,13 +97,7 @@ export const mcpHandler = createMcpHandler(
         description: "Return the exact EUR portfolio summary and completeness diagnostics.",
         inputSchema: z.object({ valuationDate: financialDateSchema.default(today()) }),
       },
-      ({ valuationDate }) =>
-        tool(() =>
-          queryPortfolio(getDatabase(), valuationDate, {
-            priceStaleAfterDays: getEnvironment().PRICE_STALE_AFTER_DAYS,
-            fxStaleAfterDays: getEnvironment().FX_STALE_AFTER_DAYS,
-          }),
-        ),
+      ({ valuationDate }) => tool(() => portfolioSummary(valuationDate)),
     );
     server.registerTool(
       "list_holdings",
@@ -103,11 +107,8 @@ export const mcpHandler = createMcpHandler(
       },
       ({ valuationDate, limit, offset }) =>
         tool(async () => {
-          const summary = await queryPortfolio(getDatabase(), valuationDate);
-          return {
-            items: summary.holdings.slice(offset, offset + limit),
-            nextOffset: summary.holdings.length > offset + limit ? offset + limit : null,
-          };
+          const summary = await portfolioSummary(valuationDate);
+          return paginate(summary.holdings, limit, offset);
         }),
     );
     server.registerTool(
@@ -118,7 +119,7 @@ export const mcpHandler = createMcpHandler(
       },
       ({ valuationDate }) =>
         tool(async () => {
-          const summary = await queryPortfolio(getDatabase(), valuationDate);
+          const summary = await portfolioSummary(valuationDate);
           return { holdings: summary.holdings, cash: summary.cash, missing: summary.missing };
         }),
     );

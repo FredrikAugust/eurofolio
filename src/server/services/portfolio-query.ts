@@ -14,15 +14,13 @@ import {
 } from "@/server/db/schema";
 import type { Database } from "@/server/db/types";
 import { add, compare, divide, multiply, subtract } from "@/server/domain/decimal";
-import { replayLedger } from "@/server/domain/ledger";
+import { replayOrderedLedger } from "@/server/domain/ledger";
 import {
   nativeToEur,
   selectFxRate,
   selectObservation,
   type Freshness,
 } from "@/server/domain/valuation";
-
-export const PORTFOLIO_DATABASE_BATCHES = 1;
 
 export type ValuedHolding = {
   accountId: string;
@@ -104,10 +102,13 @@ export type PortfolioPeriodChange = {
 
 type PortfolioRows = {
   accountRows: AccountRow[];
-  instrumentRows: InstrumentRow[];
+  accountMap: Map<string, AccountRow>;
+  instrumentMap: Map<string, InstrumentRow>;
   eventRows: LedgerEventRow[];
+  eventsByInstrument: Map<string, LedgerEventRow[]>;
   priceRows: SecurityPriceRow[];
-  fxRows: FxRateRow[];
+  pricesByInstrument: Map<string, SecurityPriceRow[]>;
+  fxByCurrency: Map<string, FxRateRow[]>;
 };
 
 type PortfolioOptions = {
@@ -115,22 +116,44 @@ type PortfolioOptions = {
   fxStaleAfterDays?: number;
 };
 
+function groupBy<T>(rows: readonly T[], keyOf: (row: T) => string | null) {
+  const grouped = new Map<string, T[]>();
+  for (const row of rows) {
+    const key = keyOf(row);
+    if (!key) continue;
+    const group = grouped.get(key) ?? [];
+    group.push(row);
+    grouped.set(key, group);
+  }
+  return grouped;
+}
+
+function eventsThroughDate(rows: readonly LedgerEventRow[], valuationDate: string) {
+  let start = 0;
+  let end = rows.length;
+  while (start < end) {
+    const middle = (start + end) >>> 1;
+    if (rows[middle].effectiveDate <= valuationDate) start = middle + 1;
+    else end = middle;
+  }
+  return rows.slice(0, start);
+}
+
 function selectPrice(
-  rows: readonly SecurityPriceRow[],
-  events: readonly LedgerEventRow[],
+  rows: PortfolioRows,
   instrumentId: string,
   valuationDate: string,
   threshold: number,
 ) {
   const marketPrice = selectObservation(
-    rows.filter((row) => row.instrumentId === instrumentId),
+    rows.pricesByInstrument.get(instrumentId) ?? [],
     valuationDate,
     threshold,
   );
   if (marketPrice.observation) return marketPrice;
 
-  const tradePrices: SecurityPriceRow[] = events.flatMap((event) => {
-    if (event.instrumentId !== instrumentId || !event.unitPrice || event.effectiveDate > valuationDate) return [];
+  const tradePrices: SecurityPriceRow[] = (rows.eventsByInstrument.get(instrumentId) ?? []).flatMap((event) => {
+    if (!event.unitPrice || event.effectiveDate > valuationDate) return [];
     return [{
       id: `trade:${event.id}`,
       instrumentId,
@@ -163,7 +186,16 @@ async function loadPortfolioRows(db: Database, valuationDate: string): Promise<P
     db.select().from(securityPrices).where(lte(securityPrices.observedOn, valuationDate)),
     db.select().from(fxRates).where(lte(fxRates.observedOn, valuationDate)),
   ]);
-  return { accountRows, instrumentRows, eventRows, priceRows, fxRows };
+  return {
+    accountRows,
+    accountMap: new Map(accountRows.map((row) => [row.id, row])),
+    instrumentMap: new Map(instrumentRows.map((row) => [row.id, row])),
+    eventRows,
+    eventsByInstrument: groupBy(eventRows, (row) => row.instrumentId),
+    priceRows,
+    pricesByInstrument: groupBy(priceRows, (row) => row.instrumentId),
+    fxByCurrency: groupBy(fxRows, (row) => row.quoteCurrency),
+  };
 }
 
 export async function queryPortfolio(
@@ -174,23 +206,17 @@ export async function queryPortfolio(
   return buildPortfolio(await loadPortfolioRows(db, valuationDate), valuationDate, options);
 }
 
-export function buildPortfolio(
+function buildPortfolio(
   rows: PortfolioRows,
   valuationDate: string,
   options: PortfolioOptions = {},
 ): PortfolioSummary {
   const priceThreshold = options.priceStaleAfterDays ?? 5;
   const fxThreshold = options.fxStaleAfterDays ?? 3;
-  const { accountRows, instrumentRows, priceRows, fxRows } = rows;
-  const eventRows = rows.eventRows.filter(
-    (event) => event.effectiveDate <= valuationDate,
-  );
+  const { accountRows, accountMap, instrumentMap, fxByCurrency } = rows;
+  const eventRows = eventsThroughDate(rows.eventRows, valuationDate);
 
-  const projection = replayLedger(eventRows);
-  const accountMap = new Map(accountRows.map((account) => [account.id, account]));
-  const instrumentMap = new Map(
-    instrumentRows.map((instrument) => [instrument.id, instrument]),
-  );
+  const projection = replayOrderedLedger(eventRows);
   const accountTotals = new Map(accountRows.map((account) => [account.id, "0"]));
   const allocation = new Map<string, string>();
   const missing: MissingValuation[] = [];
@@ -204,8 +230,7 @@ export function buildPortfolio(
     const instrument = instrumentMap.get(instrumentId);
     if (!account || !instrument) continue;
     const selectedPrice = selectPrice(
-      priceRows,
-      eventRows,
+      rows,
       instrumentId,
       valuationDate,
       priceThreshold,
@@ -224,7 +249,12 @@ export function buildPortfolio(
       });
     } else {
       nativeValue = multiply(quantity, price.price);
-      fx = selectFxRate(price.currency, fxRows, valuationDate, fxThreshold);
+      fx = selectFxRate(
+        price.currency,
+        fxByCurrency.get(price.currency) ?? [],
+        valuationDate,
+        fxThreshold,
+      );
       if (!fx) {
         missing.push({
           kind: "fx",
@@ -267,7 +297,12 @@ export function buildPortfolio(
     const [accountId, currency] = key.split(":");
     const account = accountMap.get(accountId);
     if (!account) continue;
-    const fx = selectFxRate(currency, fxRows, valuationDate, fxThreshold);
+    const fx = selectFxRate(
+      currency,
+      fxByCurrency.get(currency) ?? [],
+      valuationDate,
+      fxThreshold,
+    );
     const eurValue = fx ? nativeToEur(nativeValue, fx.rate) : null;
     if (!fx) {
       missing.push({
@@ -341,9 +376,8 @@ function shiftedDate(value: string, days = 0, months = 0): string {
 }
 
 function portfolioPeriodChanges(
-  rows: PortfolioRows,
   current: PortfolioSummary,
-  options: PortfolioOptions,
+  portfolioAt: (date: string) => PortfolioSummary,
 ): PortfolioPeriodChange[] {
   const periods = [
     { label: "1D" as const, from: shiftedDate(current.valuationDate, 1) },
@@ -353,7 +387,7 @@ function portfolioPeriodChanges(
   ];
 
   return periods.map(({ label, from }) => {
-    const previous = buildPortfolio(rows, from, options);
+    const previous = portfolioAt(from);
     if (!current.complete || !previous.complete || compare(previous.eurTotal, "0") === 0) {
       return { label, from, amount: null, percent: null };
     }
@@ -369,12 +403,10 @@ export async function queryPortfolioHistory(
   options: PortfolioOptions = {},
   sampleLimit = 25,
 ): Promise<PortfolioHistoryPoint[]> {
-  const { accountRows, instrumentRows, eventRows, priceRows, fxRows } =
-    await loadPortfolioRows(db, valuationDate);
-  if (eventRows.length === 0) return [];
+  const rows = await loadPortfolioRows(db, valuationDate);
+  if (rows.eventRows.length === 0) return [];
 
-  const rows = { accountRows, instrumentRows, eventRows, priceRows, fxRows };
-  return monthSampleDates(eventRows[0].effectiveDate, valuationDate, sampleLimit).map(
+  return monthSampleDates(rows.eventRows[0].effectiveDate, valuationDate, sampleLimit).map(
     (time) => historyPoint(buildPortfolio(rows, time, options)),
   );
 }
@@ -428,13 +460,21 @@ export async function queryPortfolioDashboard(
 }> {
   const rows = await loadPortfolioRows(db, valuationDate);
   const summary = buildPortfolio(rows, valuationDate, options);
+  const summaries = new Map([[valuationDate, summary]]);
+  const portfolioAt = (date: string) => {
+    const existing = summaries.get(date);
+    if (existing) return existing;
+    const value = buildPortfolio(rows, date, options);
+    summaries.set(date, value);
+    return value;
+  };
   const priceHistory = instrumentPriceHistory(rows.priceRows);
-  const periodChanges = portfolioPeriodChanges(rows, summary, options);
+  const periodChanges = portfolioPeriodChanges(summary, portfolioAt);
   if (rows.eventRows.length === 0) return { summary, history: [], priceHistory, periodChanges };
   const history = monthSampleDates(
     rows.eventRows[0].effectiveDate,
     valuationDate,
     25,
-  ).map((time) => historyPoint(buildPortfolio(rows, time, options)));
+  ).map((time) => historyPoint(portfolioAt(time)));
   return { summary, history, priceHistory, periodChanges };
 }
