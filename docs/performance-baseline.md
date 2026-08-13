@@ -20,3 +20,14 @@ bundle comparison used for this baseline.
 
 The memory figures come from Next.js `--experimental-debug-memory-usage`; macOS
 `/usr/bin/time -l` could not read `kern.clockrate` inside the sandbox.
+# Production navigation optimization — 2026-08-13
+
+- Next.js 16.3 Cache Components and Partial Prefetching are enabled.
+- Portfolio reads use tagged `use cache` functions with immediate invalidation after MCP, cron, or backfill mutations.
+- Authenticated pages share one persistent route-group layout; the app frame and navigation no longer remount per page.
+- Better Auth session validation uses a signed five-minute cookie cache, avoiding a Turso session round trip on every register transition.
+- The five bounded owner routes are fully prefetched after app entry and retain per-route Suspense shells.
+- Production builds emit Overview, Holdings, History, Activity, Data, and Login as Partial Prerender routes.
+- The auth query is explicitly isolated behind `connection()`; this removed a Turbopack `HANGING_PROMISE_REJECTION` found in production logs.
+- Post-deploy production error scan: clean.
+- Verification: ESLint, TypeScript, 32 tests, webpack production build, Vercel Turbopack production build, signed-in route checks.
