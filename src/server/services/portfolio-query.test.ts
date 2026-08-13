@@ -104,6 +104,8 @@ test("portfolio values EUR, USD, GBP, and DKK with partial diagnostics", async (
     "2.68096514745308311",
   );
   assert.equal(result.holdings.find((item) => item.nativeCurrency === "USD")?.priceFreshness, "manual");
+  assert.equal(result.holdings[0].eurValue, "25");
+  assert.equal(result.holdings.at(-1)?.eurValue, null);
 
   const history = await queryPortfolioHistory(db, "2026-08-09");
   assert.equal(history.at(-1)?.complete, false);

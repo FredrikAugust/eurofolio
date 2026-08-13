@@ -261,7 +261,11 @@ export function buildPortfolio(
     valuationDate,
     eurTotal,
     complete: missing.length === 0,
-    holdings: holdings.sort((left, right) => right.eurValue?.localeCompare(left.eurValue ?? "") ?? 0),
+    holdings: holdings.sort((left, right) => {
+      if (left.eurValue === null) return right.eurValue === null ? 0 : 1;
+      if (right.eurValue === null) return -1;
+      return compare(right.eurValue, left.eurValue);
+    }),
     cash,
     accountTotals: accountRows.map((account) => ({
       accountId: account.id,
