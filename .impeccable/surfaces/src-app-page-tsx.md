@@ -23,9 +23,9 @@ related_targets: ["src/app/globals.css","src/app/portfolio-chart.tsx"]
 | Masthead and width scale | Compact Eurofolio wordmark, measurement ticks, real navigation | Semantic HTML/CSS |
 | Total valuation | Extreme black grotesk, tabular figures, maximum one spectacle | Semantic heading/CSS |
 | Date and state gutter | Cadmium date stack with explicit complete/partial state | Semantic HTML/CSS |
-| Account register | Three ranked lines; Endavu orange, Nordnet cobalt, Revolut black | Semantic list/CSS |
+| Account register | Three ranked lines with honest snapshot traces; Endavu orange, Nordnet cobalt, Revolut black | Semantic list/server SVG/CSS |
 | Allocation | Four exact categories on a 0–100 baseline | Semantic HTML/CSS |
-| Ranked positions | Largest three in compact quotation rows with exact EUR and share | Semantic ordered list/CSS |
+| Ranked positions | Largest three in compact quotation rows with exact EUR, share, and stored-price trace | Semantic ordered list/server SVG/CSS |
 | Provenance strip | Real navigation, currency, date, valuation, and MCP-read-only facts | Semantic links/definition list |
 | History | Existing account-stacked chart when complete; explicit collecting state otherwise | Lightweight Charts/HTML fallback |
 | Full positions | Dense desktop register and phone disclosures in the same type system | Table/details |

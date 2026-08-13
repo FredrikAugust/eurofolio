@@ -63,11 +63,11 @@
 - [x] 7.6 Verify dashboard database work remains a fixed number of batched operations as fixture holdings increase.
 - [x] 7.7 Record authenticated desktop and phone screenshots, DOM hierarchy, current chart payload, and client bundle size as the redesign baseline.
 - [x] 7.8 Replace the current gradient/card/serif treatment with neutral semantic tokens, one restrained sans-serif hierarchy, tabular numerals, compact rules, and no decorative shadows or badges.
-- [ ] 7.9 Split the owner experience into server-rendered Overview, Holdings, Activity, and Data routes with desktop top navigation and mobile safe-area bottom navigation.
+- [x] 7.9 Split the owner experience into server-rendered Overview, Holdings, Activity, and Data routes with desktop top navigation and mobile safe-area bottom navigation.
 - [ ] 7.10 Extend the bounded history projection with per-account EUR values and per-date completeness; test account ordering, missing observations, transfers, cash, and exact consolidated totals.
 - [ ] 7.11 Rebuild the existing Lightweight Charts island as cumulative account area boundaries with stable colors, raw account tooltip values, range controls, and a non-JavaScript summary.
 - [x] 7.12 Build the responsive holdings register as a semantic desktop table and equivalent mobile disclosure rows without duplicating financial calculations.
-- [ ] 7.13 Add a read-only, filterable activity ledger and a data-quality view for refresh runs, provenance, manual observations, staleness, and gaps; retain MCP as the only mutation surface.
+- [x] 7.13 Add a read-only, filterable activity ledger and a data-quality view for refresh runs, provenance, manual observations, staleness, and gaps; retain MCP as the only mutation surface.
 - [ ] 7.14 Verify 320/375/390/430/768/1024 widths, long labels, three currencies, touch and keyboard operation, 200% zoom, reduced motion, contrast, and 44-pixel frequent controls.
 - [ ] 7.15 Re-run React/Next review, database-batch tests, production build, browser console checks, and bundle analysis; reject any new client framework or material chart regression.
 

@@ -29,6 +29,12 @@ typography:
     fontWeight: 700
     lineHeight: 1
     letterSpacing: "-0.05em"
+  page-title:
+    fontFamily: "Archivo, sans-serif"
+    fontSize: "4.8rem"
+    fontWeight: 900
+    lineHeight: 0.9
+    letterSpacing: "-0.06em"
   title:
     fontFamily: "Archivo, sans-serif"
     fontSize: "2.15rem"
@@ -87,6 +93,24 @@ components:
     typography: "{typography.label}"
     rounded: "{rounded.square}"
     height: "3rem"
+  quotation-trace:
+    backgroundColor: "transparent"
+    textColor: "{colors.registration-ink}"
+    rounded: "{rounded.square}"
+    height: "1.9rem"
+    width: "100%"
+  secondary-page-heading:
+    backgroundColor: "{colors.proof-stock}"
+    textColor: "{colors.registration-ink}"
+    typography: "{typography.page-title}"
+    rounded: "{rounded.square}"
+    height: "12rem"
+  mobile-register-nav:
+    backgroundColor: "{colors.proof-stock}"
+    textColor: "{colors.annotation-dim}"
+    typography: "{typography.label}"
+    rounded: "{rounded.square}"
+    height: "3.2rem"
 ---
 
 # Design System: Eurofolio
@@ -97,15 +121,16 @@ components:
 
 Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.
 
-The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, and hairline rules create the authority of a printed working document. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.
+The atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, hairline rules, and miniature quotation traces create the authority of a printed working document. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.
 
 **Key Characteristics:**
 
 - One oversized numerical event, surrounded by dense but legible registers.
 - Warm paper and black ink with orange and cobalt used only as semantic signals.
 - Tabular numerals, tight tracking, explicit ranks, dates, provenance, and measurement marks.
+- Stored observations drawn as restrained server-rendered quotation traces, never decorative or fabricated charts.
 - Flat construction: hierarchy comes from scale, rules, spacing, and alignment.
-- Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first.
+- Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first; phone adds a safe-area five-item register navigation.
 
 ## Colors
 
@@ -147,6 +172,7 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 ### Hierarchy
 
 - **Display** (900, `display`, 0.82 line-height): the consolidated EUR total only; it scales from 10rem on wide screens to 6rem at the intermediate breakpoint and 2.8rem on phone.
+- **Page Title** (900, `page-title`, 0.9 line-height): the secondary Holdings, History, Activity, and Data headings; it steps from 4.8rem to 4rem at the intermediate breakpoint and 3rem on phone.
 - **Headline** (700, `headline`, 1 line-height): history and holdings section headings.
 - **Title** (750, `title`, 1 line-height): prominent account names and major register labels.
 - **Body** (400, `body`, 1.5 line-height): explanatory text and ordinary content, always with tabular lining numerals enabled globally.
@@ -162,15 +188,19 @@ The palette behaves like a two-ink proof on warm stock, with neutral rules doing
 
 ## Layout
 
-The primary canvas is a centered proof sheet capped at 96rem, inset 1.5rem from the viewport and framed by a one-pixel Registration Ink rule. A sticky three-column top bar holds brand, centered navigation, and session action. Inside the sheet, sections connect vertically without card gaps: solid hairlines define major boundaries, dotted lines divide register rows, and fixed rank/value gutters make every number comparable.
+The primary canvas is a centered proof sheet capped at 96rem, inset 1.5rem from the viewport and framed by a one-pixel Registration Ink rule. A sticky three-column top bar holds brand, centered five-item navigation, and session action. Inside the sheet, sections connect vertically without card gaps: solid hairlines define major boundaries, dotted lines divide register rows, and fixed rank/value gutters make every number comparable.
 
-The opening value field is a three-column instrument: a 3.5rem weight axis, a fluid value lockup, and a 14rem valuation-date gutter. Account and position registers use a 4.5rem rank column, fluid name column, and right-aligned value/percentage columns. The 4-step allocation register and 6-cell fact strip establish repeated horizontal divisions. Major below-fold sections begin after a 3rem interval.
+The opening value field is a three-column instrument: a 3.5rem weight axis, a fluid value lockup, and a 14rem valuation-date gutter. Account and position registers use a 4.5rem rank column, fluid name column, a quotation-trace column, and right-aligned value/percentage columns. The 4-step allocation register and 6-cell fact strip establish repeated horizontal divisions. Major below-fold sections begin after a 3rem interval.
 
-At 1100px, type and fixed gutters contract while the structure remains intact. At 760px, the sheet becomes edge-to-edge, crop marks and the weight axis disappear, the date gutter narrows to 6.5rem, navigation hides, allocation and facts become two-column grids, account percentages and position shares yield, and the holdings table becomes disclosure rows. At 360px, the value and date type contract once more. The page retains a 20rem minimum width and must not scroll horizontally at 390px.
+Secondary pages reuse the width axis, then place a compact page title beside exactly three fact cells. The heading is 12rem high on wide screens; its facts occupy three equal ruled columns. Holdings, History, Activity, and Data then continue as connected tables, ledgers, filters, status stamps, or split registers on the same stock rather than becoming separate panels.
+
+At 1100px, type and fixed gutters contract while the structure remains intact. At 760px, the sheet becomes edge-to-edge, crop marks and the weight axis disappear, the date gutter narrows to 6.5rem, top navigation hides, allocation and overview facts become two-column grids, account percentages and position shares yield, and the Holdings, Activity, and instrument registers become disclosure rows. Narrow secondary ledgers remain ruled and may scroll within their register. Secondary titles stack above their three facts: the title occupies a 7rem field at 3rem, followed by a 4.5rem fact strip. A fixed five-item bottom register respects `env(safe-area-inset-bottom)`, and footer clearance prevents overlap. At 360px, the value and date type contract once more. The page retains a 20rem minimum width and must not scroll horizontally at 390px.
 
 **The Register Continuity Rule.** Sections share edges and rules; do not separate related data into floating containers.
 
 **The Yield Order Rule.** On narrow screens, remove secondary axes and percentages before reducing names or primary values beyond legibility.
+
+**The Mobile Reading Rule.** A phone register reads name and value first, quotation trace second, and expandable provenance or detail last.
 
 ## Elevation & Depth
 
@@ -211,19 +241,35 @@ Components are measured and exact. Their identity comes from alignment, typograp
 
 ### Navigation
 
-The top navigation uses 0.75rem uppercase monospace labels inside the 3rem sticky bar. The active page receives a 3px Signal Orange underline; inactive links remain Registration Ink. Navigation collapses below 760px while the brand and sign-out action remain available.
+The desktop top navigation exposes Overview, Holdings, History, Activity, and Data in 0.75rem uppercase monospace labels inside the 3rem sticky bar. The active page receives a 3px Signal Orange underline; inactive links remain Registration Ink. Below 760px those same five destinations move to a fixed 3.2rem bottom register on Proof Stock; equal cells use vertical rules, the active item returns to Registration Ink with an inset orange top line, and bottom padding follows the device safe area. The brand and sign-out action remain in the top bar.
 
 ### Value Field
 
 The value field is the signature component: a measurement axis, the 900-weight EUR total, and a stacked orange date/status gutter share one ruled baseline. It has a single 380ms entrance using a firm custom easing curve and respects reduced-motion preferences.
 
+### Secondary Page Heading
+
+Holdings, History, Activity, and Data begin with the shared measurement axis followed by a compact 4.8rem title and exactly three ruled fact cells. At the intermediate breakpoint the title becomes 4rem; on phone it becomes a 3rem title stacked above the three facts. Facts use dim uppercase monospace labels and compact right-sized Archivo values; long values truncate rather than deform the register.
+
+### Quotation Trace
+
+The quotation trace is a server-rendered 128 × 30 SVG built only from stored finite observations. A 1.6px open polyline sits on a dotted Baseline Soft rule. Security and position traces use Registration Ink; account traces inherit custody color. With fewer than two valid points, the trace becomes an explicit `0 obs` or `1 obs` label on a dotted baseline. The accessible name reports observation count and direction; a trace never interpolates missing history or treats it as zero.
+
 ### Account and Position Registers
 
-Ranks, names, values, shares, and provenance occupy stable columns with dotted row separators. Custodian color is applied to whole account rows; position rows remain neutral except for orange ranks and state indicators. Desktop holdings use a dense table, while phone holdings use native disclosure rows with the same content order.
+Ranks, names, values, shares, traces, and provenance occupy stable columns with dotted row separators. Custodian color is applied to whole account rows and their traces; security lines remain neutral except for orange ranks and state indicators. Desktop holdings use a dense table. Phone holdings use native disclosure rows in the name/value → trace → disclosure hierarchy, with trace height contracting from 1.9rem to approximately 1.35rem.
 
 ### Fact Strip
 
 Facts and shortcuts occupy equal cells with one-pixel vertical divisions. Labels are uppercase monospace; values use compact Archivo. Linked cells move their value and line-arrow cue to Signal Orange on hover without changing the surface.
+
+### Activity Filters
+
+Activity filtering is a read-only register operation: two transparent, baseline-only selects submit account and event query parameters, followed by square Apply and Clear controls. The controls may change the visible ledger slice but never mutate portfolio records; creation and correction remain MCP-only.
+
+### Data Provenance
+
+The Data page is an evidence register, not an administration console. A square run stamp uses two ruled edges and switches to Signal Orange for partial or failed state; adjacent copy explains protected refresh behavior and manual-observation precedence. Instrument, FX, and refresh ledgers expose source, observation date, and mode without adding web mutation controls.
 
 ## Do's and Don'ts
 
@@ -234,6 +280,9 @@ Facts and shortcuts occupy equal cells with one-pixel vertical divisions. Labels
 - **Do** keep the giant EUR total as the sole typographic spectacle.
 - **Do** preserve tabular lining numerals and right alignment for comparable financial values.
 - **Do** preserve the desktop-to-phone reading order and let secondary percentages and axes yield first.
+- **Do** use stored observations for traces, neutral ink for securities, and custody color for account histories; show the observation count when a line cannot be drawn.
+- **Do** open every secondary register with one compact page title and exactly three factual cells.
+- **Do** keep Activity filtering and Data provenance read-only; portfolio changes remain MCP-only.
 - **Do** keep interactions keyboard-visible and reduce the entrance motion when the user requests reduced motion.
 
 ### Don't:
@@ -243,4 +292,6 @@ Facts and shortcuts occupy equal cells with one-pixel vertical divisions. Labels
 - **Don't** spread Signal Orange or Custody Cobalt across large surfaces; color must retain semantic purpose.
 - **Don't** invent trading controls, performance claims, broker branding, or ornamental financial graphics.
 - **Don't** hide stale, missing, manual, or partial valuation state behind visual polish.
+- **Don't** fabricate quotation points, smooth across missing history, or substitute zero for absent observations.
+- **Don't** turn filters, provenance, refresh status, or disclosure rows into mutation affordances.
 - **Don't** break register alignment or allow the phone layout to overflow horizontally.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-13T12:43:38+02:00",
+  "generatedAt": "2026-08-13T13:08:38+02:00",
   "title": "Design System: Eurofolio",
   "extensions": {
     "colorMeta": {
@@ -86,6 +86,7 @@
     "typographyMeta": {
       "display": { "displayName": "Consolidated Value", "purpose": "The sole spectacle: the consolidated EUR total." },
       "headline": { "displayName": "Register Headline", "purpose": "Major history and holdings section headings." },
+      "page-title": { "displayName": "Secondary Page Title", "purpose": "Compact measured titles for Holdings, History, Activity, and Data." },
       "title": { "displayName": "Custody Title", "purpose": "Prominent account names and major register labels." },
       "body": { "displayName": "Reading Text", "purpose": "Explanations and ordinary content with tabular lining numerals." },
       "label": { "displayName": "Measurement Label", "purpose": "Axes, navigation, metadata, table headers, and operational status." }
@@ -130,9 +131,17 @@
       "name": "Top Navigation",
       "kind": "nav",
       "refersTo": "nav-label",
-      "description": "A compact sticky-bar navigation with a signal-orange registration underline.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Portfolio navigation\"><a aria-current=\"page\" href=\"#\">OVERVIEW</a><a href=\"#\">HOLDINGS</a><a href=\"#\">HISTORY</a></nav>",
-      "css": ".ds-nav { display: flex; min-height: 3rem; gap: 2rem; border-bottom: 1px solid var(--ink, #0c0c0d); background: rgba(251, 250, 246, .96); } .ds-nav a { display: grid; place-items: center; border-bottom: 3px solid transparent; color: var(--ink, #0c0c0d); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-decoration: none; text-transform: uppercase; } .ds-nav a[aria-current=\"page\"] { border-color: var(--orange, #f04d23); } .ds-nav a:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+      "description": "The five-destination desktop register with a signal-orange active underline.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Portfolio navigation\"><a aria-current=\"page\" href=\"#\">OVERVIEW</a><a href=\"#\">HOLDINGS</a><a href=\"#\">HISTORY</a><a href=\"#\">ACTIVITY</a><a href=\"#\">DATA</a></nav>",
+      "css": ".ds-nav { display: flex; min-height: 3rem; gap: 1.6rem; border-bottom: 1px solid var(--ink, #0c0c0d); background: rgba(251, 250, 246, .96); } .ds-nav a { display: grid; place-items: center; border-bottom: 3px solid transparent; color: var(--ink, #0c0c0d); font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-decoration: none; text-transform: uppercase; } .ds-nav a[aria-current=\"page\"] { border-color: var(--orange, #f04d23); } .ds-nav a:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+    },
+    {
+      "name": "Mobile Register Navigation",
+      "kind": "nav",
+      "refersTo": "mobile-register-nav",
+      "description": "A fixed five-cell phone register that clears the device safe area.",
+      "html": "<nav class=\"ds-mobile-nav\" aria-label=\"Portfolio navigation\"><a aria-current=\"page\" href=\"#\">OVERVIEW</a><a href=\"#\">HOLDINGS</a><a href=\"#\">HISTORY</a><a href=\"#\">ACTIVITY</a><a href=\"#\">DATA</a></nav>",
+      "css": ".ds-mobile-nav { position: fixed; z-index: 30; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(5, 1fr); padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); } .ds-mobile-nav a { display: grid; min-width: 0; min-height: 3.2rem; place-items: center; border-right: 1px solid var(--line, #b9b8b2); color: var(--dim, #676763); font: .68rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-decoration: none; text-transform: uppercase; } .ds-mobile-nav a:last-child { border-right: 0; } .ds-mobile-nav a[aria-current=\"page\"] { color: var(--ink, #0c0c0d); box-shadow: inset 0 3px var(--orange, #f04d23); } .ds-mobile-nav a:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: -3px; }"
     },
     {
       "name": "Consolidated Value Field",
@@ -142,36 +151,46 @@
       "css": ".ds-value-field { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; min-height: 13.6rem; border-bottom: 1px solid var(--ink, #0c0c0d); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; } .ds-value-lockup { min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: .9rem 2rem 1rem; } .ds-value-lockup span { margin-bottom: .3rem; font-size: 2.85rem; font-weight: 900; letter-spacing: -.055em; line-height: 1; } .ds-value-lockup strong { overflow: hidden; font-size: clamp(3rem, 10vw, 10rem); font-weight: 900; letter-spacing: -.075em; line-height: .82; white-space: nowrap; } .ds-valuation { display: flex; flex-direction: column; justify-content: center; padding: 1.25rem 0 1.25rem 2rem; border-left: 1px solid var(--line, #b9b8b2); text-transform: uppercase; } .ds-valuation small { font: .75rem/1.2 ui-monospace, SFMono-Regular, Roboto Mono, monospace; letter-spacing: .05em; } .ds-valuation i { position: relative; width: 1.4rem; height: 1.4rem; margin: 1rem 0; } .ds-valuation i::before, .ds-valuation i::after { position: absolute; background: var(--orange, #f04d23); content: \"\"; } .ds-valuation i::before { top: 50%; width: 100%; height: 1px; } .ds-valuation i::after { left: 50%; width: 1px; height: 100%; } .ds-valuation time { color: var(--orange, #f04d23); font-size: 3rem; font-weight: 750; letter-spacing: -.055em; line-height: .92; }"
     },
     {
-      "name": "Account Register Row",
+      "name": "Secondary Page Heading",
       "kind": "custom",
-      "description": "A ranked custody line with exact value and portfolio share columns.",
-      "html": "<div class=\"ds-account-line ds-account-cobalt\"><span>02</span><strong>Nordnet</strong><b>€84,395.03</b><em>91.4%</em></div>",
-      "css": ".ds-account-line { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) minmax(12rem, 30%) minmax(6rem, 11%); align-items: center; min-height: 3.6rem; border-bottom: 1px dotted var(--line, #b9b8b2); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-account-cobalt { color: var(--blue, #1748ba); } .ds-account-line > span { padding-left: 1rem; font-size: 1.4rem; } .ds-account-line > strong { overflow: hidden; font-size: 2.15rem; font-weight: 750; letter-spacing: -.045em; text-overflow: ellipsis; white-space: nowrap; } .ds-account-line > b, .ds-account-line > em { font-size: 2rem; font-weight: 650; font-style: normal; letter-spacing: -.04em; text-align: right; } .ds-account-line > em { padding-right: 1rem; }"
+      "refersTo": "secondary-page-heading",
+      "description": "A compact secondary title paired with exactly three factual cells.",
+      "html": "<header class=\"ds-page-heading\"><h1>Holdings</h1><dl><div><dt>POSITIONS</dt><dd>25</dd></div><div><dt>VALUE EUR</dt><dd>€92,288.82</dd></div><div><dt>AS AT</dt><dd>13 Aug 2026</dd></div></dl></header>",
+      "css": ".ds-page-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(28rem, .7fr); align-items: end; min-height: 12rem; border-bottom: 1px solid var(--ink, #0c0c0d); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; } .ds-page-heading h1 { margin: 0; padding: 1rem 0 1.2rem 3.5rem; font-size: 4.8rem; font-weight: 900; letter-spacing: -.06em; line-height: .9; } .ds-page-heading dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-self: stretch; margin: 0; border-left: 1px solid var(--line, #b9b8b2); } .ds-page-heading dl div { display: flex; min-width: 0; flex-direction: column; justify-content: end; gap: .55rem; padding: 1rem; border-right: 1px solid var(--line, #b9b8b2); } .ds-page-heading dl div:last-child { border-right: 0; } .ds-page-heading dt { color: var(--dim, #676763); font: .7rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; } .ds-page-heading dd { overflow: hidden; margin: 0; font-size: 1.05rem; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; } @media (max-width: 760px) { .ds-page-heading { grid-template-columns: 1fr; min-height: 0; } .ds-page-heading h1 { min-height: 7rem; display: flex; align-items: end; padding: 1rem 0; font-size: 3rem; } .ds-page-heading dl { min-height: 4.5rem; border-top: 1px solid var(--ink, #0c0c0d); border-left: 0; } .ds-page-heading dl div { padding: .65rem .5rem; } .ds-page-heading dt { font-size: .6rem; } .ds-page-heading dd { font-size: .82rem; } }"
     },
     {
-      "name": "Fact Shortcut",
+      "name": "Quotation Trace",
       "kind": "custom",
-      "description": "An equal-width utility cell pairing an operational label with a terse value and line arrow.",
-      "html": "<a class=\"ds-fact\" href=\"#\"><span>ALL HOLDINGS</span><strong>VIEW</strong><i aria-hidden=\"true\"></i></a>",
-      "css": ".ds-fact { position: relative; display: flex; min-height: 4.6rem; flex-direction: column; justify-content: center; gap: .45rem; padding: .6rem 1rem; border-right: 1px solid var(--line, #b9b8b2); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); text-decoration: none; } .ds-fact span { font: .75rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; text-transform: uppercase; } .ds-fact strong { font-family: var(--font-archivo), Archivo, sans-serif; font-size: .9rem; font-weight: 500; } .ds-fact i { position: absolute; right: 1rem; bottom: .85rem; width: .8rem; height: .8rem; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(-45deg); } .ds-fact:hover strong, .ds-fact:hover i { color: var(--orange, #f04d23); } .ds-fact:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+      "refersTo": "quotation-trace",
+      "description": "A server-rendered miniature trace from stored observations, paired with its explicit insufficient-data state.",
+      "html": "<div class=\"ds-trace-set\"><svg class=\"ds-trace\" viewBox=\"0 0 128 30\" role=\"img\" aria-label=\"Security price trend: 5 observations, up 4.2 percent\"><title>Security price trend</title><line x1=\"0\" y1=\"29\" x2=\"128\" y2=\"29\"/><polyline points=\"0,25 32,21 64,23 96,12 128,4\"/></svg><span class=\"ds-trace-empty\" aria-label=\"Security price trend: 1 observation\">1 OBS</span></div>",
+      "css": ".ds-trace-set { display: grid; grid-template-columns: 8rem 8rem; gap: 1rem; color: var(--ink, #0c0c0d); } .ds-trace { display: block; width: 100%; min-width: 6rem; height: 1.9rem; overflow: visible; } .ds-trace line { stroke: var(--line-soft, #dbdad4); stroke-width: 1; stroke-dasharray: 2 3; } .ds-trace polyline { fill: none; stroke: currentColor; stroke-width: 1.6; vector-effect: non-scaling-stroke; } .ds-trace-empty { display: grid; min-width: 6rem; min-height: 1.9rem; place-items: center; border-bottom: 1px dotted var(--line, #b9b8b2); color: var(--dim, #676763); font: .68rem/1 ui-monospace, SFMono-Regular, Roboto Mono, monospace; }"
+    },
+    {
+      "name": "Account Register Row",
+      "kind": "custom",
+      "description": "A ranked custody line whose value trace inherits the account color.",
+      "html": "<div class=\"ds-account-line\"><span>02</span><strong>Nordnet</strong><svg viewBox=\"0 0 128 30\" role=\"img\" aria-label=\"Nordnet account value: 5 observations, up 4.2 percent\"><line x1=\"0\" y1=\"29\" x2=\"128\" y2=\"29\"/><polyline points=\"0,25 32,21 64,23 96,12 128,4\"/></svg><b>€84,395.03</b><em>91.4%</em></div>",
+      "css": ".ds-account-line { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) 9rem minmax(12rem, 26%) minmax(6rem, 10%); align-items: center; gap: 1rem; min-height: 3.8rem; border-bottom: 1px dotted var(--line, #b9b8b2); color: var(--blue, #1748ba); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-account-line > span { padding-left: 1rem; font-size: 1.4rem; } .ds-account-line > strong { overflow: hidden; font-size: 2.15rem; font-weight: 750; letter-spacing: -.045em; text-overflow: ellipsis; white-space: nowrap; } .ds-account-line svg { display: block; width: 100%; min-width: 6rem; height: 1.9rem; } .ds-account-line svg line { stroke: var(--line-soft, #dbdad4); stroke-width: 1; stroke-dasharray: 2 3; } .ds-account-line svg polyline { fill: none; stroke: currentColor; stroke-width: 1.6; vector-effect: non-scaling-stroke; } .ds-account-line > b, .ds-account-line > em { font-size: 2rem; font-weight: 650; font-style: normal; letter-spacing: -.04em; text-align: right; } .ds-account-line > em { padding-right: 1rem; }"
     },
     {
       "name": "Mobile Position Disclosure",
       "kind": "custom",
-      "description": "The phone replacement for the dense holdings table, preserving rank, name, value, and expandable provenance.",
-      "html": "<details class=\"ds-position\"><summary><span>01</span><strong>Nordnet Norge Indeks<small>Nordnet · Fund</small></strong><b>€13,679.56<small>124.8 units</small></b></summary><dl><div><dt>Observation</dt><dd>13 Aug 2026</dd></div><div><dt>Source</dt><dd>Manual · Fresh</dd></div></dl></details>",
-      "css": ".ds-position { border-bottom: 1px dotted var(--line, #b9b8b2); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-position summary { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; min-height: 4.5rem; align-items: center; gap: .5rem; cursor: pointer; list-style: none; } .ds-position summary > span { color: var(--orange, #f04d23); font-size: 1rem; } .ds-position summary > strong, .ds-position summary > b { font-size: .84rem; font-weight: 600; } .ds-position summary > b { text-align: right; } .ds-position small { display: block; margin-top: .2rem; color: var(--dim, #676763); font: .75rem/1.2 ui-monospace, SFMono-Regular, Roboto Mono, monospace; } .ds-position dl { margin: 0 0 .75rem 3rem; } .ds-position dl div { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px dotted var(--line, #b9b8b2); font-size: .78rem; } .ds-position dt { color: var(--dim, #676763); } .ds-position dd { margin: 0; } .ds-position summary:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
+      "description": "The phone replacement for a dense position row: name and value, then trace, then expandable provenance.",
+      "html": "<details class=\"ds-position\"><summary><span class=\"ds-rank\">01</span><span class=\"ds-name\"><strong>Nordnet Norge Indeks</strong><small>Nordnet · Fund</small></span><span class=\"ds-value\"><strong>€13,679.56</strong><small>14.8%</small></span><svg viewBox=\"0 0 128 30\" role=\"img\" aria-label=\"Nordnet Norge Indeks price trend: 5 observations, up 4.2 percent\"><line x1=\"0\" y1=\"29\" x2=\"128\" y2=\"29\"/><polyline points=\"0,25 32,21 64,23 96,12 128,4\"/></svg></summary><dl><div><dt>Observation</dt><dd>13 Aug 2026</dd></div><div><dt>Source</dt><dd>Manual · Fresh</dd></div></dl></details>",
+      "css": ".ds-position { border-bottom: 1px dotted var(--line, #b9b8b2); color: var(--ink, #0c0c0d); background: var(--proof, #fbfaf6); font-family: var(--font-archivo), Archivo, sans-serif; font-variant-numeric: tabular-nums lining-nums; } .ds-position summary { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; grid-template-rows: auto 1.45rem; min-height: 5.4rem; align-items: center; gap: .35rem .5rem; cursor: pointer; list-style: none; } .ds-rank { color: var(--orange, #f04d23); font-size: 1rem; } .ds-name, .ds-value { min-width: 0; } .ds-name strong, .ds-name small, .ds-value strong, .ds-value small { display: block; } .ds-name strong { overflow: hidden; font-size: .84rem; text-overflow: ellipsis; white-space: nowrap; } .ds-value { text-align: right; } .ds-position small { margin-top: .2rem; color: var(--dim, #676763); font: .75rem/1.2 ui-monospace, SFMono-Regular, Roboto Mono, monospace; } .ds-position svg { grid-column: 2 / 4; grid-row: 2; display: block; width: 100%; min-width: 6rem; height: 1.35rem; } .ds-position svg line { stroke: var(--line-soft, #dbdad4); stroke-width: 1; stroke-dasharray: 2 3; } .ds-position svg polyline { fill: none; stroke: currentColor; stroke-width: 1.6; vector-effect: non-scaling-stroke; } .ds-position dl { margin: 0 0 .75rem 3rem; } .ds-position dl div { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px dotted var(--line, #b9b8b2); font-size: .78rem; } .ds-position dt { color: var(--dim, #676763); } .ds-position dd { margin: 0; } .ds-position summary:focus-visible { outline: 2px solid var(--orange, #f04d23); outline-offset: 3px; }"
     }
   ],
   "narrative": {
     "northStar": "The Quotation Specimen",
-    "overview": "Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.\n\nThe atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, and hairline rules create the authority of a printed working document. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.",
+    "overview": "Eurofolio is a variable-type foundry proof crossed with an exchange quotation board. It is exacting, utilitarian, and typographic: portfolio figures are not content placed inside a dashboard system; exact portfolio figures are the visual system. The giant EUR total is the sole spectacle, while every supporting fact submits to exposed baselines, measurement axes, ranks, and aligned registers.\n\nThe atmosphere is calm because it is disciplined, not because it is soft. Warm proof stock, registration ink, sparse signal color, crop marks, hairline rules, and miniature quotation traces create the authority of a printed working document. The same language extends without dilution across Overview, Holdings, History, Activity, and Data: each secondary register opens with a compact measured title and exactly three facts. The confirmed anti-reference is the rounded fintech KPI grid and generic AI-dashboard styling: no ornamental cards, floating modules, sidebar shell, donut chart, gradients, or decorative chrome.",
     "keyCharacteristics": [
       "One oversized numerical event, surrounded by dense but legible registers.",
       "Warm paper and black ink with orange and cobalt used only as semantic signals.",
       "Tabular numerals, tight tracking, explicit ranks, dates, provenance, and measurement marks.",
+      "Stored observations drawn as restrained server-rendered quotation traces, never decorative or fabricated charts.",
       "Flat construction: hierarchy comes from scale, rules, spacing, and alignment.",
-      "Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first."
+      "Desktop and phone preserve the same reading order while lower-priority percentages and axes yield first; phone adds a safe-area five-item register navigation."
     ],
     "rules": [
       { "name": "The Sparse Signal Rule", "body": "Signal Orange and Custody Cobalt identify state, custody, or action; they never become broad decorative fills.", "section": "colors" },
@@ -181,6 +200,7 @@
       { "name": "The Two-Voice Rule", "body": "Archivo carries names and values; monospace carries coordinates, labels, metadata, and operational status.", "section": "typography" },
       { "name": "The Register Continuity Rule", "body": "Sections share edges and rules; do not separate related data into floating containers.", "section": "layout" },
       { "name": "The Yield Order Rule", "body": "On narrow screens, remove secondary axes and percentages before reducing names or primary values beyond legibility.", "section": "layout" },
+      { "name": "The Mobile Reading Rule", "body": "A phone register reads name and value first, quotation trace second, and expandable provenance or detail last.", "section": "layout" },
       { "name": "The Flat Proof Rule", "body": "Surfaces remain on one physical plane; hierarchy is earned by rules, scale, spacing, and alignment, never simulated elevation.", "section": "elevation" },
       { "name": "The Square Register Rule", "body": "Do not round structural surfaces or controls. Reserve the 50% radius exclusively for status dots.", "section": "shapes" }
     ],
@@ -190,6 +210,9 @@
       "Do keep the giant EUR total as the sole typographic spectacle.",
       "Do preserve tabular lining numerals and right alignment for comparable financial values.",
       "Do preserve the desktop-to-phone reading order and let secondary percentages and axes yield first.",
+      "Do use stored observations for traces, neutral ink for securities, and custody color for account histories; show the observation count when a line cannot be drawn.",
+      "Do open every secondary register with one compact page title and exactly three factual cells.",
+      "Do keep Activity filtering and Data provenance read-only; portfolio changes remain MCP-only.",
       "Do keep interactions keyboard-visible and reduce the entrance motion when the user requests reduced motion."
     ],
     "donts": [
@@ -198,6 +221,8 @@
       "Don't spread Signal Orange or Custody Cobalt across large surfaces; color must retain semantic purpose.",
       "Don't invent trading controls, performance claims, broker branding, or ornamental financial graphics.",
       "Don't hide stale, missing, manual, or partial valuation state behind visual polish.",
+      "Don't fabricate quotation points, smooth across missing history, or substitute zero for absent observations.",
+      "Don't turn filters, provenance, refresh status, or disclosure rows into mutation affordances.",
       "Don't break register alignment or allow the phone layout to overflow horizontally."
     ]
   }

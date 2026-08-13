@@ -1,14 +1,17 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 
-import { login, logout } from "@/app/actions";
+import { login } from "@/app/actions";
+import { AppFrame } from "@/app/app-frame";
+import { displayDate, freshnessLabel, money, percent, quantity } from "@/app/format";
 import { PortfolioChart } from "@/app/portfolio-chart";
+import { Sparkline } from "@/app/sparkline";
 import { auth } from "@/server/better-auth";
 import { getDatabase } from "@/server/db/client";
-import { formatDecimal } from "@/server/domain/decimal";
 import { getEnvironment } from "@/server/env";
 import {
   queryPortfolioDashboard,
+  type InstrumentPriceHistory,
   type PortfolioHistoryPoint,
   type PortfolioSummary,
   type ValuedHolding,
@@ -22,45 +25,6 @@ const accountColors: Record<string, string> = {
   Revolut: "#0c0c0d",
 };
 const chartColors = ["#f04d23", "#1748ba", "#0c0c0d", "#657080"];
-
-function money(value: string | null, currency = "EUR"): string {
-  if (value === null) return "Not valued";
-  return new Intl.NumberFormat("en-IE", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(formatDecimal(value, 2)));
-}
-
-function quantity(value: string, maximumFractionDigits = 4): string {
-  return new Intl.NumberFormat("en-IE", { maximumFractionDigits }).format(Number(value));
-}
-
-function percent(part: string | number, total: string | number): string {
-  const denominator = Number(total);
-  return denominator ? `${((Number(part) / denominator) * 100).toFixed(1)}%` : "0.0%";
-}
-
-function displayDate(value: string, stacked = false): string | string[] {
-  const date = new Date(`${value}T12:00:00Z`);
-  if (stacked) {
-    return [
-      new Intl.DateTimeFormat("en-IE", { day: "numeric" }).format(date),
-      new Intl.DateTimeFormat("en-IE", { month: "short" }).format(date),
-      new Intl.DateTimeFormat("en-IE", { year: "numeric" }).format(date),
-    ];
-  }
-  return new Intl.DateTimeFormat("en-IE", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(date);
-}
-
-function freshnessLabel(value: string): string {
-  return value === "manual" ? "Manual" : value[0].toUpperCase() + value.slice(1);
-}
 
 function latestObservation(summary: PortfolioSummary): string {
   return [
@@ -88,7 +52,7 @@ function Login({ invalid }: { invalid: boolean }) {
             <label htmlFor="password">Password</label>
             <input id="password" name="password" type="password" minLength={12} autoComplete="current-password" required />
             {invalid ? <p className="form-error" role="alert">Email or password not accepted.</p> : null}
-            <button type="submit">Sign in →</button>
+            <button type="submit">Sign in</button>
           </form>
         </div>
       </section>
@@ -106,7 +70,7 @@ function EmptyDashboard() {
   );
 }
 
-function RegisterRow({ holding, rank }: { holding: ValuedHolding; rank: number }) {
+function RegisterRow({ holding, rank, trend }: { holding: ValuedHolding; rank: number; trend: InstrumentPriceHistory["points"] }) {
   return (
     <tr>
       <td className="rank-cell">{String(rank).padStart(2, "0")}</td>
@@ -121,6 +85,7 @@ function RegisterRow({ holding, rank }: { holding: ValuedHolding; rank: number }
       </td>
       <td className="number-cell">{money(holding.nativeValue, holding.nativeCurrency)}</td>
       <td className="number-cell"><strong>{money(holding.eurValue)}</strong></td>
+      <td className="trend-cell"><Sparkline points={trend} label={`${holding.instrumentName} price trend`} /></td>
       <td>
         <span className={`source-state ${holding.priceFreshness}`}>{freshnessLabel(holding.priceFreshness)}</span>
         <small>{holding.priceProvider ?? "No source"}</small>
@@ -129,13 +94,14 @@ function RegisterRow({ holding, rank }: { holding: ValuedHolding; rank: number }
   );
 }
 
-function MobileRegisterRow({ holding, rank }: { holding: ValuedHolding; rank: number }) {
+function MobileRegisterRow({ holding, rank, trend }: { holding: ValuedHolding; rank: number; trend: InstrumentPriceHistory["points"] }) {
   return (
     <details className="mobile-position">
       <summary>
         <span className="mobile-rank">{String(rank).padStart(2, "0")}</span>
         <span className="mobile-name"><strong>{holding.instrumentName}</strong><small>{holding.accountName} · {holding.assetClass}</small></span>
         <span className="number-cell"><strong>{money(holding.eurValue)}</strong><small>{quantity(holding.quantity)} units</small></span>
+        <Sparkline points={trend} label={`${holding.instrumentName} price trend`} className="mobile-sparkline" />
       </summary>
       <dl>
         <div><dt>Price</dt><dd>{holding.price ? money(holding.price, holding.nativeCurrency) : "Missing"}</dd></div>
@@ -147,12 +113,17 @@ function MobileRegisterRow({ holding, rank }: { holding: ValuedHolding; rank: nu
   );
 }
 
-function Dashboard({ summary, history }: { summary: PortfolioSummary; history: PortfolioHistoryPoint[] }) {
+function Dashboard({ summary, history, priceHistory }: { summary: PortfolioSummary; history: PortfolioHistoryPoint[]; priceHistory: InstrumentPriceHistory[] }) {
   const total = Number(summary.eurTotal) || 1;
   const observedOn = latestObservation(summary);
   const observedParts = displayDate(observedOn, true) as string[];
   const valuedHistory = history.filter((point) => point.complete);
   const topHoldings = summary.holdings.filter((holding) => holding.eurValue !== null).slice(0, 3);
+  const priceHistoryMap = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
+  const accountHistory = new Map(summary.accountTotals.map((account) => [account.accountId, history.flatMap((point) => {
+    const value = point.accounts.find((candidate) => candidate.accountId === account.accountId)?.value;
+    return point.complete && value !== null && value !== undefined ? [{ time: point.time, value }] : [];
+  })]));
 
   return (
     <>
@@ -180,6 +151,7 @@ function Dashboard({ summary, history }: { summary: PortfolioSummary; history: P
           <div className="account-line" style={{ color: accountColors[account.accountName] ?? "#0c0c0d" }} key={account.accountId}>
             <span className="register-rank">{String(index + 1).padStart(2, "0")}</span>
             <strong>{account.accountName}</strong>
+            <Sparkline points={accountHistory.get(account.accountId) ?? []} label={`${account.accountName} account value`} color="currentColor" />
             <span className="account-value">{money(account.eurValue)}</span>
             <span className="account-percent">{percent(account.eurValue, summary.eurTotal)}</span>
           </div>
@@ -199,12 +171,13 @@ function Dashboard({ summary, history }: { summary: PortfolioSummary; history: P
       </section>
 
       <section className="top-register" aria-labelledby="leaders-heading">
-        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>% of portfolio</span></header>
+        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Trend</span><span>Value (EUR)</span><span>% of portfolio</span></header>
         <ol>
           {topHoldings.map((holding, index) => (
             <li key={`${holding.accountId}:${holding.instrumentId}`}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <strong>{holding.instrumentName}</strong>
+              <Sparkline points={priceHistoryMap.get(holding.instrumentId) ?? []} label={`${holding.instrumentName} price trend`} />
               <span>{money(holding.eurValue)}</span>
               <span>{percent(holding.eurValue ?? 0, total)}</span>
             </li>
@@ -239,11 +212,11 @@ function Dashboard({ summary, history }: { summary: PortfolioSummary; history: P
         <header><div><h2 id="holdings-heading">All holdings</h2><p>{summary.holdings.length} positions · {summary.accountTotals.length} custodians · EUR reporting</p></div></header>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Data</th></tr></thead>
-            <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
+            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend</th><th>Data</th></tr></thead>
+            <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
           </table>
         </div>
-        <div className="mobile-positions">{summary.holdings.map((holding, index) => <MobileRegisterRow holding={holding} rank={index + 1} key={`${holding.accountId}:${holding.instrumentId}`} />)}</div>
+        <div className="mobile-positions">{summary.holdings.map((holding, index) => <MobileRegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</div>
       </section>
 
       {summary.missing.length ? (
@@ -263,25 +236,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 
   const environment = getEnvironment();
   const valuationDate = new Date().toISOString().slice(0, 10);
-  const { summary, history } = await queryPortfolioDashboard(getDatabase(), valuationDate, {
+  const { summary, history, priceHistory } = await queryPortfolioDashboard(getDatabase(), valuationDate, {
     priceStaleAfterDays: environment.PRICE_STALE_AFTER_DAYS,
     fxStaleAfterDays: environment.FX_STALE_AFTER_DAYS,
   });
   const hasData = summary.accountTotals.length || summary.holdings.length || summary.cash.length;
 
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <Link href="/" className="topbar-brand">Eurofolio</Link>
-        <nav aria-label="Portfolio navigation"><a href="#portfolio-heading" aria-current="page">Overview</a><a href="#holdings-heading">Holdings</a><a href="#history-heading">History</a></nav>
-        <form action={logout}><button type="submit">Sign out</button></form>
-      </header>
-      <main className="quotation-sheet">
-        <i className="crop-mark crop-ne" aria-hidden="true" />
-        <i className="crop-mark crop-sw" aria-hidden="true" />
-        {hasData ? <Dashboard summary={summary} history={history} /> : <EmptyDashboard />}
-      </main>
-      <footer><span>EUR / SINGLE OWNER / DELAYED MARKET DATA</span><span>Not investment advice</span></footer>
-    </div>
-  );
+  return <AppFrame current="Overview">{hasData ? <Dashboard summary={summary} history={history} priceHistory={priceHistory} /> : <EmptyDashboard />}</AppFrame>;
 }

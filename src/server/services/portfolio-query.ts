@@ -85,6 +85,16 @@ export type PortfolioHistoryPoint = {
   }[];
 };
 
+export type PriceHistoryPoint = {
+  time: string;
+  value: number;
+};
+
+export type InstrumentPriceHistory = {
+  instrumentId: string;
+  points: PriceHistoryPoint[];
+};
+
 type PortfolioRows = {
   accountRows: AccountRow[];
   instrumentRows: InstrumentRow[];
@@ -320,18 +330,46 @@ function historyPoint(summary: PortfolioSummary): PortfolioHistoryPoint {
   };
 }
 
+function instrumentPriceHistory(rows: readonly SecurityPriceRow[]): InstrumentPriceHistory[] {
+  const byInstrument = new Map<string, Map<string, SecurityPriceRow>>();
+  for (const row of rows) {
+    const byDate = byInstrument.get(row.instrumentId) ?? new Map<string, SecurityPriceRow>();
+    const current = byDate.get(row.observedOn);
+    if (
+      !current ||
+      (row.isManual && !current.isManual) ||
+      (row.isManual === current.isManual && row.retrievedAt > current.retrievedAt)
+    ) {
+      byDate.set(row.observedOn, row);
+    }
+    byInstrument.set(row.instrumentId, byDate);
+  }
+  return [...byInstrument].map(([instrumentId, byDate]) => ({
+    instrumentId,
+    points: [...byDate.values()]
+      .sort((left, right) => left.observedOn.localeCompare(right.observedOn))
+      .slice(-32)
+      .map((row) => ({ time: row.observedOn, value: Number(row.price) })),
+  }));
+}
+
 export async function queryPortfolioDashboard(
   db: Database,
   valuationDate: string,
   options: PortfolioOptions = {},
-): Promise<{ summary: PortfolioSummary; history: PortfolioHistoryPoint[] }> {
+): Promise<{
+  summary: PortfolioSummary;
+  history: PortfolioHistoryPoint[];
+  priceHistory: InstrumentPriceHistory[];
+}> {
   const rows = await loadPortfolioRows(db, valuationDate);
   const summary = buildPortfolio(rows, valuationDate, options);
-  if (rows.eventRows.length === 0) return { summary, history: [] };
+  const priceHistory = instrumentPriceHistory(rows.priceRows);
+  if (rows.eventRows.length === 0) return { summary, history: [], priceHistory };
   const history = monthSampleDates(
     rows.eventRows[0].effectiveDate,
     valuationDate,
     25,
   ).map((time) => historyPoint(buildPortfolio(rows, time, options)));
-  return { summary, history };
+  return { summary, history, priceHistory };
 }
