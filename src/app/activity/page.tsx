@@ -46,7 +46,7 @@ async function ActivityRegister({ searchParams }: ActivityPageProps) {
         <label>Account<select name="account" defaultValue={filters.account ?? ""}><option value="">All accounts</option>{accountRows.map((account) => <option value={account.id} key={account.id}>{account.name}</option>)}</select></label>
         <label>Event<select name="type" defaultValue={filters.type ?? ""}><option value="">All event types</option>{eventTypes.map((type) => <option value={type} key={type}>{type.replaceAll("_", " ")}</option>)}</select></label>
         <button type="submit">Apply filters</button>
-        <Link href="/activity" prefetch>Clear</Link>
+        <Link href="/activity">Clear</Link>
       </form>
       <section className="page-register" aria-labelledby="activity-register-heading">
         <h2 className="sr-only" id="activity-register-heading">Ledger events</h2>

@@ -18,7 +18,7 @@ export function NavigationLink({
   children: ReactNode;
 }) {
   return (
-    <Link href={href} prefetch aria-current={current ? "page" : undefined}>
+    <Link href={href} aria-current={current ? "page" : undefined}>
       <span>{children}</span>
       <PendingMark />
     </Link>
