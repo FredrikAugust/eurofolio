@@ -113,7 +113,7 @@ test("manual observations update one row and retain reason metadata", async () =
   fixture.close();
 });
 
-test("backfill stores only real month-end observations and is idempotent", async () => {
+test("backfill keeps recent daily observations and is idempotent", async () => {
   const fixture = await createTestDatabase();
   const ledger = new LedgerService(fixture.db);
   const instrument = await ledger.createInstrument({
@@ -154,12 +154,12 @@ test("backfill stores only real month-end observations and is idempotent", async
   });
   const first = await service.backfill("2026-06-01", "2026-07-31");
   const second = await service.backfill("2026-06-01", "2026-07-31");
-  assert.equal(first.priceObservationsStored, 2);
+  assert.equal(first.priceObservationsStored, 3);
   assert.equal(first.fxObservationsStored, 2);
   assert.equal(first.observationsRepaired, 1);
   assert.equal(second.errors.length, 0);
   const storedPrices = await fixture.db.select().from(securityPrices);
-  assert.equal(storedPrices.length, 3);
+  assert.equal(storedPrices.length, 4);
   assert.equal(storedPrices.find((row) => row.id === "over-precise")?.price, "10.123456789012");
   assert.equal((await fixture.db.select().from(fxRates)).length, 2);
   fixture.close();

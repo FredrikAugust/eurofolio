@@ -164,3 +164,26 @@ test("dashboard reports exact portfolio changes for standard periods", async () 
   assert.equal(dashboard.periodChanges[3].percent, "10");
   close();
 });
+
+test("dashboard 1D compares the latest two market closes on a weekend", async () => {
+  const { db, close } = await createTestDatabase();
+  const service = new LedgerService(db, () => new Date("2026-08-22T12:00:00.000Z"));
+  const account = await service.createAccount({ name: "Main", institution: "", defaultCurrency: "EUR" });
+  const instrument = await service.createInstrument({
+    name: "Index fund", assetClass: "fund", nativeCurrency: "EUR", provider: "manual", providerSymbol: "INDEX",
+  });
+  await service.ingestEvents([
+    { type: "deposit", accountId: account.id, effectiveDate: "2026-08-01", currency: "EUR", amount: "100" },
+    { type: "buy", accountId: account.id, instrumentId: instrument.id, effectiveDate: "2026-08-01", currency: "EUR", quantity: "1", unitPrice: "100" },
+  ]);
+  await db.insert(securityPrices).values([
+    { id: "thursday", instrumentId: instrument.id, provider: "manual", price: "100", currency: "EUR", observedOn: "2026-08-20", retrievedAt: "2026-08-20T20:00:00.000Z", isManual: true },
+    { id: "friday", instrumentId: instrument.id, provider: "manual", price: "105", currency: "EUR", observedOn: "2026-08-21", retrievedAt: "2026-08-21T20:00:00.000Z", isManual: true },
+  ]);
+
+  const dashboard = await queryPortfolioDashboard(db, "2026-08-22");
+  assert.equal(dashboard.periodChanges[0].from, "2026-08-20");
+  assert.equal(dashboard.periodChanges[0].amount, "5");
+  assert.equal(dashboard.periodChanges[0].percent, "5");
+  close();
+});

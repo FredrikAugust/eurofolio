@@ -362,6 +362,18 @@ function monthSampleDates(firstDate: string, endDate: string, limit: number): st
   return [...candidates].sort();
 }
 
+function historySampleDates(firstDate: string, endDate: string): string[] {
+  const candidates = new Set(monthSampleDates(firstDate, endDate, 25));
+  const cursor = new Date(`${endDate}T00:00:00Z`);
+  for (let offset = 0; offset < 93; offset += 1) {
+    const date = cursor.toISOString().slice(0, 10);
+    if (date < firstDate) break;
+    candidates.add(date);
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return [...candidates].sort();
+}
+
 function shiftedDate(value: string, days = 0, months = 0): string {
   const date = new Date(`${value}T00:00:00Z`);
   if (months) {
@@ -378,12 +390,17 @@ function shiftedDate(value: string, days = 0, months = 0): string {
 function portfolioPeriodChanges(
   current: PortfolioSummary,
   portfolioAt: (date: string) => PortfolioSummary,
+  observationDates: readonly string[],
 ): PortfolioPeriodChange[] {
+  const asOf = observationDates.filter((date) => date <= current.valuationDate).at(-1)
+    ?? current.valuationDate;
+  const previousClose = observationDates.filter((date) => date < asOf).at(-1)
+    ?? shiftedDate(asOf, 1);
   const periods = [
-    { label: "1D" as const, from: shiftedDate(current.valuationDate, 1) },
-    { label: "1W" as const, from: shiftedDate(current.valuationDate, 7) },
-    { label: "1M" as const, from: shiftedDate(current.valuationDate, 0, 1) },
-    { label: "3M" as const, from: shiftedDate(current.valuationDate, 0, 3) },
+    { label: "1D" as const, from: previousClose },
+    { label: "1W" as const, from: shiftedDate(asOf, 7) },
+    { label: "1M" as const, from: shiftedDate(asOf, 0, 1) },
+    { label: "3M" as const, from: shiftedDate(asOf, 0, 3) },
   ];
 
   return periods.map(({ label, from }) => {
@@ -469,12 +486,10 @@ export async function queryPortfolioDashboard(
     return value;
   };
   const priceHistory = instrumentPriceHistory(rows.priceRows);
-  const periodChanges = portfolioPeriodChanges(summary, portfolioAt);
+  const observationDates = [...new Set(rows.priceRows.map((row) => row.observedOn))].sort();
+  const periodChanges = portfolioPeriodChanges(summary, portfolioAt, observationDates);
   if (rows.eventRows.length === 0) return { summary, history: [], priceHistory, periodChanges };
-  const history = monthSampleDates(
-    rows.eventRows[0].effectiveDate,
-    valuationDate,
-    25,
-  ).map((time) => historyPoint(portfolioAt(time)));
+  const history = historySampleDates(rows.eventRows[0].effectiveDate, valuationDate)
+    .map((time) => historyPoint(portfolioAt(time)));
   return { summary, history, priceHistory, periodChanges };
 }

@@ -1,9 +1,7 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { Chevron } from "@/app/app-frame";
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
-import { PortfolioBackdrop } from "@/app/portfolio-backdrop";
 import { PortfolioChart } from "@/app/portfolio-chart";
 import { OverviewPending } from "@/app/route-pending";
 import { Sparkline } from "@/app/sparkline";
@@ -16,11 +14,6 @@ import {
   type ValuedHolding,
 } from "@/server/services/portfolio-query";
 
-const accountColors: Record<string, string> = {
-  Endavu: "#f04d23",
-  Nordnet: "#1748ba",
-  Revolut: "#0c0c0d",
-};
 const chartColors = ["#f04d23", "#1748ba", "#0c0c0d", "#657080"];
 const allocationColors: Record<string, string> = {
   stock: "#f04d23",
@@ -56,26 +49,22 @@ function EmptyDashboard() {
   );
 }
 
-function RegisterRow({ holding, rank, trend }: { holding: ValuedHolding; rank: number; trend: InstrumentPriceHistory["points"] }) {
+function RegisterRow({ holding, rank, trend, total }: { holding: ValuedHolding; rank: number; trend: InstrumentPriceHistory["points"]; total: number }) {
   return (
     <tr>
       <td className="rank-cell">{String(rank).padStart(2, "0")}</td>
       <td>
         <strong>{holding.instrumentName}</strong>
-        <small>{holding.accountName} · {holding.assetClass}</small>
+        <small>{holding.accountName} · {assetClassLabel(holding.assetClass)} · {freshnessLabel(holding.priceFreshness)}</small>
       </td>
       <td className="number-cell">{quantity(holding.quantity)}</td>
       <td className="number-cell">
         {holding.price ? money(holding.price, holding.nativeCurrency) : "—"}
         <small>{holding.priceDate ? displayDate(holding.priceDate) : "Price missing"}</small>
       </td>
-      <td className="number-cell">{money(holding.nativeValue, holding.nativeCurrency)}</td>
       <td className="number-cell"><strong>{money(holding.eurValue)}</strong></td>
+      <td className="number-cell">{percent(holding.eurValue ?? 0, total)}</td>
       <td className="trend-cell"><Sparkline points={trend} label={`${holding.instrumentName} price trend`} /></td>
-      <td>
-        <span className={`source-state ${holding.priceFreshness}`}>{freshnessLabel(holding.priceFreshness)}</span>
-        <small>{priceSourceLabel(holding.priceProvider, holding.priceFreshness)}</small>
-      </td>
     </tr>
   );
 }
@@ -114,23 +103,17 @@ function Dashboard({ summary, history, priceHistory, periodChanges }: { summary:
   const total = Number(summary.eurTotal) || 1;
   const observedOn = latestObservation(summary);
   const valuedHistory = history.filter((point) => point.complete);
-  const topHoldings = summary.holdings.filter((holding) => holding.eurValue !== null).slice(0, 3);
   const priceHistoryMap = new Map(priceHistory.map((series) => [series.instrumentId, series.points]));
-  const accountHistory = new Map(summary.accountTotals.map((account) => [account.accountId, history.flatMap((point) => {
-    const value = point.accounts.find((candidate) => candidate.accountId === account.accountId)?.value;
-    return value !== null && value !== undefined ? [{ time: point.time, value }] : [];
-  })]));
 
   return (
     <>
-      <section className="value-field" aria-labelledby="portfolio-heading">
-        <div className="weight-axis" aria-hidden="true"><span>WGT</span><b>900</b><i>700</i></div>
-        <div className="value-lockup">
-          <PortfolioBackdrop points={history} />
-          <div className="value-copy">
-            <span className="wordmark">Eurofolio</span>
-            <h1 id="portfolio-heading">{money(summary.eurTotal)}</h1>
-          </div>
+      <section className="portfolio-hero" aria-labelledby="portfolio-heading">
+        <div className="hero-value">
+          <span>Portfolio value</span>
+          <h1 id="portfolio-heading">{money(summary.eurTotal)}</h1>
+          <p>{summary.complete ? "Complete valuation" : "Partial valuation"} · Prices through {displayDate(observedOn)}</p>
+        </div>
+        <div className="hero-periods" aria-label={`Portfolio value changes as at ${displayDate(observedOn)}`}>
           <div className="period-changes" aria-label={`Portfolio changes as at ${displayDate(observedOn)}`}>
             {periodChanges.map((period) => {
               const numeric = Number(period.amount ?? 0);
@@ -147,61 +130,8 @@ function Dashboard({ summary, history, priceHistory, periodChanges }: { summary:
         </div>
       </section>
 
-      <section className="account-register" id="accounts-heading" aria-labelledby="account-register-heading">
-        <h2 className="sr-only" id="account-register-heading">Accounts</h2>
-        {summary.accountTotals.map((account, index) => (
-          <div className="account-line" style={{ color: accountColors[account.accountName] ?? "#0c0c0d" }} key={account.accountId}>
-            <span className="register-rank">{String(index + 1).padStart(2, "0")}</span>
-            <strong>{account.accountName}</strong>
-            <span className="account-value">{money(account.eurValue)}</span>
-            <Sparkline points={accountHistory.get(account.accountId) ?? []} label={`${account.accountName} account value`} color="currentColor" />
-            <span className="account-percent">{percent(account.eurValue, summary.eurTotal)}</span>
-          </div>
-        ))}
-      </section>
-
-      <section className="allocation-register" aria-labelledby="allocation-heading">
-        <h2 className="sr-only" id="allocation-heading">Asset allocation</h2>
-        <div className="allocation-values">
-          {summary.allocation.map((item) => (
-            <div key={item.assetClass}>
-              <span>{assetClassLabel(item.assetClass)}</span>
-              <strong>{percent(item.eurValue, total)}</strong>
-              <span className="allocation-graph" style={{ color: allocationColors[item.assetClass.toLowerCase()] ?? "#0c0c0d" }} aria-hidden="true">
-                <i style={{ width: `${Math.min(100, Math.max(0, (Number(item.eurValue) / total) * 100))}%` }} />
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="top-register" aria-labelledby="leaders-heading">
-        <header><h2 id="leaders-heading">{summary.holdings.length} positions</h2><span>Value (EUR)</span><span>Trend / change</span><span>% of portfolio</span></header>
-        <ol>
-          {topHoldings.map((holding, index) => (
-            <li key={`${holding.accountId}:${holding.instrumentId}`}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{holding.instrumentName}</strong>
-              <span className="leader-value">{money(holding.eurValue)}</span>
-              <Sparkline points={priceHistoryMap.get(holding.instrumentId) ?? []} label={`${holding.instrumentName} price trend`} />
-              <span className="leader-percent">{percent(holding.eurValue ?? 0, total)}</span>
-            </li>
-          ))}
-        </ol>
-        <a href="#holdings-heading">+{Math.max(0, summary.holdings.length - topHoldings.length)} more positions <Chevron direction="down" /></a>
-      </section>
-
-      <nav className="fact-strip" aria-label="Portfolio facts and shortcuts">
-        <a href="#holdings-heading"><span>All holdings</span><strong>View</strong><Chevron direction="right" /></a>
-        <a href="#history-heading"><span>History</span><strong>{valuedHistory.length >= 2 ? "View" : "Collecting"}</strong><Chevron direction="down" /></a>
-        <div><span>Base currency</span><strong>EUR</strong></div>
-        <div><span>Prices as at</span><strong>{displayDate(observedOn)}</strong></div>
-        <div><span>Valuation</span><strong>{summary.complete ? "Complete" : "Partial"}</strong></div>
-        <div><span>Interface</span><strong>MCP read-only</strong></div>
-      </nav>
-
       <section className="history-register" aria-labelledby="history-heading">
-        <header><div><h2 id="history-heading">Portfolio history</h2><p>Monthly closing values by account · EUR</p></div><span>{valuedHistory.length >= 2 ? `${displayDate(valuedHistory[0].time)} — ${displayDate(valuedHistory.at(-1)?.time ?? valuedHistory[0].time)}` : `Begins ${displayDate(summary.valuationDate)}`}</span></header>
+        <header><div><h2 id="history-heading">Performance</h2><p>Portfolio value by account · EUR</p></div></header>
         {valuedHistory.length >= 2 ? (
           <PortfolioChart data={valuedHistory} colors={chartColors} />
         ) : (
@@ -213,12 +143,23 @@ function Dashboard({ summary, history, priceHistory, periodChanges }: { summary:
         )}
       </section>
 
+      <section className="portfolio-breakdown" aria-label="Portfolio breakdown">
+        <div>
+          <h2>Accounts</h2>
+          {summary.accountTotals.map((account) => <p key={account.accountId}><span>{account.accountName}</span><strong>{money(account.eurValue)}</strong><small>{percent(account.eurValue, total)}</small></p>)}
+        </div>
+        <div>
+          <h2>Allocation</h2>
+          {summary.allocation.map((item) => <p key={item.assetClass}><span>{assetClassLabel(item.assetClass)}</span><strong>{percent(item.eurValue, total)}</strong><i style={{ color: allocationColors[item.assetClass.toLowerCase()] ?? "#0c0c0d", width: `${Math.min(100, Math.max(2, (Number(item.eurValue) / total) * 100))}%` }} /></p>)}
+        </div>
+      </section>
+
       <section className="positions-register" aria-labelledby="holdings-heading">
-        <header><div><h2 id="holdings-heading">All holdings</h2><p>{summary.holdings.length} positions · {summary.accountTotals.length} custodians · EUR reporting</p></div></header>
+        <header><div><h2 id="holdings-heading">Holdings</h2><p>{summary.holdings.length} positions across {summary.accountTotals.length} accounts</p></div></header>
         <div className="desktop-table">
           <table>
-            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Native value</th><th className="number-cell">Value EUR</th><th>Trend / change</th><th>Data</th></tr></thead>
-            <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
+            <thead><tr><th>Rank</th><th>Instrument</th><th className="number-cell">Quantity</th><th className="number-cell">Price</th><th className="number-cell">Value EUR</th><th className="number-cell">Weight</th><th>Recent</th></tr></thead>
+            <tbody>{summary.holdings.map((holding, index) => <RegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} total={total} key={`${holding.accountId}:${holding.instrumentId}`} />)}</tbody>
           </table>
         </div>
         <div className="mobile-positions">{summary.holdings.map((holding, index) => <MobileRegisterRow holding={holding} rank={index + 1} trend={priceHistoryMap.get(holding.instrumentId) ?? []} key={`${holding.accountId}:${holding.instrumentId}`} />)}</div>

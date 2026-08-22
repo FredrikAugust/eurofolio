@@ -1,11 +1,32 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Time } from "lightweight-charts";
 
 import type { PortfolioHistoryPoint } from "@/server/services/portfolio-query";
 
 type Props = { data: PortfolioHistoryPoint[]; colors: string[] };
+type Range = "1M" | "3M" | "1Y" | "ALL";
+
+const ranges: Range[] = ["1M", "3M", "1Y", "ALL"];
+
+export function rangeStart(end: string, range: Range): string | null {
+  if (range === "ALL") return null;
+  const date = new Date(`${end}T00:00:00Z`);
+  const originalDay = date.getUTCDate();
+  date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth() - (range === "1M" ? 1 : range === "3M" ? 3 : 12));
+  const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
+  date.setUTCDate(Math.min(originalDay, lastDay));
+  return date.toISOString().slice(0, 10);
+}
+
+function dataInRange(data: PortfolioHistoryPoint[], range: Range): PortfolioHistoryPoint[] {
+  const end = data.at(-1)?.time;
+  if (!end) return [];
+  const start = rangeStart(end, range);
+  return start ? data.filter((point) => point.time >= start) : data;
+}
 
 const eur = new Intl.NumberFormat("en-IE", {
   style: "currency",
@@ -108,13 +129,18 @@ async function initializeChart(
 }
 
 export function PortfolioChart({ data, colors }: Props) {
+  const [range, setRange] = useState<Range>(() => dataInRange(data, "3M").length >= 2 ? "3M" : "ALL");
   const containerRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
+  const visibleData = useMemo(() => dataInRange(data, range), [data, range]);
+  const availableRanges = useMemo(() => new Set(
+    ranges.filter((option) => dataInRange(data, option).length >= 2),
+  ), [data]);
 
   useEffect(() => {
     const container = containerRef.current;
     const detail = detailRef.current;
-    if (!container || !detail || data.length < 2) return;
+    if (!container || !detail || visibleData.length < 2) return;
     let disposed = false;
     let started = false;
     let cleanup: (() => void) | undefined;
@@ -124,7 +150,7 @@ export function PortfolioChart({ data, colors }: Props) {
       if (started) return;
       started = true;
       intersectionObserver?.disconnect();
-      void initializeChart(container, detail, data, colors).then((dispose) => {
+      void initializeChart(container, detail, visibleData, colors).then((dispose) => {
         if (disposed) dispose();
         else cleanup = dispose;
       });
@@ -147,18 +173,23 @@ export function PortfolioChart({ data, colors }: Props) {
       intersectionObserver?.disconnect();
       cleanup?.();
     };
-  }, [colors, data]);
+  }, [colors, visibleData]);
 
   const accounts = data.at(-1)?.accounts ?? [];
   return (
     <div className="chart-wrap">
-      <div className="chart-legend" aria-label="Account legend">
-        {accounts.map((account, index) => (
-          <span key={account.accountId}><i style={{ backgroundColor: colors[index % colors.length] }} />{account.accountName}</span>
-        ))}
+      <div className="chart-toolbar">
+        <div className="chart-legend" aria-label="Account legend">
+          {accounts.map((account, index) => (
+            <span key={account.accountId}><i style={{ backgroundColor: colors[index % colors.length] }} />{account.accountName}</span>
+          ))}
+        </div>
+        <div className="chart-ranges" aria-label="Chart period">
+          {ranges.map((option) => <button type="button" aria-pressed={range === option} disabled={!availableRanges.has(option)} onClick={() => setRange(option)} key={option}>{option}</button>)}
+        </div>
       </div>
-      <div className="portfolio-chart" ref={containerRef} aria-label="Stacked portfolio value by account" />
-      <div className="chart-detail" ref={detailRef} aria-live="polite">Move across the chart for account values</div>
+      <div className="portfolio-chart" ref={containerRef} aria-label={`Stacked portfolio value by account, ${range} range`} />
+      <div className="chart-detail" ref={detailRef} aria-live="polite">Move or tap across the chart for account values</div>
     </div>
   );
 }

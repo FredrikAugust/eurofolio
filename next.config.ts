@@ -3,6 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  redirects() {
+    return ["holdings", "history", "activity", "data"].map((route) => ({
+      source: `/${route}`,
+      destination: "/",
+      permanent: true,
+    }));
+  },
   async headers() {
     return [
       {
