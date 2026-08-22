@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   description: "A private, EUR-first portfolio overview.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={archivo.variable}>
       <body>
