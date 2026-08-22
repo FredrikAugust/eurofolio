@@ -14,7 +14,7 @@ import {
 import type { Database } from "@/server/db/types";
 import { positiveDecimal } from "@/server/domain/decimal";
 import { currencySchema, financialDateSchema } from "@/server/domain/schemas";
-import { latestObservationPerMonth } from "@/server/market/history";
+import { recentDailyAndMonthly } from "@/server/market/history";
 import type {
   FxObservation,
   FxProvider,
@@ -269,8 +269,8 @@ export class MarketService {
 
     if (this.fxProvider.fetchHistory) {
       try {
-        const observations = latestObservationPerMonth(
-          await this.fxProvider.fetchHistory(startOn, endOn),
+        const observations = recentDailyAndMonthly(
+          await this.fxProvider.fetchHistory(startOn, endOn), endOn,
         );
         await this.persistMany(observations.map((observation) => this.persistFx(observation)));
         fxObservationsStored = observations.length;
@@ -288,8 +288,8 @@ export class MarketService {
       if (!provider?.fetchHistory) {
         throw new Error(`No historical provider configured for ${instrument.provider}.`);
       }
-      const observations = latestObservationPerMonth(
-        await provider.fetchHistory(instrument, startOn, endOn),
+      const observations = recentDailyAndMonthly(
+        await provider.fetchHistory(instrument, startOn, endOn), endOn,
       );
       await this.persistMany(observations.map((observation) => this.persistPrice(observation)));
       return observations.length;
