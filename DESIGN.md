@@ -14,10 +14,10 @@ Anything that does not support those questions stays out of the interface.
 ## Visual hierarchy
 
 - **Current value** is the only display-sized number.
-- **Period changes** qualify the current value without becoming separate cards.
-- **Performance** is the only large interactive chart.
-- **Accounts and allocation** are compact supporting summaries.
-- **Holdings** is the detailed register and final primary section.
+- **One period control** qualifies the current value and governs every time-based view on the page.
+- **Portfolio balance** is the only large interactive chart; account performance is not charted.
+- **Holdings** is the detailed register and shows price change for the selected page period.
+- **Accounts and allocation** are compact supporting summaries after the holdings register.
 - **Valuation gaps** appear only when data is incomplete.
 
 The page does not repeat top holdings, duplicate history charts, expose MCP details, or use navigation for information already present below.
@@ -41,11 +41,11 @@ The system sans-serif carries names and values without requiring a runtime font 
 
 ## Layout
 
-The portfolio is a single surface capped at 84rem. It uses rules, spacing, and alignment rather than cards, shadows, radii, or ornamental axes. Desktop opens with a two-column value/change area. Below 900px it becomes one column. Below 680px, the holdings table becomes disclosure rows and the account/allocation summaries stack.
+The portfolio is a single full-width surface. It uses rules, spacing, and alignment rather than cards, shadows, radii, or ornamental axes. Desktop opens with a two-column value/change area. Below 900px it becomes one column. Below 680px, the period selector becomes two rows, the holdings table becomes disclosure rows, and the account/allocation summaries stack.
 
 ## Interaction
 
-The chart exposes `1M`, `3M`, `1Y`, and `ALL` periods. Unavailable periods are disabled rather than showing observations outside the chosen window. Crosshair details work with pointer and touch. Frequently used financial surfaces do not animate on arrival; buttons receive only brief press feedback and reduced-motion preferences are respected.
+The page exposes `1D`, `1W`, `1M`, `3M`, `1Y`, and `ALL` periods in one control. The selection updates the total balance change, total-balance chart, and every holding's price change and trace. Crosshair details work with pointer and touch. Frequently used financial surfaces do not animate on arrival; buttons receive only brief press feedback and reduced-motion preferences are respected.
 
 ## Data honesty
 

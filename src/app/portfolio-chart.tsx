@@ -1,32 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { Time } from "lightweight-charts";
 
-import type { PortfolioHistoryPoint } from "@/server/services/portfolio-query";
+import type { PortfolioRange } from "@/app/portfolio-period";
 
-type Props = { data: PortfolioHistoryPoint[]; colors: string[] };
-type Range = "1M" | "3M" | "1Y" | "ALL";
-
-const ranges: Range[] = ["1M", "3M", "1Y", "ALL"];
-
-export function rangeStart(end: string, range: Range): string | null {
-  if (range === "ALL") return null;
-  const date = new Date(`${end}T00:00:00Z`);
-  const originalDay = date.getUTCDate();
-  date.setUTCDate(1);
-  date.setUTCMonth(date.getUTCMonth() - (range === "1M" ? 1 : range === "3M" ? 3 : 12));
-  const lastDay = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate();
-  date.setUTCDate(Math.min(originalDay, lastDay));
-  return date.toISOString().slice(0, 10);
-}
-
-function dataInRange(data: PortfolioHistoryPoint[], range: Range): PortfolioHistoryPoint[] {
-  const end = data.at(-1)?.time;
-  if (!end) return [];
-  const start = rangeStart(end, range);
-  return start ? data.filter((point) => point.time >= start) : data;
-}
+type PortfolioBalancePoint = { time: string; value: number };
+type Props = { data: PortfolioBalancePoint[]; range: PortfolioRange };
 
 const eur = new Intl.NumberFormat("en-IE", {
   style: "currency",
@@ -37,11 +17,9 @@ const eur = new Intl.NumberFormat("en-IE", {
 async function initializeChart(
   container: HTMLDivElement,
   detail: HTMLDivElement,
-  data: PortfolioHistoryPoint[],
-  colors: string[],
+  data: PortfolioBalancePoint[],
 ) {
   const { AreaSeries, ColorType, CrosshairMode, createChart } = await import("lightweight-charts");
-  const accountOrder = data.at(-1)?.accounts ?? [];
   const chart = createChart(container, {
     width: container.clientWidth,
     height: container.clientWidth < 640 ? 220 : 310,
@@ -66,53 +44,29 @@ async function initializeChart(
     },
   });
 
-  const cumulativeByAccount = accountOrder.map((account) => ({
-    account,
-    values: [] as { time: Time; value: number }[],
-  }));
-  for (const point of data) {
-    const valuesByAccount = new Map(
-      point.accounts.map((account) => [account.accountId, account.value ?? 0]),
-    );
-    let cumulative = 0;
-    cumulativeByAccount.forEach(({ account, values }) => {
-      cumulative += valuesByAccount.get(account.accountId) ?? 0;
-      values.push({ time: point.time as Time, value: cumulative });
-    });
-  }
-
-  for (let index = cumulativeByAccount.length - 1; index >= 0; index -= 1) {
-    const { values } = cumulativeByAccount[index];
-    const color = colors[index % colors.length];
-    const series = chart.addSeries(AreaSeries, {
-      lineColor: color,
-      topColor: `${color}d9`,
-      bottomColor: `${color}d9`,
-      lineWidth: 2,
-      priceLineVisible: false,
-      lastValueVisible: false,
-      crosshairMarkerVisible: false,
-      priceFormat: { type: "price", precision: 0, minMove: 1 },
-    });
-    series.setData(values);
-  }
+  const series = chart.addSeries(AreaSeries, {
+    lineColor: "#1748ba",
+    topColor: "rgba(23, 72, 186, 0.2)",
+    bottomColor: "rgba(23, 72, 186, 0.01)",
+    lineWidth: 2,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    crosshairMarkerVisible: true,
+    priceFormat: { type: "price", precision: 0, minMove: 1 },
+  });
+  series.setData(data.map((point) => ({ time: point.time as Time, value: point.value })));
   chart.timeScale().fitContent();
 
   chart.subscribeCrosshairMove((parameter) => {
     if (!parameter.time || parameter.point === undefined) {
-      detail.textContent = "Move across the chart for account values";
+      detail.textContent = "Move across the chart for the portfolio balance";
       return;
     }
     const point = data.find((candidate) => candidate.time === String(parameter.time));
     if (!point) return;
-    const valuesByAccount = new Map(
-      point.accounts.map((account) => [account.accountId, account.value ?? 0]),
-    );
-    const date = new Intl.DateTimeFormat("en-IE", { month: "short", year: "numeric" })
+    const date = new Intl.DateTimeFormat("en-IE", { day: "numeric", month: "short", year: "numeric" })
       .format(new Date(`${point.time}T12:00:00Z`));
-    detail.textContent = `${date} · ${accountOrder.map((account) =>
-      `${account.accountName} ${eur.format(valuesByAccount.get(account.accountId) ?? 0)}`
-    ).join(" · ")}`;
+    detail.textContent = `${date} · ${eur.format(point.value)}`;
   });
 
   const resizeObserver = new ResizeObserver(([entry]) => {
@@ -128,19 +82,14 @@ async function initializeChart(
   };
 }
 
-export function PortfolioChart({ data, colors }: Props) {
-  const [range, setRange] = useState<Range>(() => dataInRange(data, "3M").length >= 2 ? "3M" : "ALL");
+export function PortfolioChart({ data, range }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
-  const visibleData = useMemo(() => dataInRange(data, range), [data, range]);
-  const availableRanges = useMemo(() => new Set(
-    ranges.filter((option) => dataInRange(data, option).length >= 2),
-  ), [data]);
 
   useEffect(() => {
     const container = containerRef.current;
     const detail = detailRef.current;
-    if (!container || !detail || visibleData.length < 2) return;
+    if (!container || !detail || data.length < 2) return;
     let disposed = false;
     let started = false;
     let cleanup: (() => void) | undefined;
@@ -150,7 +99,7 @@ export function PortfolioChart({ data, colors }: Props) {
       if (started) return;
       started = true;
       intersectionObserver?.disconnect();
-      void initializeChart(container, detail, visibleData, colors).then((dispose) => {
+      void initializeChart(container, detail, data).then((dispose) => {
         if (disposed) dispose();
         else cleanup = dispose;
       });
@@ -173,23 +122,12 @@ export function PortfolioChart({ data, colors }: Props) {
       intersectionObserver?.disconnect();
       cleanup?.();
     };
-  }, [colors, visibleData]);
+  }, [data]);
 
-  const accounts = data.at(-1)?.accounts ?? [];
   return (
     <div className="chart-wrap">
-      <div className="chart-toolbar">
-        <div className="chart-legend" aria-label="Account legend">
-          {accounts.map((account, index) => (
-            <span key={account.accountId}><i style={{ backgroundColor: colors[index % colors.length] }} />{account.accountName}</span>
-          ))}
-        </div>
-        <div className="chart-ranges" aria-label="Chart period">
-          {ranges.map((option) => <button type="button" aria-pressed={range === option} disabled={!availableRanges.has(option)} onClick={() => setRange(option)} key={option}>{option}</button>)}
-        </div>
-      </div>
-      <div className="portfolio-chart" ref={containerRef} aria-label={`Stacked portfolio value by account, ${range} range`} />
-      <div className="chart-detail" ref={detailRef} aria-live="polite">Move or tap across the chart for account values</div>
+      <div className="portfolio-chart" ref={containerRef} role="img" aria-label={`Total portfolio balance in EUR, ${range} range`} />
+      <div className="chart-detail" ref={detailRef} aria-live="polite">Move or tap across the chart for the portfolio balance</div>
     </div>
   );
 }

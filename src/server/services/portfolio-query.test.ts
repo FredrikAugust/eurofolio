@@ -157,7 +157,7 @@ test("dashboard reports exact portfolio changes for standard periods", async () 
   ]);
 
   const dashboard = await queryPortfolioDashboard(db, "2026-08-10");
-  assert.deepEqual(dashboard.periodChanges.map((change) => change.label), ["1D", "1W", "1M", "3M"]);
+  assert.deepEqual(dashboard.periodChanges.map((change) => change.label), ["1D", "1W", "1M", "3M", "1Y", "ALL"]);
   assert.equal(dashboard.periodChanges[0].amount, "10");
   assert.equal(dashboard.periodChanges[0].percent, "10");
   assert.equal(dashboard.periodChanges[3].amount, "10");

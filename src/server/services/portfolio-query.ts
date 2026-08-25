@@ -94,7 +94,7 @@ export type InstrumentPriceHistory = {
 };
 
 export type PortfolioPeriodChange = {
-  label: "1D" | "1W" | "1M" | "3M";
+  label: "1D" | "1W" | "1M" | "3M" | "1Y" | "ALL";
   from: string;
   amount: string | null;
   percent: string | null;
@@ -391,6 +391,7 @@ function portfolioPeriodChanges(
   current: PortfolioSummary,
   portfolioAt: (date: string) => PortfolioSummary,
   observationDates: readonly string[],
+  firstDate: string,
 ): PortfolioPeriodChange[] {
   const asOf = observationDates.filter((date) => date <= current.valuationDate).at(-1)
     ?? current.valuationDate;
@@ -401,6 +402,8 @@ function portfolioPeriodChanges(
     { label: "1W" as const, from: shiftedDate(asOf, 7) },
     { label: "1M" as const, from: shiftedDate(asOf, 0, 1) },
     { label: "3M" as const, from: shiftedDate(asOf, 0, 3) },
+    { label: "1Y" as const, from: shiftedDate(asOf, 0, 12) },
+    { label: "ALL" as const, from: firstDate },
   ];
 
   return periods.map(({ label, from }) => {
@@ -460,7 +463,6 @@ function instrumentPriceHistory(rows: readonly SecurityPriceRow[]): InstrumentPr
     instrumentId,
     points: [...byDate.values()]
       .sort((left, right) => left.observedOn.localeCompare(right.observedOn))
-      .slice(-32)
       .map((row) => ({ time: row.observedOn, value: Number(row.price) })),
   }));
 }
@@ -487,7 +489,8 @@ export async function queryPortfolioDashboard(
   };
   const priceHistory = instrumentPriceHistory(rows.priceRows);
   const observationDates = [...new Set(rows.priceRows.map((row) => row.observedOn))].sort();
-  const periodChanges = portfolioPeriodChanges(summary, portfolioAt, observationDates);
+  const firstDate = rows.eventRows[0]?.effectiveDate ?? valuationDate;
+  const periodChanges = portfolioPeriodChanges(summary, portfolioAt, observationDates, firstDate);
   if (rows.eventRows.length === 0) return { summary, history: [], priceHistory, periodChanges };
   const history = historySampleDates(rows.eventRows[0].effectiveDate, valuationDate)
     .map((time) => historyPoint(portfolioAt(time)));
