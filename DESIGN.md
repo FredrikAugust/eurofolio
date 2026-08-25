@@ -42,11 +42,11 @@ The system sans-serif carries names and values without requiring a runtime font 
 
 ## Layout
 
-The portfolio is a single full-width surface. It uses rules, spacing, and alignment rather than cards, shadows, radii, or ornamental axes. The current value, freshness status, shared period control, balance change, and balance history form one overview. Below 900px the summary becomes one column. Below 680px, the period selector becomes two rows, holdings reflow into two-line disclosure rows, and supporting summaries stack.
+The portfolio is a single full-width surface. It uses rules, spacing, and alignment rather than cards, shadows, radii, or ornamental axes. The current value, freshness status, shared period control, balance change, and balance history form one overview. Below 900px the summary becomes one column. Below 680px, holdings reflow into two-line disclosure rows and supporting summaries stack.
 
 ## Interaction
 
-The page exposes `1D`, `1W`, `1M`, `3M`, `1Y`, and `ALL` periods in one control. The selection updates the total balance change, total-balance chart, and every holding's price change. Holding rows expand with native disclosure behavior. Crosshair details work with pointer and touch. Frequently used financial surfaces do not animate on arrival; buttons receive only brief press feedback and reduced-motion preferences are respected.
+The page exposes `1D`, `1W`, `1M`, `3M`, `1Y`, and `ALL` on one stepped “time lens.” The native range control is draggable and arrow-key operable; its rail and attached value marker make changing the horizon feel like zooming through portfolio history. The selection updates the total balance change, total-balance chart, and every holding's price change. Holding rows expand with native disclosure behavior. Crosshair details work with pointer and touch. Frequently used financial surfaces do not animate on arrival and reduced-motion preferences are respected.
 
 ## Data honesty
 

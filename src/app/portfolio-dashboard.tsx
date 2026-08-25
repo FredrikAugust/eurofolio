@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 
 import { displayDate, freshnessLabel, money, percent, priceSourceLabel, quantity } from "@/app/format";
 import { PortfolioChart } from "@/app/portfolio-chart";
@@ -92,6 +92,8 @@ type Props = {
 
 export function PortfolioDashboard({ summary, history, priceHistory, periodChanges }: Props) {
   const [range, setRange] = useState<PortfolioRange>("1M");
+  const rangeIndex = portfolioRanges.indexOf(range);
+  const rangeProgress = rangeIndex / (portfolioRanges.length - 1);
   const total = Number(summary.eurTotal) || 1;
   const observed = observationWindow(summary);
   const selectedChange = periodChanges.find((period) => period.label === range) ?? periodChanges[0];
@@ -122,10 +124,33 @@ export function PortfolioDashboard({ summary, history, priceHistory, periodChang
             </div>
           </div>
           <div className="hero-periods">
-            <div className="page-ranges" aria-label="Portfolio time range">
-              {portfolioRanges.map((option) => (
-                <button type="button" aria-pressed={range === option} onClick={() => setRange(option)} key={option}>{option}</button>
-              ))}
+            <div
+              className="time-lens"
+              style={{ "--range-progress": `${rangeProgress * 100}%` } as CSSProperties}
+            >
+              <div className="time-lens-heading">
+                <label htmlFor="portfolio-time-range">Time range</label>
+                <span aria-hidden="true">Drag to zoom</span>
+              </div>
+              <div className="time-lens-control">
+                <output className="time-lens-output" htmlFor="portfolio-time-range">{range}</output>
+                <input
+                  id="portfolio-time-range"
+                  type="range"
+                  min={0}
+                  max={portfolioRanges.length - 1}
+                  step={1}
+                  value={rangeIndex}
+                  aria-valuetext={range === "ALL" ? "All history" : range}
+                  onChange={(event) => setRange(portfolioRanges[Number(event.currentTarget.value)] ?? range)}
+                />
+                <div className="time-lens-ticks" aria-hidden="true">
+                  {portfolioRanges.map((option) => (
+                    <span className={range === option ? "selected" : undefined} key={option}>{option}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="time-lens-caption" aria-hidden="true"><span>Detailed</span><span>Long-term</span></div>
             </div>
             <div className={`selected-change ${changeDirection}`} aria-live="polite">
               <span>{range} balance change</span>
