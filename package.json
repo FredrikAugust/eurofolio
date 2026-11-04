@@ -29,7 +29,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "yahoo-finance2": "4.0.2",
-    "zod": "4.4.3"
+    "zod": "4.6.6"
   },
   "devDependencies": {
     "@fission-ai/openspec": "1.7.0",
